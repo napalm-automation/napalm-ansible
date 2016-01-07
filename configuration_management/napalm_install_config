@@ -22,7 +22,7 @@
 import ast
 import logging
 
-logger = logging.getLogger('eos_install_config')
+logger = logging.getLogger('napalm_install_config')
 
 DOCUMENTATION = '''
 ---
