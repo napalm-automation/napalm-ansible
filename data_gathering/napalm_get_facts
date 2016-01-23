@@ -23,11 +23,42 @@ import ast
 import logging
 
 logger = logging.getLogger('eos_install_config')
-
 DOCUMENTATION = '''
+---
+module: napalm_get_facts
+author: David Barroso <dbarrosop@dravetech.com>
+version_added: "1.0.0"
+short_description: Gather facts of devices
+description:
+  - gathers facts of devices
+
+requirements:
+    - napalm
+
+options:
+    hostname:
+        description:
+          - IP or FQDN of the device you want to connect to
+        required: true
+    username:
+        description:
+          - Username
+        required: true
+    dev_os:
+        description:
+          - OS running the device
+        required: true
+    password:
+        description:
+          - Password
+        required: true
+
 '''
 
 EXAMPLES = '''
+# gather facts
+- napalm_get_facts: hostname={{ inventory_hostname }} username=admin password=admin dev_os=eos
+
 '''
 
 
@@ -39,7 +70,7 @@ def main():
             password=dict(required=True),
             dev_os=dict(required=True),
         ),
-        supports_check_mode=True
+        supports_check_mode=False
     )
 
     hostname = module.params['hostname']
