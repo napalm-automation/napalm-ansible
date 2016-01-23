@@ -31,7 +31,7 @@ author: David Barroso <dbarrosop@dravetech.com>
 version_added: "1.0.0"
 short_description: Replaces the configuration taken from a file on a device supported by NAPALM.
 description:
-    This library will take the configuration from a file and load it into a device running any OS supported by napalm.
+  - This library will take the configuration from a file and load it into a device running any OS supported by napalm.
     The old configuration will be replaced by the new one.
 
 requirements:
@@ -39,40 +39,49 @@ requirements:
 
 options:
     hostname:
-        description: IP or FQDN of the device you want to connect to
+        description:
+          - IP or FQDN of the device you want to connect to
         required: true
     username:
-        description: Username
+        description:
+          - Username
         required: true
     dev_os:
-        description: OS running the device
+        description:
+          - OS running the device
         required: true
     password:
-        description: Password
+        description:
+          - Password
         required: true
     timeout:
-        description: Timeout for connections and requests to device
+        description:
+          - Timeout for connections and requests to device
         required: false
         default: 60
     config_file:
-        description: Where to load the configuration from.
+        description:
+          - Where to load the configuration from.
         required: true
     commit_changes:
-        description: If set to True the configuration will be actually replaced. If the set to False, we will not
-                     apply the changes, just check the differences.
+        description:
+          - If set to True the configuration will be actually replaced. If the set to False, we will not
+            apply the changes, just check the differences.
         required: true
     replace_config:
-        description: If set to True the entire configuration on the device will be replaced during the commit. If
-                     set to False, we will merge the new config with the existing one. Default: False.
+        description:
+          - If set to True the entire configuration on the device will be replaced during the commit. If
+            set to False, we will merge the new config with the existing one. Default is False.
         required: False
     diff_file:
-        description: A file where to store the "diff" between the running configuration and the new configuration. If
-                     it's not set the diff between configurations is not saved.
+        description:
+          - A file where to store the "diff" between the running configuration and the new configuration. If
+            it's not set the diff between configurations is not saved.
         required: False
     get_diffs:
         description:
             - Set to false to not have any diffs generated and always apply config.  Useful if platform does
-              not support commands being used to generated diffs.  Note: By default diffs are generated
+              not support commands being used to generated diffs.  By default diffs are generated
               even if the diff_file param is not set.
         choices: ['true', 'false']
         required: False
