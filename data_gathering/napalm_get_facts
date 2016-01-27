@@ -15,19 +15,46 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-
-"""
-"""
-
 import ast
 import logging
 
 logger = logging.getLogger('eos_install_config')
 
 DOCUMENTATION = '''
+---
+module: napalm_install_config
+author: David Barroso <dbarrosop@dravetech.com>
+version_added: "1.0.0"
+short_description: Gathers facts from a network device
+description:
+    - Gathers facts from a network device
+requirements:
+    - napalm
+options:
+    hostname:
+        description:
+          - IP or FQDN of the device you want to connect to
+        required: true
+    username:
+        description:
+          - Username
+        required: true
+    dev_os:
+        description:
+          - OS running the device
+        required: true
+    password:
+        description:
+          - Password
+        required: true
 '''
 
 EXAMPLES = '''
+ - napalm_install_config:
+     hostname={{ inventory_hostname }}
+     username=dbarroso
+     dev_os={{os}}
+     password=p4ssw0rd
 '''
 
 
@@ -39,14 +66,13 @@ def main():
             password=dict(required=True),
             dev_os=dict(required=True),
         ),
-        supports_check_mode=True
+        supports_check_mode=False
     )
 
     hostname = module.params['hostname']
     username = module.params['username']
     dev_os = module.params['dev_os']
     password = module.params['password']
-
 
     network_driver = get_network_driver(dev_os)
 
