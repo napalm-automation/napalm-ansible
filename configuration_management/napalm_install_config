@@ -90,6 +90,7 @@ EXAMPLES = '''
     username=dbarroso
     dev_os={{os}}
     password=p4ssw0rd
+    config_file=../compiled/{{ inventory_hostname }}/running.conf
 '''
 
 
