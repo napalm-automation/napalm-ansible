@@ -85,10 +85,10 @@ options:
 
 EXAMPLES = '''
 - name: Assemble configuration
-assemble: src=../compiled/{{ inventory_hostname }}/ dest=../compiled/{{ inventory_hostname }}/running.conf
+  assemble: src=../compiled/{{ inventory_hostname }}/ dest=../compiled/{{ inventory_hostname }}/running.conf
 
 - name: Push Configuration
-napalm_install_config:
+  napalm_install_config:
     hostname={{ inventory_hostname }}
     username=dbarroso
     dev_os={{os}}
