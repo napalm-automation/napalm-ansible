@@ -87,13 +87,6 @@ EXAMPLES = '''
 
 - napalm_install_config:
     hostname={{ inventory_hostname }}
-    username=dbarroso
-    dev_os={{os}}
-    password=p4ssw0rd
-    config_file=../compiled/{{ inventory_hostname }}/running.conf
-    commit_changes={{ commit_changes }}
-    replace_config={{ replace_config }}
-    diff_file=../compiled/{{ inventory_hostname }}/diff
 '''
 
 
