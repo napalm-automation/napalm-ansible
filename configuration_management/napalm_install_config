@@ -84,32 +84,20 @@ options:
 '''
 
 EXAMPLES = '''
-    In our playbook would have something like:
 
-  tasks:
-  - name: Assemble configuration
-    assemble: src=../compiled/{{ inventory_hostname }}/ dest=../compiled/{{ inventory_hostname }}/running.conf
-  - name: Push Configuration
-    napalm_install_config:
-        hostname={{ inventory_hostname }}
-        username=dbarroso
-        dev_os={{os}}
-        password=p4ssw0rd
-        config_file=../compiled/{{ inventory_hostname }}/running.conf
-        commit_changes={{ commit_changes }}
-        replace_config={{ replace_config }}
-        diff_file=../compiled/{{ inventory_hostname }}/diff
-        timeout={{timeout}}
+- assemble:
+    src=../compiled/{{ inventory_hostname }}/
+    dest=../compiled/{{ inventory_hostname }}/running.conf
 
-    From the CLI we would trigger the playbook like:
-
-        # We don't commit changes, we only want to check the diff
-        $ ansible-playbook -v -e commit_changes=0 napalm_test.yml
-
-        or
-
-        # We actually commit the changes
-        $ ansible-playbook -v -e commit_changes=1 napalm_test.yml
+- napalm_install_config:
+    hostname={{ inventory_hostname }}
+    username=dbarroso
+    dev_os={{os}}
+    password=p4ssw0rd
+    config_file=../compiled/{{ inventory_hostname }}/running.conf
+    commit_changes={{ commit_changes }}
+    replace_config={{ replace_config }}
+    diff_file=../compiled/{{ inventory_hostname }}/diff
 '''
 
 
