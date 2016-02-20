@@ -83,7 +83,7 @@ options:
     get_diffs:
         description:
             - Set to False to not have any diffs generated. Useful if platform does not support commands
-              being used to generate diffs. Note: By default diffs are generated even if the diff_file
+              being used to generate diffs. Note- By default diffs are generated even if the diff_file
               param is not set.
         choices: [yes,on,1,true,no,off,0,false]
         default: True
