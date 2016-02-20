@@ -23,7 +23,7 @@ along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
 DOCUMENTATION = '''
 ---
 module: napalm_get_lldp_neighbors
-author: "Elisa Jasinska (@fooelisa)" 
+author: "Elisa Jasinska (@fooelisa)"
 version_added: "1.0.0"
 short_description: "Gathers LLDP neighbors from a network device"
 description:
@@ -51,8 +51,8 @@ options:
     timeout:
         description:
           - Time in seconds to wait for the device to respond
-          required: False
-          default: 60
+        required: False
+        default: 60
     optional_args:
         description:
           - Dictionary of additional arguments passed to underlying driver
@@ -101,7 +101,7 @@ def main():
     else:
         optional_args = module.params['optional_args']
 
-    try: 
+    try:
         network_driver = get_network_driver(dev_os)
         device = network_driver(hostname=hostname,
                                 username=username,

@@ -23,7 +23,7 @@ along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
 DOCUMENTATION = '''
 ---
 module: napalm_get_bgp_config
-author: "Elisa Jasinska (@fooelisa)" 
+author: "Elisa Jasinska (@fooelisa)"
 version_added: "1.0.0"
 short_description: "Gathers BGP config from a network device"
 description:
@@ -51,8 +51,8 @@ options:
     timeout:
         description:
           - Time in seconds to wait for the device to respond
-          required: False
-          default: 60
+        required: False
+        default: 60
     optional_args:
         description:
           - Dictionary of additional arguments passed to underlying driver
