@@ -70,7 +70,7 @@ options:
     replace_config:
         description:
           - If set to True, the entire configuration on the device will be replaced during the commit.
-            If set to False, we will merge the new config with the existing one. Default: False
+            If set to False, we will merge the new config with the existing one. Default- False
         choices: [yes,on,1,true,no,off,0,false]
         default: False
         required: False
