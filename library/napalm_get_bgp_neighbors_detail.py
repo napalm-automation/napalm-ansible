@@ -24,7 +24,7 @@ DOCUMENTATION = '''
 ---
 module: napalm_get_bgp_neighbors_detail
 author: "Elisa Jasinska (@fooelisa)"
-version_added: "1.0.0"
+version_added: "2.1.0"
 short_description: "Gathers BGP neighbors detail from a network device"
 description:
     - "Gathers BGP neighbors detail from a network device via the Python module napalm"

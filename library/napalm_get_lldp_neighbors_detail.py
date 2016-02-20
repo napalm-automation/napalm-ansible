@@ -22,12 +22,12 @@ along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
 
 DOCUMENTATION = '''
 ---
-module: napalm_get_interfaces
+module: napalm_get_lldp_neighbors_detail
 author: "Elisa Jasinska (@fooelisa)"
-version_added: "1.0.0"
-short_description: "Gathers interfaces from a network device"
+version_added: "2.1.0"
+short_description: "Gathers LLDP neighbors detail from a network device"
 description:
-    - "Gathers interfaces from a network device via the Python module napalm"
+    - "Gathers LLDP neighbors detail from a network device via the Python module napalm"
 requirements:
     - napalm
 options:
@@ -60,7 +60,7 @@ options:
 '''
 
 EXAMPLES = '''
- - napalm_get_interfaces:
+ - napalm_get_lldp_neighbors_detail:
      hostname={{ inventory_hostname }}
      username={{ user }}
      dev_os={{ os }}
@@ -113,7 +113,7 @@ def main():
         module.fail_json(msg="cannot connect to device")
 
     try:
-        facts = device.get_interfaces()
+        facts = device.get_lldp_neighbors_detail()
     except:
         module.fail_json(msg="cannot retrieve device data")
 

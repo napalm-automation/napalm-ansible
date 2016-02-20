@@ -22,12 +22,12 @@ along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
 
 DOCUMENTATION = '''
 ---
-module: napalm_get_bgp_neighbors
+module: napalm_get_lldp_neighbors
 author: "Elisa Jasinska (@fooelisa)"
-version_added: "1.0.0"
-short_description: "Gathers BGP neighbors from a network device"
+version_added: "2.1.0"
+short_description: "Gathers LLDP neighbors from a network device"
 description:
-    - "Gathers BGP neighbors from a network device via the Python module napalm"
+    - "Gathers LLDP neighbors from a network device via the Python module napalm"
 requirements:
     - napalm
 options:
@@ -60,7 +60,7 @@ options:
 '''
 
 EXAMPLES = '''
- - napalm_get_bgp_neighbors:
+ - napalm_get_lldp_neighbors:
      hostname={{ inventory_hostname }}
      username={{ user }}
      dev_os={{ os }}
@@ -113,7 +113,7 @@ def main():
         module.fail_json(msg="cannot connect to device")
 
     try:
-        facts = device.get_bgp_neighbors()
+        facts = device.get_lldp_neighbors()
     except:
         module.fail_json(msg="cannot retrieve device data")
 

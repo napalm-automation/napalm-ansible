@@ -24,11 +24,11 @@ DOCUMENTATION = '''
 ---
 module: napalm_install_config
 author: "David Barroso (@dbarrosop)"
-version_added: "1.0.0"
-short_description: Installs the configuration taken from a file on a device supported by NAPALM"
+version_added: "2.1.0"
+short_description: "Installs the configuration taken from a file on a device supported by NAPALM"
 description:
-    - This library will take the configuration from a file and load it into a device running any OS supported by napalm.
-      The old configuration will be replaced or merged with the new one.
+    - "This library will take the configuration from a file and load it into a device running any OS supported by napalm.
+      The old configuration will be replaced or merged with the new one."
 requirements:
     - napalm
 options:
@@ -106,6 +106,19 @@ EXAMPLES = '''
     replace_config={{ replace_config }}
     get_diffs=True
     diff_file=../compiled/{{ inventory_hostname }}/diff
+'''
+
+RETURN = '''
+changed:
+    description: whether the config on the device was changed
+    returned: always
+    type: bool
+    sample: True
+msg:
+    description: diff of the change
+    returned: always
+    type: string
+    sample: "[edit system]\n-  host-name lab-testing;\n+  host-name lab;"
 '''
 
 try:
