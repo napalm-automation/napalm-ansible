@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/python
 # -*- coding: utf-8 -*-
 
 """
@@ -70,8 +70,7 @@ options:
     replace_config:
         description:
           - If set to True, the entire configuration on the device will be replaced during the commit.
-            If set to False, we will merge the new config with the existing one.
-            Default: False
+            If set to False, we will merge the new config with the existing one. Default- False
         choices: [yes,on,1,true,no,off,0,false]
         default: False
         required: False
@@ -84,7 +83,7 @@ options:
     get_diffs:
         description:
             - Set to False to not have any diffs generated. Useful if platform does not support commands
-              being used to generate diffs. Note: By default diffs are generated even if the diff_file
+              being used to generate diffs. Note- By default diffs are generated even if the diff_file
               param is not set.
         choices: [yes,on,1,true,no,off,0,false]
         default: True
