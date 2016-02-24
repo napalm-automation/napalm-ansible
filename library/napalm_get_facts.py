@@ -84,7 +84,7 @@ def main():
             timeout=dict(type='int', required=False, default=60),
             optional_args=dict(required=False, type='dict', default=None),
         ),
-        supports_check_mode=False
+        supports_check_mode=True
     )
 
     if not napalm_found:
