@@ -57,14 +57,99 @@ options:
         description:
           - Dictionary of additional arguments passed to underlying driver
         required: False
+    filter:
+        description:
+            - A list of facts to retreive from a device and provided though C(ansible_facts)
+              The following facts are available:
+              facts, environment, interfaces, interfaces_counters, bgp_config, bgp_neighbors,
+              bgp_neighbors_detail, lldp_neighbors, lldp_neighbors_detail
+              Note- not all getters are implemented on all supported devcie types
+        required: False
+        default: 'facts'
 '''
 
 EXAMPLES = '''
- - napalm_get_facts:
+ - name: get facts from device
+   napalm_get_facts:
      hostname={{ inventory_hostname }}
      username={{ user }}
      dev_os={{ os }}
      password={{ passwd }}
+     filter='facts'
+   register: result
+
+ - name: print data
+   debug: var=result
+'''
+
+RETURN = '''
+changed:
+    description: whether the command has been executed on the device
+    returned: always
+    type: bool
+    sample: True
+
+ansible_facts:
+    description: facts gathered on the device are provided though C(ansible_facts)
+    returned: depending on filter
+    type: dict
+    sample: "
+
+    filter: facts
+    "ansible_facts": {
+        "facts": {
+        }
+    }
+
+    filter: environment
+    "ansible_facts": {
+        "environment": {
+        }
+    }
+
+    filter: interfaces
+    "ansible_facts": {
+        "interfaces": {
+        }
+    }
+
+    filter: interfaces_counters
+    "ansible_facts": {
+        "interfaces_counters": {
+        }
+    }
+
+    filter: bgp_config
+    "ansible_facts": {
+        "bgp_config": {
+        }
+    }
+
+    filter: bgp_neighbors
+    "ansible_facts": {
+        "bgp_neighbors": {
+        }
+    }
+
+    filter: bgp_neighbors_detail
+    "ansible_facts": {
+        "bgp_neighbors_detail": {
+        }
+    }
+
+    filter: lldp_neighbors
+    "ansible_facts": {
+        "lldp_neighbors": {
+        }
+    }
+
+    filter: lldp_neighbors_detail
+    "ansible_facts": {
+        "lldp_neighbors_detail": {
+        }
+    }
+
+    "
 '''
 
 try:
@@ -82,7 +167,9 @@ def main():
             password=dict(type='str', required=True, no_log=True),
             dev_os=dict(type='str', required=True, choices=['eos', 'junos', 'iosxr', 'fortios', 'ibm', 'ios', 'nxos']),
             timeout=dict(type='int', required=False, default=60),
-            optional_args=dict(required=False, type='dict', default=None),
+            optional_args=dict(type='dict', required=False, default=None),
+            filter=dict(type='str', required=False, default='facts'),
+
         ),
         supports_check_mode=False
     )
@@ -95,6 +182,7 @@ def main():
     dev_os = module.params['dev_os']
     password = module.params['password']
     timeout = module.params['timeout']
+    filter_list = module.params['filter'].split(',')
 
     if module.params['optional_args'] is None:
         optional_args = {}
@@ -113,7 +201,37 @@ def main():
         module.fail_json(msg="cannot connect to device")
 
     try:
-        facts = device.get_facts()
+        facts = {}
+        for filter in filter_list:
+            if filter == 'facts':
+                result = device.get_facts()
+                facts['facts'] = result
+            elif filter == 'interfaces':
+                result = device.get_interfaces()
+                facts['interfaces'] = result
+            elif filter == 'interfaces_counter':
+                result = device.get_interfaces_counter()
+                facts['interfaces_counter'] = result
+            elif filter == 'bgp_config':
+                result = device.get_bgp_config()
+                facts['bgp_config'] = result
+            elif filter == 'bgp_neighbors':
+                result = device.get_bgp_neighbors()
+                facts['bgp_neighbors'] = result
+            elif filter == 'bgp_neighbors_detail':
+                result = device.get_bgp_neighbors_detail()
+                facts['bgp_neighbors_detail'] = result
+            elif filter == 'environment':
+                result = device.get_environment()
+                facts['environment'] = result
+            elif filter == 'lldp_neighbors':
+                result = device.get_lldp_neighbors()
+                facts['lldp_neighbors'] = result
+            elif filter == 'lldp_neighbors_detail':
+                result = device.get_lldp_neighbors_detail()
+                facts['lldp_neighbors_detail'] = result
+            else:
+                module.fail_json(msg="filter not recognized: " + filter)
     except:
         module.fail_json(msg="cannot retrieve device data")
 

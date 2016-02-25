@@ -6,15 +6,7 @@ Collection of ansible modules that use [napalm](https://github.com/napalm-automa
 Modules
 =======
 The following modules are currenty available:
-- napalm_get_bgp_config
-- napalm_get_bgp_neighbors
-- napalm_get_bgp_neighbors_detail
-- napalm_get_environment
 - napalm_get_facts
-- napalm_get_interfaces
-- napalm_get_interfaces_counters
-- napalm_get_lldp_neighbors
-- napalm_get_lldp_neighbors_detail
 - napalm_install_config
 
 Install
@@ -38,3 +30,38 @@ ansible-galaxy install -r requirements.yml --force
 Dependencies
 =======
 * [napalm](https://github.com/napalm-automation/napalm) 0.51.0 or later
+
+
+Examples
+=======
+Example to retreive facts from a device
+```
+ - name: get facts from device
+   napalm_get_facts:
+     hostname={{ inventory_hostname }}
+     username={{ user }}
+     dev_os={{ os }}
+     password={{ passwd }}
+     filter='facts,interfaces,bgp_neighbors'
+   register: result
+
+ - name: print data
+   debug: var=result
+```
+Example to install config on a device
+```
+- assemble:
+    src=../compiled/{{ inventory_hostname }}/
+    dest=../compiled/{{ inventory_hostname }}/running.conf
+
+ - napalm_install_config:
+    hostname={{ inventory_hostname }}
+    username={{ user }}
+    dev_os={{ os }}
+    password={{ passwd }}
+    config_file=../compiled/{{ inventory_hostname }}/running.conf
+    commit_changes={{ commit_changes }}
+    replace_config={{ replace_config }}
+    get_diffs=True
+    diff_file=../compiled/{{ inventory_hostname }}/diff
+```
