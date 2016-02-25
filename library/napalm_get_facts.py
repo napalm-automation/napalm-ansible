@@ -25,7 +25,7 @@ DOCUMENTATION = '''
 module: napalm_get_facts
 author: "Elisa Jasinska (@fooelisa)"
 version_added: "2.1.0"
-short_description: "Gathers facts from a network device"
+short_description: "Gathers facts from a network device via napalm"
 description:
     - "Gathers facts from a network device via the Python module napalm"
 requirements:
@@ -60,7 +60,7 @@ options:
     filter:
         description:
             - A list of facts to retreive from a device and provided though C(ansible_facts)
-              The following facts are available:
+              The following facts are available-
               facts, environment, interfaces, interfaces_counters, bgp_config, bgp_neighbors,
               bgp_neighbors_detail, lldp_neighbors, lldp_neighbors_detail
               Note- not all getters are implemented on all supported devcie types
@@ -84,72 +84,14 @@ EXAMPLES = '''
 
 RETURN = '''
 changed:
-    description: whether the command has been executed on the device
+    description: "whether the command has been executed on the device"
     returned: always
     type: bool
     sample: True
-
 ansible_facts:
-    description: facts gathered on the device are provided though C(ansible_facts)
-    returned: depending on filter
+    description: "Facts gathered on the device provided via C(ansible_facts)"
+    returned: certain keys are returned depending on filter
     type: dict
-    sample: "
-
-    filter: facts
-    "ansible_facts": {
-        "facts": {
-        }
-    }
-
-    filter: environment
-    "ansible_facts": {
-        "environment": {
-        }
-    }
-
-    filter: interfaces
-    "ansible_facts": {
-        "interfaces": {
-        }
-    }
-
-    filter: interfaces_counters
-    "ansible_facts": {
-        "interfaces_counters": {
-        }
-    }
-
-    filter: bgp_config
-    "ansible_facts": {
-        "bgp_config": {
-        }
-    }
-
-    filter: bgp_neighbors
-    "ansible_facts": {
-        "bgp_neighbors": {
-        }
-    }
-
-    filter: bgp_neighbors_detail
-    "ansible_facts": {
-        "bgp_neighbors_detail": {
-        }
-    }
-
-    filter: lldp_neighbors
-    "ansible_facts": {
-        "lldp_neighbors": {
-        }
-    }
-
-    filter: lldp_neighbors_detail
-    "ansible_facts": {
-        "lldp_neighbors_detail": {
-        }
-    }
-
-    "
 '''
 
 try:

@@ -128,8 +128,11 @@ else:
     napalm_found = True
 
 def save_to_file(content, filename):
-    with open(filename, 'w') as f:
+    f = open(filename, 'w')
+    try:
         f.write(content)
+    finally:
+        f.close()
 
 def main():
     module = AnsibleModule(
