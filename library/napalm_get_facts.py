@@ -113,7 +113,7 @@ def main():
             filter=dict(type='str', required=False, default='facts'),
 
         ),
-        supports_check_mode=True
+        supports_check_mode=False
     )
 
     if not napalm_found:
@@ -146,37 +146,36 @@ def main():
     # retreive data from device
     facts = {}
     try:
-        if not module.check_mode:
-            for filter in filter_list:
-                if filter == 'facts':
-                    result = device.get_facts()
-                    facts['facts'] = result
-                elif filter == 'interfaces':
-                    result = device.get_interfaces()
-                    facts['interfaces'] = result
-                elif filter == 'interfaces_counter':
-                    result = device.get_interfaces_counter()
-                    facts['interfaces_counter'] = result
-                elif filter == 'bgp_config':
-                    result = device.get_bgp_config()
-                    facts['bgp_config'] = result
-                elif filter == 'bgp_neighbors':
-                    result = device.get_bgp_neighbors()
-                    facts['bgp_neighbors'] = result
-                elif filter == 'bgp_neighbors_detail':
-                    result = device.get_bgp_neighbors_detail()
-                    facts['bgp_neighbors_detail'] = result
-                elif filter == 'environment':
-                    result = device.get_environment()
-                    facts['environment'] = result
-                elif filter == 'lldp_neighbors':
-                    result = device.get_lldp_neighbors()
-                    facts['lldp_neighbors'] = result
-                elif filter == 'lldp_neighbors_detail':
-                    result = device.get_lldp_neighbors_detail()
-                    facts['lldp_neighbors_detail'] = result
-                else:
-                    module.fail_json(msg="filter not recognized: " + filter)
+        for filter in filter_list:
+            if filter == 'facts':
+                result = device.get_facts()
+                facts['facts'] = result
+            elif filter == 'interfaces':
+                result = device.get_interfaces()
+                facts['interfaces'] = result
+            elif filter == 'interfaces_counter':
+                result = device.get_interfaces_counter()
+                facts['interfaces_counter'] = result
+            elif filter == 'bgp_config':
+                result = device.get_bgp_config()
+                facts['bgp_config'] = result
+            elif filter == 'bgp_neighbors':
+                result = device.get_bgp_neighbors()
+                facts['bgp_neighbors'] = result
+            elif filter == 'bgp_neighbors_detail':
+                result = device.get_bgp_neighbors_detail()
+                facts['bgp_neighbors_detail'] = result
+            elif filter == 'environment':
+                result = device.get_environment()
+                facts['environment'] = result
+            elif filter == 'lldp_neighbors':
+                result = device.get_lldp_neighbors()
+                facts['lldp_neighbors'] = result
+            elif filter == 'lldp_neighbors_detail':
+                result = device.get_lldp_neighbors_detail()
+                facts['lldp_neighbors_detail'] = result
+            else:
+                module.fail_json(msg="filter not recognized: " + filter)
     except:
         module.fail_json(msg="cannot retrieve device data")
 
