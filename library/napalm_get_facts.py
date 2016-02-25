@@ -113,7 +113,7 @@ def main():
             filter=dict(type='str', required=False, default='facts'),
 
         ),
-        supports_check_mode=False
+        supports_check_mode=True
     )
 
     if not napalm_found:
