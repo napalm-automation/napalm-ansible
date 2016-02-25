@@ -131,6 +131,7 @@ def main():
     else:
         optional_args = module.params['optional_args']
 
+    # open device connection
     try:
         network_driver = get_network_driver(dev_os)
         device = network_driver(hostname=hostname,
@@ -142,8 +143,9 @@ def main():
     except:
         module.fail_json(msg="cannot connect to device")
 
+    # retreive data from device
+    facts = {}
     try:
-        facts = {}
         for filter in filter_list:
             if filter == 'facts':
                 result = device.get_facts()
@@ -177,6 +179,7 @@ def main():
     except:
         module.fail_json(msg="cannot retrieve device data")
 
+    # close device connection
     try:
         device.close()
     except:
