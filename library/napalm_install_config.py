@@ -3,6 +3,7 @@
 
 """
 (c) 2016 Elisa Jasinska <elisa@bigwaveit.org>
+    Original prototype by David Barroso <dbarrosop@dravetech.com>
 
 This file is part of Ansible
 
@@ -23,7 +24,7 @@ along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
 DOCUMENTATION = '''
 ---
 module: napalm_install_config
-author: "David Barroso (@dbarrosop)"
+author: "Elisa Jasinska (@fooelisa)"
 version_added: "2.1.0"
 short_description: "Installs the configuration taken from a file on a device supported by NAPALM"
 description:
