@@ -180,16 +180,16 @@ def main():
                                 timeout=timeout,
                                 optional_args=optional_args)
         device.open()
-    except:
-        module.fail_json(msg="cannot connect to device")
+    except Exception as e:
+        module.fail_json(msg="cannot connect to device: " + str(e))
 
     try:
         if replace_config:
             device.load_replace_candidate(filename=config_file)
         else:
             device.load_merge_candidate(filename=config_file)
-    except:
-        module.fail_json(msg="cannot load config")
+    except Exception as e:
+        module.fail_json(msg="cannot load config: " + str(e))
 
     try:
         if get_diffs:
@@ -200,8 +200,8 @@ def main():
             diff = None
         if diff_file is not None and get_diffs:
             save_to_file(diff, diff_file)
-    except:
-        module.fail_json(msg="cannot diff config")
+    except Exception as e:
+        module.fail_json(msg="cannot diff config: " + str(e))
 
     try:
         if module.check_mode or not commit_changes:
@@ -209,13 +209,13 @@ def main():
         else:
             if changed:
                 device.commit_config()
-    except:
-        module.fail_json(msg="cannot install config")
+    except Exception as e:
+        module.fail_json(msg="cannot install config: " + str(e))
 
     try:
         device.close()
-    except:
-        module.fail_json(msg="cannot close device connection")
+    except Exception as e:
+        module.fail_json(msg="cannot close device connection: " + str(e))
 
     module.exit_json(changed=changed, msg=diff)
 
