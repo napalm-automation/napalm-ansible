@@ -62,11 +62,11 @@ options:
         description:
             - A list of facts to retreive from a device and provided though C(ansible_facts)
               The following facts are available-
-              facts, environment, interfaces, interfaces_counters, bgp_config, bgp_neighbors,
+              facts, environment, interfaces, interfaces_counter, bgp_config, bgp_neighbors,
               bgp_neighbors_detail, lldp_neighbors, lldp_neighbors_detail
               Note- not all getters are implemented on all supported devcie types
         required: False
-        default: 'facts'
+        default: ['facts']
 '''
 
 EXAMPLES = '''
@@ -76,7 +76,7 @@ EXAMPLES = '''
      username={{ user }}
      dev_os={{ os }}
      password={{ passwd }}
-     filter='facts'
+     filter=['facts']
    register: result
 
  - name: print data
@@ -111,7 +111,7 @@ def main():
             dev_os=dict(type='str', required=True, choices=['eos', 'junos', 'iosxr', 'fortios', 'ibm', 'ios', 'nxos']),
             timeout=dict(type='int', required=False, default=60),
             optional_args=dict(type='dict', required=False, default=None),
-            filter=dict(type='str', required=False, default='facts'),
+            filter=dict(type='list', required=False, default=['facts']),
 
         ),
         supports_check_mode=True
@@ -125,7 +125,7 @@ def main():
     dev_os = module.params['dev_os']
     password = module.params['password']
     timeout = module.params['timeout']
-    filter_list = module.params['filter'].split(',')
+    filter_list = module.params['filter']
 
     if module.params['optional_args'] is None:
         optional_args = {}
