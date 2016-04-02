@@ -141,7 +141,7 @@ def main():
                                 timeout=timeout,
                                 optional_args=optional_args)
         device.open()
-    except Exception as e:
+    except Exception, e:
         module.fail_json(msg="cannot connect to device: " + str(e))
 
     # retreive data from device
@@ -177,13 +177,13 @@ def main():
                 facts['lldp_neighbors_detail'] = result
             else:
                 module.fail_json(msg="filter not recognized: " + filter)
-    except Exception as e:
+    except Exception, e:
         module.fail_json(msg="cannot retrieve device data: " + str(e))
 
     # close device connection
     try:
         device.close()
-    except Exception as e:
+    except Exception, e:
         module.fail_json(msg="cannot close device connection: " + str(e))
 
     module.exit_json(ansible_facts=facts)
