@@ -25,7 +25,7 @@ DOCUMENTATION = '''
 ---
 module: napalm_install_config
 author: "Elisa Jasinska (@fooelisa)"
-version_added: "2.1.0"
+version_added: "2.1"
 short_description: "Installs the configuration taken from a file on a device supported by NAPALM"
 description:
     - "This library will take the configuration from a file and load it into a device running any OS supported by napalm.
@@ -59,6 +59,7 @@ options:
         description:
           - Dictionary of additional arguments passed to underlying driver
         required: False
+        default: None
     config_file:
         description:
           - Path to the file to load the configuration from
@@ -67,12 +68,13 @@ options:
         description:
           - If set to True the configuration will be actually merged or replaced. If the set to False,
             we will not apply the changes, just check and report the diff
+        choices: [true,false]
         required: True
     replace_config:
         description:
           - If set to True, the entire configuration on the device will be replaced during the commit.
             If set to False, we will merge the new config with the existing one. Default- False
-        choices: [yes,on,1,true,no,off,0,false]
+        choices: [true,false]
         default: False
         required: False
     diff_file:
@@ -86,7 +88,7 @@ options:
             - Set to False to not have any diffs generated. Useful if platform does not support commands
               being used to generate diffs. Note- By default diffs are generated even if the diff_file
               param is not set.
-        choices: [yes,on,1,true,no,off,0,false]
+        choices: [true,false]
         default: True
         required: False
 '''
@@ -140,15 +142,15 @@ def main():
         argument_spec=dict(
             hostname=dict(type='str', required=True),
             username=dict(type='str', required=True),
-            password=dict(type='str', required=True),
+            password=dict(type='str', required=True, no_log=True),
             timeout=dict(type='int', required=False, default=60),
             optional_args=dict(required=False, type='dict', default=None),
             config_file=dict(type='str', required=True),
             dev_os=dict(type='str', required=True, choices=['eos', 'junos', 'iosxr', 'fortios', 'ibm', 'ios', 'nxos']),
-            commit_changes=dict(type='bool', required=True, choices=BOOLEANS),
-            replace_config=dict(type='bool', required=False, choices=BOOLEANS, default=False),
+            commit_changes=dict(type='bool', required=True),
+            replace_config=dict(type='bool', required=False, default=False),
             diff_file=dict(type='str', required=False, default=None),
-            get_diffs=dict(type='bool', required=False, choices=BOOLEANS, default=True)
+            get_diffs=dict(type='bool', required=False, default=True)
         ),
         supports_check_mode=True
     )
