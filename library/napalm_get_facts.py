@@ -24,7 +24,7 @@ DOCUMENTATION = '''
 ---
 module: napalm_get_facts
 author: "Elisa Jasinska (@fooelisa)"
-version_added: "2.1.0"
+version_added: "2.1"
 short_description: "Gathers facts from a network device via napalm"
 description:
     - "Gathers facts from a network device via the Python module napalm"
@@ -57,6 +57,7 @@ options:
         description:
           - Dictionary of additional arguments passed to underlying driver
         required: False
+        default: None
     filter:
         description:
             - A list of facts to retreive from a device and provided though C(ansible_facts)
