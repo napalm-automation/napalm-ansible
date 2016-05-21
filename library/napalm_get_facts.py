@@ -47,7 +47,7 @@ options:
         description:
           - OS of the device
         required: True
-        choices: ['eos', 'junos', 'iosxr', 'fortios', 'ibm', 'ios', 'nxos']
+        choices: ['eos', 'junos', 'iosxr', 'fortios', 'ibm', 'ios', 'nxos', 'panos']
     timeout:
         description:
           - Time in seconds to wait for the device to respond
@@ -108,7 +108,7 @@ def main():
             hostname=dict(type='str', required=True),
             username=dict(type='str', required=True),
             password=dict(type='str', required=True, no_log=True),
-            dev_os=dict(type='str', required=True, choices=['eos', 'junos', 'iosxr', 'fortios', 'ibm', 'ios', 'nxos']),
+            dev_os=dict(type='str', required=True, choices=['eos', 'junos', 'iosxr', 'fortios', 'ibm', 'ios', 'nxos', 'panos']),
             timeout=dict(type='int', required=False, default=60),
             optional_args=dict(type='dict', required=False, default=None),
             filter=dict(type='list', required=False, default=['facts']),
