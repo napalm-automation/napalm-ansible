@@ -49,7 +49,7 @@ options:
         description:
           - OS of the device
         required: True
-        choices: ['eos', 'junos', 'iosxr', 'fortios', 'ibm', 'ios', 'nxos']
+        choices: ['eos', 'junos', 'iosxr', 'fortios', 'ibm', 'ios', 'nxos', 'panos']
     timeout:
         description:
           - Time in seconds to wait for the device to respond
@@ -146,7 +146,7 @@ def main():
             timeout=dict(type='int', required=False, default=60),
             optional_args=dict(required=False, type='dict', default=None),
             config_file=dict(type='str', required=True),
-            dev_os=dict(type='str', required=True, choices=['eos', 'junos', 'iosxr', 'fortios', 'ibm', 'ios', 'nxos']),
+            dev_os=dict(type='str', required=True, choices=['eos', 'junos', 'iosxr', 'fortios', 'ibm', 'ios', 'nxos', 'panos']),
             commit_changes=dict(type='bool', required=True),
             replace_config=dict(type='bool', required=False, default=False),
             diff_file=dict(type='str', required=False, default=None),
