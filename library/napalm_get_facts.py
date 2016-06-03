@@ -96,7 +96,7 @@ ansible_facts:
 '''
 
 try:
-    from napalm import get_network_driver
+    from napalm_base import get_network_driver
 except ImportError:
     napalm_found = False
 else:
