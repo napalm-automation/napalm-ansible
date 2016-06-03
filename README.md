@@ -29,7 +29,7 @@ ansible-galaxy install -r requirements.yml --force
 
 Dependencies
 =======
-* [napalm](https://github.com/napalm-automation/napalm) 0.51.0 or later
+* [napalm](https://github.com/napalm-automation/napalm) 1.00.0 or later
 
 
 Examples
