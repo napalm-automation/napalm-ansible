@@ -154,6 +154,9 @@ def main():
             elif filter == 'interfaces':
                 result = device.get_interfaces()
                 facts['interfaces'] = result
+            elif filter == 'interfaces_ip':
+                result = device.get_interfaces_ip()
+                facts['interfaces_ip'] = result
             elif filter == 'interfaces_counter':
                 result = device.get_interfaces_counter()
                 facts['interfaces_counter'] = result
