@@ -200,7 +200,7 @@ def main():
         else:
             changed = True
             diff = None
-        if diff_file is not None and get_diffs:
+        if diff_file is not None and get_diffs and changed:
             save_to_file(diff, diff_file)
     except Exception, e:
         module.fail_json(msg="cannot diff config: " + str(e))
