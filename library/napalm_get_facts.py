@@ -58,6 +58,13 @@ options:
           - Dictionary of additional arguments passed to underlying driver
         required: False
         default: None
+    ignore_notimplemented:
+        description:
+          - Ignores NotImplementedError for filters which aren't supported by the driver. Returns
+            invalid filters in a list called: not_implemented
+        required: False
+        default: False
+        choices: [True, False]
     filter:
         description:
             - A list of facts to retreive from a device and provided though C(ansible_facts)
@@ -102,6 +109,7 @@ except ImportError:
 else:
     napalm_found = True
 
+
 def main():
     module = AnsibleModule(
         argument_spec=dict(
@@ -110,6 +118,7 @@ def main():
             password=dict(type='str', required=True, no_log=True),
             dev_os=dict(type='str', required=True, choices=['eos', 'junos', 'iosxr', 'fortios', 'ibm', 'ios', 'nxos', 'panos']),
             timeout=dict(type='int', required=False, default=60),
+            ignore_notimplemented=dict(type='bool', required=False, default=False),
             optional_args=dict(type='dict', required=False, default=None),
             filter=dict(type='list', required=False, default=['facts']),
 
@@ -126,6 +135,8 @@ def main():
     password = module.params['password']
     timeout = module.params['timeout']
     filter_list = module.params['filter']
+    ignore_notimplemented = module.params['ignore_notimplemented']
+    implementation_errors = []
 
     if module.params['optional_args'] is None:
         optional_args = {}
@@ -146,48 +157,38 @@ def main():
 
     # retreive data from device
     facts = {}
-    try:
-        for filter in filter_list:
-            if filter == 'facts':
-                result = device.get_facts()
-                facts['facts'] = result
-            elif filter == 'interfaces':
-                result = device.get_interfaces()
-                facts['interfaces'] = result
-            elif filter == 'interfaces_ip':
-                result = device.get_interfaces_ip()
-                facts['interfaces_ip'] = result
-            elif filter == 'interfaces_counter':
-                result = device.get_interfaces_counter()
-                facts['interfaces_counter'] = result
-            elif filter == 'bgp_config':
-                result = device.get_bgp_config()
-                facts['bgp_config'] = result
-            elif filter == 'bgp_neighbors':
-                result = device.get_bgp_neighbors()
-                facts['bgp_neighbors'] = result
-            elif filter == 'bgp_neighbors_detail':
-                result = device.get_bgp_neighbors_detail()
-                facts['bgp_neighbors_detail'] = result
-            elif filter == 'environment':
-                result = device.get_environment()
-                facts['environment'] = result
-            elif filter == 'lldp_neighbors':
-                result = device.get_lldp_neighbors()
-                facts['lldp_neighbors'] = result
-            elif filter == 'lldp_neighbors_detail':
-                result = device.get_lldp_neighbors_detail()
-                facts['lldp_neighbors_detail'] = result
+
+    NAPALM_GETTERS=[getter for getter in dir(network_driver) if getter.startswith("get_")]
+
+    for getter in filter_list:
+        getter_function = "get_{}".format(getter)
+        if getter_function not in NAPALM_GETTERS:
+            module.fail_json(msg="filter not recognized: " + getter)
+
+        try:
+            get_func = getattr(device, getter_function)
+            result = get_func()
+            facts[getter] = result
+        except NotImplementedError:
+            if ignore_notimplemented:
+                implementation_errors.append(getter)
             else:
-                module.fail_json(msg="filter not recognized: " + filter)
-    except Exception, e:
-        module.fail_json(msg="cannot retrieve device data: " + str(e))
+                module.fail_json(
+                    msg="The filter {} is not supported in napalm-{} [get_{}()]".format(
+                        getter, dev_os, getter))
+        except Exception, e:
+            module.fail_json(msg="[{}] cannot retrieve device data: ".format(getter) + str(e))
 
     # close device connection
     try:
         device.close()
     except Exception, e:
         module.fail_json(msg="cannot close device connection: " + str(e))
+
+    results = {}
+    results['ansible_facts'] = facts
+    if ignore_notimplemented:
+        results['not_implemented'] = sorted(implementation_errors)
 
     module.exit_json(ansible_facts=facts)
 
