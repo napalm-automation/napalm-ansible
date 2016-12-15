@@ -133,15 +133,24 @@ def main():
 
     provider = module.params['provider'] or {}
 
+    # allow host or hostname
+    if provider.get('host') and not provider.get('hostname'):
+        provider['hostname'] = provider.get('host')
     # allow local params to override provider
-    hostname = module.params.get('hostname') or provider.get('hostname') or provider.get('host')
-    username = module.params.get('username') or provider.get('username')
-    dev_os = module.params.get('dev_os') or provider.get('dev_os')
-    password = module.params.get('password') or provider.get('password')
-    timeout = module.params.get('timeout') or provider.get('timeout')
+    for param, pvalue in provider.items():
+        value = module.params.get(param)
+        if not value:
+            module.params[param] = pvalue
+
+    hostname = module.params['hostname']
+    username = module.params['username']
+    dev_os = module.params['dev_os']
+    password = module.params['password']
+    timeout = module.params['timeout']
     filter_list = module.params['filter']
     ignore_notimplemented = module.params['ignore_notimplemented']
     implementation_errors = []
+
 
     argument_check = { 'hostname': hostname, 'username': username, 'dev_os': dev_os, 'password': password }
     for key, val in argument_check.items():
