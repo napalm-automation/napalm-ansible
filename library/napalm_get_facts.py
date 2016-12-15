@@ -111,12 +111,14 @@ else:
 
 
 def main():
+    os_choices = ['eos', 'junos', 'iosxr', 'fortios', 'ibm', 'ios', 'nxos', 'panos']
     module = AnsibleModule(
         argument_spec=dict(
-            hostname=dict(type='str', required=True),
-            username=dict(type='str', required=True),
-            password=dict(type='str', required=True, no_log=True),
-            dev_os=dict(type='str', required=True, choices=['eos', 'junos', 'iosxr', 'fortios', 'ibm', 'ios', 'nxos', 'panos']),
+            hostname=dict(type='str', required=False),
+            username=dict(type='str', required=False),
+            password=dict(type='str', required=False, no_log=True),
+            provider=dict(type='dict', required=False, no_log=True),
+            dev_os=dict(type='str', required=False, choices=os_choices),
             timeout=dict(type='int', required=False, default=60),
             ignore_notimplemented=dict(type='bool', required=False, default=False),
             optional_args=dict(type='dict', required=False, default=None),
@@ -129,14 +131,26 @@ def main():
     if not napalm_found:
         module.fail_json(msg="the python module napalm is required")
 
-    hostname = module.params['hostname']
-    username = module.params['username']
-    dev_os = module.params['dev_os']
-    password = module.params['password']
-    timeout = module.params['timeout']
+    provider = module.params['provider'] or {}
+
+    # allow local params to override provider
+    hostname = module.params.get('hostname') or provider.get('hostname') or provider.get('host')
+    username = module.params.get('username') or provider.get('username')
+    dev_os = module.params.get('dev_os') or provider.get('dev_os')
+    password = module.params.get('password') or provider.get('password')
+    timeout = module.params.get('timeout') or provider.get('timeout')
     filter_list = module.params['filter']
     ignore_notimplemented = module.params['ignore_notimplemented']
     implementation_errors = []
+
+    argument_check = { 'hostname': hostname, 'username': username, 'dev_os': dev_os, 'password': password }
+    for key, val in argument_check.items():
+        if val is None:
+            module.fail_json(msg=str(key) + " is required")
+
+    # use checks outside of ansible defined checks, since params come can come from provider
+    if dev_os not in os_choices:
+        module.fail_json(msg="dev_os is not set to " + str(os_choices))
 
     if module.params['optional_args'] is None:
         optional_args = {}
