@@ -114,7 +114,7 @@ def main():
     os_choices = ['eos', 'junos', 'iosxr', 'fortios', 'ibm', 'ios', 'nxos', 'panos']
     module = AnsibleModule(
         argument_spec=dict(
-            hostname=dict(type='str', required=False),
+            hostname=dict(type='str', required=False, aliases=['host']),
             username=dict(type='str', required=False),
             password=dict(type='str', required=False, no_log=True),
             provider=dict(type='dict', required=False, no_log=True),
