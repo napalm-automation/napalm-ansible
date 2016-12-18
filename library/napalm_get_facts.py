@@ -34,20 +34,28 @@ options:
     hostname:
         description:
           - IP or FQDN of the device you want to connect to
-        required: True
+        required: False
     username:
         description:
           - Username
-        required: True
+        required: False
     password:
         description:
           - Password
-        required: True
+        required: False
     dev_os:
         description:
           - OS of the device
         required: True
         choices: ['eos', 'junos', 'iosxr', 'fortios', 'ibm', 'ios', 'nxos', 'panos']
+    provider:
+        description
+          - Dictionary which acts as a collection of arguments used to define the characteristics 
+            of how to connect to the device.
+            Note - hostname, username, password and dev_os must be defined in either provider 
+            or local param
+            Note - local param takes precedence, e.g. hostname is preferred to provider['hostname']
+        required: False
     timeout:
         description:
           - Time in seconds to wait for the device to respond
@@ -77,6 +85,14 @@ options:
 '''
 
 EXAMPLES = '''
+
+vars:
+  ios_provider:
+    hostname: "{{ inventory_hostname }}"
+    username: "napalm"
+    password: "napalm"
+    dev_os: "ios"
+
  - name: get facts from device
    napalm_get_facts:
      hostname={{ inventory_hostname }}
@@ -88,6 +104,14 @@ EXAMPLES = '''
 
  - name: print data
    debug: var=result
+
+ - name: Getters
+   napalm_get_facts:
+     provider: "{{ ios_provider }}"
+     filter:
+       - "lldp_neighbors_detail"
+       - "interfaces"
+
 '''
 
 RETURN = '''
