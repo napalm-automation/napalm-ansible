@@ -8,6 +8,7 @@ Modules
 The following modules are currenty available:
 - napalm_get_facts
 - napalm_install_config
+- napalm_validate
 
 Install
 =======
@@ -64,4 +65,15 @@ Example to install config on a device
     replace_config={{ replace_config }}
     get_diffs=True
     diff_file=../compiled/{{ inventory_hostname }}/diff
+```
+
+Example to get compliance report
+```
+- name: GET VALIDATION REPORT
+  napalm_validate:
+    username: "{{ un }}"
+    password: "{{ pwd }}"
+    hostname: "{{ inventory_hostname }}"
+    dev_os: "{{ dev_os }}"
+    validation_file: validate.yml
 ```
