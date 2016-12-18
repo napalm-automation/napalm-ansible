@@ -41,7 +41,7 @@ options:
         default: None
     validation_file:
         description:
-          - Validation file containing resources desired states.
+          - YAML Validation file containing resources desired states.
         required: True
 '''
 
