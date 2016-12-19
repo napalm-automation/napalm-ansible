@@ -36,19 +36,27 @@ options:
     hostname:
         description:
           - IP or FQDN of the device you want to connect to
-        required: True
+        required: False
     username:
         description:
           - Username
-        required: True
+        required: False
     password:
         description:
           - Password
-        required: True
+        required: False
+    provider:
+        description
+          - Dictionary which acts as a collection of arguments used to define the characteristics 
+            of how to connect to the device.
+            Note - hostname, username, password and dev_os must be defined in either provider 
+            or local param
+            Note - local param takes precedence, e.g. hostname is preferred to provider['hostname']
+        required: False
     dev_os:
         description:
           - OS of the device
-        required: True
+        required: False
         choices: ['eos', 'junos', 'iosxr', 'fortios', 'ibm', 'ios', 'nxos', 'panos']
     timeout:
         description:
@@ -94,15 +102,33 @@ options:
 '''
 
 EXAMPLES = '''
+
+vars:
+  ios_provider:
+    hostname: "{{ inventory_hostname }}"
+    username: "napalm"
+    password: "napalm"
+    dev_os: "ios"
+
 - assemble:
     src=../compiled/{{ inventory_hostname }}/
     dest=../compiled/{{ inventory_hostname }}/running.conf
 
- - napalm_install_config:
+ - name: Install Config and save diff
+   napalm_install_config:
     hostname={{ inventory_hostname }}
     username={{ user }}
     dev_os={{ os }}
     password={{ passwd }}
+    config_file=../compiled/{{ inventory_hostname }}/running.conf
+    commit_changes={{ commit_changes }}
+    replace_config={{ replace_config }}
+    get_diffs=True
+    diff_file=../compiled/{{ inventory_hostname }}/diff
+
+ - name: Install Config using Provider
+   napalm_install_config:
+    provider: "{{ ios_provider }}"
     config_file=../compiled/{{ inventory_hostname }}/running.conf
     commit_changes={{ commit_changes }}
     replace_config={{ replace_config }}
@@ -138,15 +164,17 @@ def save_to_file(content, filename):
         f.close()
 
 def main():
+    os_choices = ['eos', 'junos', 'iosxr', 'fortios', 'ibm', 'ios', 'nxos', 'panos']
     module = AnsibleModule(
         argument_spec=dict(
-            hostname=dict(type='str', required=True),
-            username=dict(type='str', required=True),
-            password=dict(type='str', required=True, no_log=True),
+            hostname=dict(type='str', required=False, aliases=['host']),
+            username=dict(type='str', required=False),
+            password=dict(type='str', required=False, no_log=True),
+            provider=dict(type='dict', required=False, no_log=True),
             timeout=dict(type='int', required=False, default=60),
             optional_args=dict(required=False, type='dict', default=None),
             config_file=dict(type='str', required=True),
-            dev_os=dict(type='str', required=True, choices=['eos', 'junos', 'iosxr', 'fortios', 'ibm', 'ios', 'nxos', 'panos']),
+            dev_os=dict(type='str', required=False, choices=os_choices),
             commit_changes=dict(type='bool', required=True),
             replace_config=dict(type='bool', required=False, default=False),
             diff_file=dict(type='str', required=False, default=None),
@@ -158,6 +186,17 @@ def main():
     if not napalm_found:
         module.fail_json(msg="the python module napalm is required")
 
+    provider = module.params['provider'] or {}
+
+    # allow host or hostname
+    if provider.get('host') and not provider.get('hostname'):
+        provider['hostname'] = provider.get('host')
+    # allow local params to override provider
+    for param, pvalue in provider.items():
+        value = module.params.get(param)
+        if not value:
+            module.params[param] = pvalue
+
     hostname = module.params['hostname']
     username = module.params['username']
     dev_os = module.params['dev_os']
@@ -168,6 +207,15 @@ def main():
     replace_config = module.params['replace_config']
     diff_file = module.params['diff_file']
     get_diffs = module.params['get_diffs']
+
+    argument_check = { 'hostname': hostname, 'username': username, 'dev_os': dev_os, 'password': password }
+    for key, val in argument_check.items():
+        if val is None:
+            module.fail_json(msg=str(key) + " is required")
+
+    # use checks outside of ansible defined checks, since params come can come from provider
+    if dev_os not in os_choices:
+        module.fail_json(msg="dev_os is not set to " + str(os_choices))
 
     if module.params['optional_args'] is None:
         optional_args = {}

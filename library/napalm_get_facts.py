@@ -46,7 +46,7 @@ options:
     dev_os:
         description:
           - OS of the device
-        required: True
+        required: False
         choices: ['eos', 'junos', 'iosxr', 'fortios', 'ibm', 'ios', 'nxos', 'panos']
     provider:
         description
