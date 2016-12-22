@@ -46,7 +46,7 @@ options:
     dev_os:
         description:
           - OS of the device
-        required: True
+        required: False
         choices: ['eos', 'junos', 'iosxr', 'fortios', 'ibm', 'ios', 'nxos', 'panos']
     provider:
         description
@@ -158,13 +158,10 @@ def main():
     provider = module.params['provider'] or {}
 
     # allow host or hostname
-    if provider.get('host') and not provider.get('hostname'):
-        provider['hostname'] = provider.get('host')
+    provider['hostname'] = provider.get('hostname', None) or provider.get('host', None)
     # allow local params to override provider
     for param, pvalue in provider.items():
-        value = module.params.get(param)
-        if not value:
-            module.params[param] = pvalue
+        module.params[param] = module.params.get(param, None) or pvalue
 
     hostname = module.params['hostname']
     username = module.params['username']
