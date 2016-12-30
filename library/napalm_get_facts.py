@@ -50,9 +50,9 @@ options:
         choices: ['eos', 'junos', 'iosxr', 'fortios', 'ibm', 'ios', 'nxos', 'panos']
     provider:
         description
-          - Dictionary which acts as a collection of arguments used to define the characteristics 
+          - Dictionary which acts as a collection of arguments used to define the characteristics
             of how to connect to the device.
-            Note - hostname, username, password and dev_os must be defined in either provider 
+            Note - hostname, username, password and dev_os must be defined in either provider
             or local param
             Note - local param takes precedence, e.g. hostname is preferred to provider['hostname']
         required: False
@@ -234,7 +234,7 @@ def main():
     if ignore_notimplemented:
         results['not_implemented'] = sorted(implementation_errors)
 
-    module.exit_json(ansible_facts=facts)
+    module.exit_json(**results)
 
 # standard ansible module imports
 from ansible.module_utils.basic import *
