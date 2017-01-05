@@ -76,9 +76,7 @@ options:
     filter:
         description:
             - A list of facts to retreive from a device and provided though C(ansible_facts)
-              The following facts are available-
-              facts, environment, interfaces, interfaces_counter, interfaces_ip, bgp_config,
-              bgp_neighbors, bgp_neighbors_detail, lldp_neighbors, lldp_neighbors_detail
+              The list of facts available are maintained at: http://napalm.readthedocs.io/en/latest/support/
               Note- not all getters are implemented on all supported device types
         required: False
         default: ['facts']
