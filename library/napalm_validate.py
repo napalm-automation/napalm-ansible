@@ -30,7 +30,7 @@ options:
         required: False
         choices: ['eos', 'junos', 'iosxr', 'fortios', 'ibm', 'ios', 'nxos', 'panos', 'vyos']
     provider:
-        description
+        description:
           - Dictionary which acts as a collection of arguments used to define the characteristics 
             of how to connect to the device.
             Note - hostname, username, password and dev_os must be defined in either provider 
