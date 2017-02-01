@@ -110,7 +110,8 @@ def get_device_instance(module, os_choices):
     provider['hostname'] = provider.get('hostname', None) or provider.get('host', None)
     # allow local params to override provider
     for param, pvalue in provider.items():
-        module.params[param] = module.params.get(param, None) or pvalue
+        if module.params.get(param) != False:
+            module.params[param] = module.params.get(param) or pvalue
 
     hostname = module.params['hostname']
     username = module.params['username']
