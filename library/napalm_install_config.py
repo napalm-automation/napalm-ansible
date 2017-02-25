@@ -47,9 +47,9 @@ options:
         required: False
     provider:
         description:
-          - Dictionary which acts as a collection of arguments used to define the characteristics 
+          - Dictionary which acts as a collection of arguments used to define the characteristics
             of how to connect to the device.
-            Note - hostname, username, password and dev_os must be defined in either provider 
+            Note - hostname, username, password and dev_os must be defined in either provider
             or local param
             Note - local param takes precedence, e.g. hostname is preferred to provider['hostname']
         required: False
@@ -164,7 +164,7 @@ def save_to_file(content, filename):
         f.close()
 
 def main():
-    os_choices = ['eos', 'junos', 'iosxr', 'fortios', 'ibm', 'ios', 'nxos', 'panos', 'vyos']
+    os_choices = ['eos', 'junos', 'iosxr', 'fortios', 'ibm', 'ios', 'nxos', 'panos', 'vyos', 'ros']
     module = AnsibleModule(
         argument_spec=dict(
             hostname=dict(type='str', required=False, aliases=['host']),
