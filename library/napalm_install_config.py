@@ -47,9 +47,9 @@ options:
         required: False
     provider:
         description:
-          - Dictionary which acts as a collection of arguments used to define the characteristics 
+          - Dictionary which acts as a collection of arguments used to define the characteristics
             of how to connect to the device.
-            Note - hostname, username, password and dev_os must be defined in either provider 
+            Note - hostname, username, password and dev_os must be defined in either provider
             or local param
             Note - local param takes precedence, e.g. hostname is preferred to provider['hostname']
         required: False
@@ -98,6 +98,12 @@ options:
               param is not set.
         choices: [true,false]
         default: True
+        required: False
+    archive_file:
+        description:
+            - File to store backup of running-configuration from device. Configuration will not be retrieved
+              if not set.
+        default: None
         required: False
 '''
 
@@ -178,7 +184,8 @@ def main():
             commit_changes=dict(type='bool', required=True),
             replace_config=dict(type='bool', required=False, default=False),
             diff_file=dict(type='str', required=False, default=None),
-            get_diffs=dict(type='bool', required=False, default=True)
+            get_diffs=dict(type='bool', required=False, default=True),
+            archive_file=dict(type='str', required=False, default=None)
         ),
         supports_check_mode=True
     )
@@ -205,6 +212,7 @@ def main():
     replace_config = module.params['replace_config']
     diff_file = module.params['diff_file']
     get_diffs = module.params['get_diffs']
+    archive_file = module.params['archive_file']
 
     argument_check = { 'hostname': hostname, 'username': username, 'dev_os': dev_os, 'password': password }
     for key, val in argument_check.items():
@@ -230,6 +238,13 @@ def main():
         device.open()
     except Exception, e:
         module.fail_json(msg="cannot connect to device: " + str(e))
+
+    try:
+        if archive_file is not None:
+            running_config = device.get_config(retrieve="running")["running"]
+            save_to_file(running_config, archive_file)
+    except Exception, e:
+        module.fail_json(msg="cannot retrieve running config:" + str(e))
 
     try:
         if replace_config:
