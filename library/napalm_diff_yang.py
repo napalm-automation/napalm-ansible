@@ -121,7 +121,7 @@ def main():
 
     diff = napalm_yang.utils.diff(first, second)
 
-    module.exit_json(diff=diff)
+    module.exit_json(yang_diff=diff)
 
 
 if __name__ == '__main__':
