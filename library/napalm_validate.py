@@ -1,5 +1,17 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
+from ansible.module_utils.basic import AnsibleModule
+
+try:
+    from napalm_base import get_network_driver
+    napalm_base = True
+except ImportError:
+    napalm_base = None
+
+try:
+    import napalm_yang
+except ImportError:
+    napalm_yang = None
 
 
 DOCUMENTATION = '''
@@ -28,14 +40,16 @@ options:
         description:
           - OS of the device.
         required: False
-        choices: ['eos', 'junos', 'iosxr', 'fortios', 'ibm', 'ios', 'nxos', 'panos', 'vyos']
+        choices: ['eos', 'junos', 'iosxr', 'fortios', 'ibm', 'ios', 'nxos',
+                  'panos', 'vyos']
     provider:
         description:
-          - Dictionary which acts as a collection of arguments used to define the characteristics 
-            of how to connect to the device.
-            Note - hostname, username, password and dev_os must be defined in either provider 
-            or local param
-            Note - local param takes precedence, e.g. hostname is preferred to provider['hostname']
+          - Dictionary which acts as a collection of arguments used to define
+            the characteristics of how to connect to the device.
+            Note - hostname, username, password and dev_os must be defined in
+            either provider or local param
+            Note - local param takes precedence, e.g. hostname is preferred
+              to provider['hostname']
         required: False
     timeout:
         description:
@@ -50,6 +64,16 @@ options:
     validation_file:
         description:
           - YAML Validation file containing resources desired states.
+        required: True
+    models:
+        description:
+          - List of models to parse
+            Note - data to connect to the device is not necessary when using
+              YANG models
+        required: True
+    data:
+        description:
+          - dict to load into the YANG object
         required: True
 '''
 
@@ -74,6 +98,26 @@ vars:
     provider: "{{ ios_provider }}"
     validation_file: validate.yml
 
+# USING YANG
+- name: Let's gather state of interfaces
+  napalm_parse_yang:
+    dev_os: "{{ dev_os }}"
+    hostname: "{{ hostname }}"
+    username: "{{ username }}"
+    password: "{{ password }}"
+    mode: "state"
+    optional_args:
+        port: "{{ port }}"
+    models:
+        - models.openconfig_interfaces
+  register: interfaces
+- name: Check all interfaces are up
+  napalm_validate:
+    data: "{{ interfaces.yang_model }}"
+    models:
+        - models.openconfig_interfaces
+    validation_file: "validate.yaml"
+  register: report
 '''
 
 RETURN = '''
@@ -88,15 +132,6 @@ compliance_report:
     type: dict
 '''
 
-from ansible.module_utils.basic import *
-
-try:
-    from napalm_base import get_network_driver
-except ImportError:
-    napalm_found = False
-else:
-    napalm_found = True
-
 
 def get_compliance_report(module, device):
     return device.compliance_report(module.params['validation_file'])
@@ -107,10 +142,11 @@ def get_device_instance(module, os_choices):
     provider = module.params['provider'] or {}
 
     # allow host or hostname
-    provider['hostname'] = provider.get('hostname', None) or provider.get('host', None)
+    provider['hostname'] = provider.get('hostname', None) \
+        or provider.get('host', None)
     # allow local params to override provider
     for param, pvalue in provider.items():
-        if module.params.get(param) != False:
+        if module.params.get(param) is not False:
             module.params[param] = module.params.get(param) or pvalue
 
     hostname = module.params['hostname']
@@ -119,12 +155,14 @@ def get_device_instance(module, os_choices):
     password = module.params['password']
     timeout = module.params['timeout']
 
-    argument_check = { 'hostname': hostname, 'username': username, 'dev_os': dev_os, 'password': password }
+    argument_check = {'hostname': hostname, 'username': username,
+                      'dev_os': dev_os, 'password': password}
     for key, val in argument_check.items():
         if val is None:
             module.fail_json(msg=str(key) + " is required")
 
-    # use checks outside of ansible defined checks, since params come can come from provider
+    # use checks outside of ansible defined checks,
+    # since params come can come from provider
     if dev_os not in os_choices:
         module.fail_json(msg="dev_os is not set to " + str(os_choices))
 
@@ -142,10 +180,28 @@ def get_device_instance(module, os_choices):
     return device
 
 
+def get_root_object(models):
+    """
+    Read list of models and returns a Root object with the proper models added.
+    """
+    root = napalm_yang.base.Root()
+
+    for model in models:
+        current = napalm_yang
+        for p in model.split("."):
+            current = getattr(current, p)
+        root.add_model(current)
+
+    return root
+
+
 def main():
-    os_choices = ['eos', 'junos', 'iosxr', 'fortios', 'ibm', 'ios', 'nxos', 'panos', 'vyos']
+    os_choices = ['eos', 'junos', 'iosxr', 'fortios', 'ibm',
+                  'ios', 'nxos', 'panos', 'vyos']
     module = AnsibleModule(
         argument_spec=dict(
+            models=dict(type="list", required=False),
+            data=dict(type='dict', required=True),
             hostname=dict(type='str', required=False, aliases=['host']),
             username=dict(type='str', required=False),
             password=dict(type='str', required=False, no_log=True),
@@ -157,17 +213,29 @@ def main():
         ),
         supports_check_mode=False
     )
-    if not napalm_found:
+    if not napalm_base:
         module.fail_json(msg="the python module napalm is required")
+    if not napalm_yang:
+        module.fail_json(msg="the python module napalm-yang is required")
 
-    device = get_device_instance(module, os_choices)
+    if module.params["models"]:
+        device = get_root_object(module.params["models"])
+
+        if not module.params["data"]:
+            module.fail_json(msg="You need to pass the data for the YANG obj")
+
+        device.load_dict(module.params["data"])
+    else:
+        device = get_device_instance(module, os_choices)
     compliance_report = get_compliance_report(module, device)
 
-    # close device connection
-    try:
-        device.close()
-    except Exception as err:
-        module.fail_json(msg="cannot close device connection: {0}".format(str(err)))
+    if not module.params["models"]:
+        # close device connection
+        try:
+            device.close()
+        except Exception as err:
+            module.fail_json(
+                msg="cannot close device connection: {0}".format(str(err)))
 
     results = {}
     results['compliance_report'] = compliance_report
