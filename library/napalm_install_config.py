@@ -70,8 +70,12 @@ options:
         default: None
     config_file:
         description:
-          - Path to the file to load the configuration from
-        required: True
+          - Path to the file to load the configuration from. Either config or config_file is needed.
+        required: False
+    config:
+        description:
+          - Configuration to load. Either config or config_file is needed.
+        required: False
     commit_changes:
         description:
           - If set to True the configuration will be actually merged or replaced. If the set to False,
@@ -179,7 +183,8 @@ def main():
             provider=dict(type='dict', required=False, no_log=True),
             timeout=dict(type='int', required=False, default=60),
             optional_args=dict(required=False, type='dict', default=None),
-            config_file=dict(type='str', required=True),
+            config_file=dict(type='str', required=False),
+            config=dict(type='str', required=False),
             dev_os=dict(type='str', required=False, choices=os_choices),
             commit_changes=dict(type='bool', required=True),
             replace_config=dict(type='bool', required=False, default=False),
@@ -208,6 +213,7 @@ def main():
     password = module.params['password']
     timeout = module.params['timeout']
     config_file = module.params['config_file']
+    config = module.params['config']
     commit_changes = module.params['commit_changes']
     replace_config = module.params['replace_config']
     diff_file = module.params['diff_file']
@@ -247,10 +253,17 @@ def main():
         module.fail_json(msg="cannot retrieve running config:" + str(e))
 
     try:
-        if replace_config:
+        if replace_config and config_file:
             device.load_replace_candidate(filename=config_file)
-        else:
+        elif replace_config and config:
+            device.load_replace_candidate(config=config)
+        elif not replace_config and config_file:
             device.load_merge_candidate(filename=config_file)
+        elif not replace_config and config:
+            device.load_merge_candidate(config=config)
+        else:
+            module.fail_json(
+                msg="You have to specify either config or config_file")
     except Exception, e:
         module.fail_json(msg="cannot load config: " + str(e))
 
