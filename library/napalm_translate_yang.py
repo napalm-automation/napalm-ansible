@@ -48,7 +48,7 @@ options:
         description:
           - List of profiles to use to translate the object
         required: True
-    dict:
+    data:
         description:
           - dict to load into the YANG object
         required: True
