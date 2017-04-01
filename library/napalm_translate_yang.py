@@ -52,6 +52,14 @@ options:
         description:
           - dict to load into the YANG object
         required: True
+    merge:
+        description:
+          - When translating config, merge resulting config here
+        required: False
+    replace:
+        description:
+          - When translating config, replace resulting config here
+        required: False
 '''
 
 EXAMPLES = '''
@@ -94,7 +102,8 @@ def main():
             models=dict(type="list", required=True),
             profiles=dict(type="list", required=False),
             data=dict(type='dict', required=True),
-
+            merge=dict(type='dict', required=False),
+            replace=dict(type='dict', required=False),
         ),
         supports_check_mode=True
     )
@@ -104,7 +113,18 @@ def main():
 
     root = get_root_object(module.params["models"])
     root.load_dict(module.params["data"])
-    config = root.translate_config(profile=module.params["profiles"])
+
+    running = get_root_object(module.params["models"])
+    args = {}
+
+    if module.params["merge"]:
+        args["merge"] = running
+        running.load_dict(module.params["merge"])
+    elif module.params["replace"]:
+        args["replace"] = running
+        running.load_dict(module.params["replace"])
+
+    config = root.translate_config(profile=module.params["profiles"], **args)
 
     module.exit_json(config=config)
 
