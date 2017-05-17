@@ -78,13 +78,13 @@ You would run this playbook like so
 cd ~/playbooks
 ```
 ```
-ansible-playbook inventory.yaml -M napalm/library/
+ansible-playbook inventory.yaml -M napalm-ansible/library/
 ```
 
 And it should produce output similar to this.
 
 ```
-user@host$ ansible-playbook inventory.yaml -M napalm/library/
+user@host$ ansible-playbook inventory.yaml -M napalm-ansible/library/
 
 PLAY [Push config to switch group.] ********************************************
 
@@ -122,7 +122,7 @@ PLAY RECAP *********************************************************************
 192.168.0.11               : ok=2    changed=0    unreachable=0    failed=0
 ```
 
-Example to retreive facts from a device
+Example to retrieve facts from a device
 ```
  - name: get facts from device
    napalm_get_facts:

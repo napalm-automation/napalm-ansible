@@ -54,5 +54,6 @@ docs/_build/
 
 .idea
 .DS_Store
+*.iml
 
 env
