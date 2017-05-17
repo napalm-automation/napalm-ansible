@@ -74,7 +74,7 @@ options:
     data:
         description:
           - dict to load into the YANG object
-        required: True
+        required: False
 '''
 
 EXAMPLES = '''
@@ -201,7 +201,7 @@ def main():
     module = AnsibleModule(
         argument_spec=dict(
             models=dict(type="list", required=False),
-            data=dict(type='dict', required=True),
+            data=dict(type='dict', required=False),
             hostname=dict(type='str', required=False, aliases=['host']),
             username=dict(type='str', required=False),
             password=dict(type='str', required=False, no_log=True),
