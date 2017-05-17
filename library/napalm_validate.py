@@ -215,10 +215,11 @@ def main():
     )
     if not napalm_base:
         module.fail_json(msg="the python module napalm is required")
-    if not napalm_yang:
-        module.fail_json(msg="the python module napalm-yang is required")
 
     if module.params["models"]:
+        if not napalm_yang:
+            module.fail_json(msg="the python module napalm-yang is required")
+
         device = get_root_object(module.params["models"])
 
         if not module.params["data"]:
