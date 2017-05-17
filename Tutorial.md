@@ -13,11 +13,11 @@ Non parameterized example with comments to get you started
   connection: local    #Required
   gather_facts: no     #Do not gather facts
 
-  tasks:
+  tasks:                                     #Begin Tasks
     - name: get facts from device            #Task Name
       napalm_get_facts:                      #Call the napalm module, in this case napal_get_facts
         optional_args: {'secret': password}  #The enable password for Cisco IOS
-        hostname: "{{ inventory_hostname }}" #This _is_ a parameter and is found in your ansible inventory file
+        hostname: "{{ inventory_hostname }}" #This is a parameter and is derived from your ansible inventory file
         username: 'user'                     #The username to ssh with
         dev_os: 'ios'                        #The hardware operating system
         password: 'password'                 #The line level password
@@ -30,28 +30,25 @@ Non parameterized example with comments to get you started
 
 Keeping with our example dir at the beginning of the Readme, we now have this layout
 ```
-user@host ~/playbooks
+user@host ~/workspace/ansible-playbooks
 08:16 $ ls -la
 total 32
 drwxrwxr-x 3 user user 4096 Feb 26 07:24 .
 drwxrwxr-x 8 user user 4096 Feb 25 16:32 ..
 -rw-rw-r-- 1 user user  404 Feb 26 07:24 inventory.yaml
-drwxrwxr-x 5 user user   75 Feb 23 00:40 napalm-ansible
 ```
 
-You would run this playbook like so
+You would run this playbook like as
 ```
-cd ~/playbooks
+cd ~/workspace
 ```
 ```
-ansible-playbook inventory.yaml -M napalm-ansible/library/
+ansible-playbook ansible-playbooks/inventory.yaml
 ```
 
 And it should produce output similar to this.
 
 ```
-user@host$ ansible-playbook inventory.yaml -M napalm-ansible/library/
-
 PLAY [Push config to switch group.] ********************************************
 
 TASK [get facts from device] ***************************************************

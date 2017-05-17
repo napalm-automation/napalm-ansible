@@ -12,7 +12,9 @@ The following modules are currenty available:
 
 Install
 =======
-To install, clone napalm-ansible into your ansible module path. This will depend on your own setup and contents of your ansible.cfg file. If yours looks like:
+To install, clone napalm-ansible into your ansible module path. This will depend on your own setup and contents of your ansible.cfg file which tells ansible where to look for modules. For more in-depth explanation, see the [Ansible Docs](http://docs.ansible.com/ansible/intro_configuration.html#library).
+
+If your ansible.cfg looks like:
 
 ```
 [defaults]
