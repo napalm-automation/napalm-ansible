@@ -80,6 +80,11 @@ options:
               Note- not all getters are implemented on all supported device types
         required: False
         default: ['facts']
+    args:
+        description:
+            - dictionary of kwargs arguments to pass to the filter. The outer key is the name of the getter (same as the filter)
+        requited: False
+        default: None
 '''
 
 EXAMPLES = '''
@@ -109,6 +114,20 @@ vars:
      filter:
        - "lldp_neighbors_detail"
        - "interfaces"
+
+- name: get facts from device
+  napalm_get_facts:
+    hostname: "{{ host }}"
+    username: "{{ user }}"
+    dev_os: "{{ os }}"
+    password: "{{ password }}"
+    optional_args:
+      port: "{{ port }}"
+    filter: ['facts', 'route_to', 'interfaces']
+    args:
+        route_to:
+            protocol: static
+            destination: 8.8.8.8
 
 '''
 
@@ -143,6 +162,7 @@ def main():
             dev_os=dict(type='str', required=False, choices=os_choices),
             timeout=dict(type='int', required=False, default=60),
             ignore_notimplemented=dict(type='bool', required=False, default=False),
+            args=dict(type='dict', required=False, default=None),
             optional_args=dict(type='dict', required=False, default=None),
             filter=dict(type='list', required=False, default=['facts']),
 
@@ -168,6 +188,7 @@ def main():
     password = module.params['password']
     timeout = module.params['timeout']
     filter_list = module.params['filter']
+    args = module.params.get('args', {})
     ignore_notimplemented = module.params['ignore_notimplemented']
     implementation_errors = []
 
@@ -210,7 +231,7 @@ def main():
 
         try:
             get_func = getattr(device, getter_function)
-            result = get_func()
+            result = get_func(**args.get(getter, {}))
             facts[getter] = result
         except NotImplementedError:
             if ignore_notimplemented:
