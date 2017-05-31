@@ -12,30 +12,51 @@ The following modules are currenty available:
 
 Install
 =======
-To install, clone the library directory into your ansible path.
+To install, clone napalm-ansible into your ansible module path. This will depend on your own setup and contents of your ansible.cfg file which tells ansible where to look for modules. For more in-depth explanation, see the [Ansible Docs](http://docs.ansible.com/ansible/intro_configuration.html#library).
 
-OR
+If your ansible.cfg looks like:
 
-Add the following in requirements.yml
 ```
-- src: https://github.com/napalm-automation/napalm-ansible/
-  version: master
-  name: napalm
-  path: roles
+[defaults]
+library = ~/workspace/napalm-ansible
 ```
-Then execute:
+Then you can do the following:
+
 ```
-ansible-galaxy install -r requirements.yml --force
+cd ~/workspace
+```
+
+```
+git clone https://github.com/napalm-automation/napalm-ansible.git
+```
+
+```
+user@hostname:~/workspace ls -la
+total 12
+drwxrwxr-x 3 user user 4096 Feb 26 12:51 .
+drwxr-xr-x 7 user user 4096 Feb 26 12:49 ..
+drwxrwxr-x 5 user user 4096 Feb 26 12:51 napalm-ansible
+```
+From here you would add your playbook(s) for your project, for example:
+
+```
+mkdir ansible-playbooks
+
+user@hostname:~/workspace ls -la
+total 12
+drwxrwxr-x 3 user user 4096 Feb 26 12:51 .
+drwxr-xr-x 7 user user 4096 Feb 26 12:49 ..
+drwxrwxr-x 5 user user 4096 Feb 26 12:51 napalm-ansible
+drwxrwxr-x 5 user user 4096 Feb 26 12:53 ansible-playbooks
 ```
 
 Dependencies
 =======
 * [napalm](https://github.com/napalm-automation/napalm) 1.00.0 or later
 
-
 Examples
 =======
-Example to retreive facts from a device
+Example to retrieve facts from a device
 ```
  - name: get facts from device
    napalm_get_facts:
