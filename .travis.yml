@@ -1,0 +1,20 @@
+language: python
+python:
+    - 2.7
+
+env:
+    - ANSIBLE_VERSION=2.2
+    - ANSIBLE_VERSION=2.3
+
+install:
+    - pip install -e git://github.com/napalm-automation/napalm-base.git@dumb_driver#egg=napalm_base
+    - pip install "ansible>=$ANSIBLE_VERSION.0,<$ANSIBLE_VERSION.99"
+
+script:
+    - cd tests
+    # Test configuration dry-run
+    - ansible-playbook -l "*.dry_run.*" basic/config.yaml -C
+    # Test configuration commit
+    - ansible-playbook -l "*.commit.*" basic/config.yaml
+    # Test errrors
+    - ansible-playbook -l "*.error*" basic/config_error.yaml

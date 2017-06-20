@@ -59,3 +59,5 @@ env
 
 tags
 *.swp
+
+.compiled
