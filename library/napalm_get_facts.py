@@ -188,7 +188,7 @@ def main():
     password = module.params['password']
     timeout = module.params['timeout']
     filter_list = module.params['filter']
-    args = module.params.get('args', {})
+    args = module.params['args'] or {}
     ignore_notimplemented = module.params['ignore_notimplemented']
     implementation_errors = []
 
