@@ -16,3 +16,5 @@ script:
     - ansible-playbook -l "*.dry_run.*" basic/config.yaml -C
     # Test configuration commit
     - ansible-playbook -l "*.commit.*" basic/config.yaml
+    # Test errrors
+    - ansible-playbook -l "*.error*" basic/config_error.yaml

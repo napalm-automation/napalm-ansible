@@ -265,7 +265,6 @@ def main():
             module.fail_json(
                 msg="You have to specify either config or config_file")
     except Exception, e:
-        raise e
         module.fail_json(msg="cannot load config: " + str(e))
 
     try:
