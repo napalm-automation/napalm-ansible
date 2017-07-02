@@ -13,6 +13,7 @@ install:
     - pip install ansible>=$ANSIBLE_VERSION.0,<ANSIBLE_VERSION.99
 
 script:
+    - cd tests
     # Test configuration dry-run
     - ansible-playbook -l "*.dry_run.*" basic/config.yaml -C
     # Test configuration commit
