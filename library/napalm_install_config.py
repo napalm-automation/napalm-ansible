@@ -57,7 +57,7 @@ options:
         description:
           - OS of the device
         required: False
-        choices: ['eos', 'junos', 'iosxr', 'fortios', 'ibm', 'ios', 'nxos', 'panos', 'vyos']
+        choices: ['eos', 'junos', 'iosxr', 'fortios', 'ibm', 'ios', 'mock', 'nxos', 'panos', 'vyos']
     timeout:
         description:
           - Time in seconds to wait for the device to respond
@@ -174,7 +174,7 @@ def save_to_file(content, filename):
         f.close()
 
 def main():
-    os_choices = ['eos', 'junos', 'iosxr', 'fortios', 'ibm', 'ios', 'nxos', 'panos', 'vyos', 'ros']
+    os_choices = ['eos', 'junos', 'iosxr', 'fortios', 'ibm', 'ios', 'mock', 'nxos', 'panos', 'vyos', 'ros']
     module = AnsibleModule(
         argument_spec=dict(
             hostname=dict(type='str', required=False, aliases=['host']),
@@ -265,6 +265,7 @@ def main():
             module.fail_json(
                 msg="You have to specify either config or config_file")
     except Exception, e:
+        raise e
         module.fail_json(msg="cannot load config: " + str(e))
 
     try:
