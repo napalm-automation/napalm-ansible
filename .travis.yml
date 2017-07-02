@@ -10,7 +10,7 @@ env:
 
 install:
     - pip install -e git://github.com/napalm-automation/napalm-base.git@dumb_driver#egg=napalm_base
-    - pip install ansible>=$ANSIBLE_VERSION.0,<$ANSIBLE_VERSION.99
+    - pip install "ansible>=$ANSIBLE_VERSION.0,<$ANSIBLE_VERSION.99"
 
 script:
     - cd tests
