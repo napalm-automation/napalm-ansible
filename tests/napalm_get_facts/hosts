@@ -1,0 +1,7 @@
+[all]
+multiple_facts.ok              os=mock   host=127.0.0.1 user=vagrant password=vagrant profile=[eos]
+multiple_facts.not_implemented os=mock   host=127.0.0.1 user=vagrant password=vagrant profile=[eos]
+multiple_facts.error           os=mock   host=127.0.0.1 user=vagrant password=vagrant profile=[eos]
+
+[all:vars]
+ansible_python_interpreter="/usr/bin/env python"
