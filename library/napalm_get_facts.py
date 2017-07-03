@@ -158,7 +158,7 @@ def main():
             hostname=dict(type='str', required=False, aliases=['host']),
             username=dict(type='str', required=False),
             password=dict(type='str', required=False, no_log=True),
-            provider=dict(type='dict', required=False, no_log=True),
+            provider=dict(type='dict', required=False),
             dev_os=dict(type='str', required=False, choices=os_choices),
             timeout=dict(type='int', required=False, default=60),
             ignore_notimplemented=dict(type='bool', required=False, default=False),
@@ -174,6 +174,11 @@ def main():
         module.fail_json(msg="the python module napalm is required")
 
     provider = module.params['provider'] or {}
+
+    no_log = ['password']
+    for param in no_log:
+        if provider.get(param):
+            module.no_log_values.update(return_values(provider[param]))
 
     # allow host or hostname
     provider['hostname'] = provider.get('hostname', None) or provider.get('host', None)

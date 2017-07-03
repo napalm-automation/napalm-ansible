@@ -20,7 +20,7 @@ You should have received a copy of the GNU General Public License
 along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
 """
 # standard ansible module imports
-from ansible.module_utils.basic import AnsibleModule
+from ansible.module_utils.basic import AnsibleModule, return_values
 
 import json
 
@@ -138,6 +138,11 @@ changed:
 def update_module_provider_data(module):
     provider = module.params['provider'] or {}
 
+    no_log = ['password']
+    for param in no_log:
+        if provider.get(param):
+            module.no_log_values.update(return_values(provider[param]))
+
     # allow host or hostname
     provider['hostname'] = provider.get('hostname', None) \
         or provider.get('host', None)
@@ -252,7 +257,7 @@ def main():
             hostname=dict(type='str', required=False, aliases=['host']),
             username=dict(type='str', required=False),
             password=dict(type='str', required=False, no_log=True),
-            provider=dict(type='dict', required=False, no_log=True),
+            provider=dict(type='dict', required=False),
             file_path=dict(type='str', required=False),
             mode=dict(type='str', required=True,
                       choices=["config", "state", "both"]),
