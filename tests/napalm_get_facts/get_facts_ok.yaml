@@ -1,0 +1,26 @@
+---
+- name: Get facts
+  hosts: all
+  connection: local                       # code is run locally
+  gather_facts: no                        # don't gather facts
+  tasks:
+    - name: get facts from device
+      napalm_get_facts:                   # NAPALM plugin
+        hostname: "{{ host }}"            # start of connection parameters
+        username: "{{ user }}"
+        dev_os: "{{ os }}"
+        password: "{{ password }}"
+        optional_args:
+            path: "{{ playbook_dir }}/mocked/{{ inventory_hostname }}"
+            profile: "{{ profile }}"
+        filter: ['facts', 'route_to', 'interfaces']                # which NAPALM getters to use
+        args:
+            route_to:
+                protocol: static
+                destination: 8.8.8.8
+      register: napalm_facts             # store information here
+    - assert:
+        that:
+            - napalm_facts.ansible_facts.facts.hostname == "localhost"
+            - "{{ '1.0.4.0/24' in napalm_facts.ansible_facts.route_to }}"
+            - napalm_facts.ansible_facts.interfaces.Ethernet1.mac_address == "08:00:27:C6:00:F0"
