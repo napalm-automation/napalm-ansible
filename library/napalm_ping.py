@@ -162,10 +162,14 @@ def main():
 
     provider = module.params['provider'] or {}
 
-    no_log = ['password']
+    no_log = ['password', 'secret']
     for param in no_log:
         if provider.get(param):
             module.no_log_values.update(return_values(provider[param]))
+        if provider.get('optional_args') and provider['optional_args'].get(param):
+            module.no_log_values.update(return_values(provider['optional_args'].get(param)))
+        if module.params.get('optional_args') and module.params['optional_args'].get(param):
+            module.no_log_values.update(return_values(module.params['optional_args'].get(param)))
 
     # allow host or hostname
     provider['hostname'] = provider.get('hostname', None) or provider.get('host', None)
