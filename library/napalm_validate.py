@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-from ansible.module_utils.basic import AnsibleModule
+from ansible.module_utils.basic import AnsibleModule, return_values
 
 try:
     from napalm_base import get_network_driver
@@ -141,6 +141,15 @@ def get_device_instance(module, os_choices):
 
     provider = module.params['provider'] or {}
 
+    no_log = ['password', 'secret']
+    for param in no_log:
+        if provider.get(param):
+            module.no_log_values.update(return_values(provider[param]))
+        if provider.get('optional_args') and provider['optional_args'].get(param):
+            module.no_log_values.update(return_values(provider['optional_args'].get(param)))
+        if module.params.get('optional_args') and module.params['optional_args'].get(param):
+            module.no_log_values.update(return_values(module.params['optional_args'].get(param)))
+
     # allow host or hostname
     provider['hostname'] = provider.get('hostname', None) \
         or provider.get('host', None)
@@ -205,7 +214,7 @@ def main():
             hostname=dict(type='str', required=False, aliases=['host']),
             username=dict(type='str', required=False),
             password=dict(type='str', required=False, no_log=True),
-            provider=dict(type='dict', required=False, no_log=True),
+            provider=dict(type='dict', required=False),
             dev_os=dict(type='str', required=False, choices=os_choices),
             timeout=dict(type='int', required=False, default=60),
             optional_args=dict(type='dict', required=False, default=None),
