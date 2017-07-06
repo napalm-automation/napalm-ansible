@@ -1,0 +1,64 @@
+---
+- name: "Simple configuration"
+  hosts: all
+  connection: local
+  gather_facts: no
+  vars:
+      conf_dir: "{{ playbook_dir }}/.compiled/"
+
+  pre_tasks:
+    - name: "Assign tmp folder to host"
+      set_fact:
+         host_tmpdir: "{{ conf_dir}}/{{ inventory_hostname}}"
+      changed_when: no   # Don't report changes
+      check_mode: no     # Always make changes
+    - name: "Make sure there are no remains from a previous run"
+      file:
+        path: "{{ host_tmpdir }}"
+        state: absent
+      changed_when: no   # Don't report changes
+      check_mode: no     # Always make changes
+    - name: "Create folder to store configurations and diffs for/from the devices"
+      file:
+        path: "{{ host_tmpdir }}"
+        state: directory
+      changed_when: no   # Don't report changes
+      check_mode: no     # Always make changes
+
+- name: "Automated Configuration"
+  hosts: all
+  connection: local
+  roles:
+    - base
+
+  post_tasks:
+    - name: "Assemble all the configuration bits"
+      assemble:
+          src: "{{ host_tmpdir }}/"
+          dest: "{{ host_tmpdir }}/assembled.conf"
+      changed_when: no   # Don't report changes
+      check_mode: no     # Always make changes
+    - block:
+        - name: "Load configuration into the device"
+          napalm_install_config:
+            hostname: "{{ host }}"
+            username: "{{ user }}"
+            dev_os: "{{ os }}"
+            password: "{{ password }}"
+            optional_args:
+                path: "{{ playbook_dir }}/mocked/{{ inventory_hostname }}"
+                profile: "{{ profile }}"
+            config_file: "{{ host_tmpdir }}/assembled.conf"
+            commit_changes: "{{ not ansible_check_mode }}"
+            replace_config: "{{ 'replace' in inventory_hostname }}"
+            get_diffs: true
+            diff_file: "{{ host_tmpdir }}/diff"
+          register: deployment
+        - fail:
+            msg: "I should never reach this"
+      rescue:
+          - assert:
+              that:
+                  - not ansible_failed_result.changed
+                  - ansible_failed_result.failed
+                  - "{{ 'cannot load config: Error occurred when loading configuration' == ansible_failed_result.msg }}"

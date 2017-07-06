@@ -1,0 +1,13 @@
+[all]
+merge.dry_run.change    os=mock   host=127.0.0.1 user=vagrant password=vagrant profile=[eos]
+merge.dry_run.no_change os=mock   host=127.0.0.1 user=vagrant password=vagrant profile=[eos]
+merge.commit.change     os=mock   host=127.0.0.1 user=vagrant password=vagrant profile=[eos]
+merge.commit.no_change  os=mock   host=127.0.0.1 user=vagrant password=vagrant profile=[eos]
+replace.dry_run.change    os=mock   host=127.0.0.1 user=vagrant password=vagrant profile=[eos]
+replace.dry_run.no_change os=mock   host=127.0.0.1 user=vagrant password=vagrant profile=[eos]
+replace.commit.change     os=mock   host=127.0.0.1 user=vagrant password=vagrant profile=[eos]
+replace.commit.no_change  os=mock   host=127.0.0.1 user=vagrant password=vagrant profile=[eos]
+merge.error os=mock   host=127.0.0.1 user=vagrant password=vagrant profile=[eos]
+
+[all:vars]
+ansible_python_interpreter="/usr/bin/env python"

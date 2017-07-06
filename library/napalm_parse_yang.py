@@ -66,8 +66,8 @@ options:
         description:
           - OS of the device
         required: False
-        choices: ['eos', 'junos', 'iosxr', 'fortios', 'ibm', 'ios', 'nxos',
-                  'panos', 'vyos']
+        choices: ['eos', 'junos', 'iosxr', 'fortios', 'ibm', 'ios', 'mock',
+                  'nxos', 'panos', 'vyos']
     provider:
         description:
           - Dictionary which acts as a collection of arguments used to define
@@ -246,7 +246,7 @@ def parse_from_device(module, os_choices):
 
 def main():
     os_choices = ['eos', 'junos', 'iosxr', 'fortios', 'ibm', 'ios',
-                  'nxos', 'panos', 'vyos']
+                  'mock', 'nxos', 'panos', 'vyos']
     module = AnsibleModule(
         argument_spec=dict(
             hostname=dict(type='str', required=False, aliases=['host']),

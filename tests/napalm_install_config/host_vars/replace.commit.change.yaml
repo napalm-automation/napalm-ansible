@@ -1,0 +1,3 @@
+---
+changes_expected: True
+expected_diff: "this is a configuration diff"
