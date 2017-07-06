@@ -142,7 +142,7 @@ def main():
             hostname=dict(type='str', required=False, aliases=['host']),
             username=dict(type='str', required=False),
             password=dict(type='str', required=False, no_log=True),
-            provider=dict(type='dict', required=False, no_log=True),
+            provider=dict(type='dict', required=False),
             timeout=dict(type='int', required=False, default=60),
             optional_args=dict(required=False, type='dict', default=None),
             dev_os=dict(type='str', required=False, choices=os_choices),
@@ -161,6 +161,15 @@ def main():
         module.fail_json(msg="the python module napalm is required")
 
     provider = module.params['provider'] or {}
+
+    no_log = ['password', 'secret']
+    for param in no_log:
+        if provider.get(param):
+            module.no_log_values.update(return_values(provider[param]))
+        if provider.get('optional_args') and provider['optional_args'].get(param):
+            module.no_log_values.update(return_values(provider['optional_args'].get(param)))
+        if module.params.get('optional_args') and module.params['optional_args'].get(param):
+            module.no_log_values.update(return_values(module.params['optional_args'].get(param)))
 
     # allow host or hostname
     provider['hostname'] = provider.get('hostname', None) or provider.get('host', None)
