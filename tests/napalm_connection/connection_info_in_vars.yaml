@@ -1,0 +1,17 @@
+---
+- name: Get facts
+  hosts: all
+  connection: local                       # code is run locally
+  gather_facts: no                        # don't gather facts
+  tasks:
+    - block:
+      - name: get facts from device
+        napalm_get_facts:                   # NAPALM plugin
+          hostname: "{{ ansible_host }}"
+          username: "vagrant"
+          password: "vagrant"
+          dev_os: "{{ os }}"
+          optional_args:
+            path: "{{ playbook_dir }}/mocked"
+            profile: "{{ profile }}"
+          filter: ['facts']
