@@ -21,6 +21,22 @@
       register: napalm_facts             # store information here
     - assert:
         that:
-            - napalm_facts.ansible_facts.facts.hostname == "localhost"
-            - "{{ '1.0.4.0/24' in napalm_facts.ansible_facts.route_to }}"
-            - napalm_facts.ansible_facts.interfaces.Ethernet1.mac_address == "08:00:27:C6:00:F0"
+            - napalm_facts.ansible_facts.napalm_facts.hostname == "localhost"
+            - "{{ '1.0.4.0/24' in napalm_facts.ansible_facts.napalm_route_to }}"
+            - napalm_facts.ansible_facts.napalm_interfaces.Ethernet1.mac_address == "08:00:27:C6:00:F0"
+    # Check direct facts
+    - assert:
+        that:
+            - napalm_vendor == "Arista"
+            - napalm_model == "vEOS"
+            - napalm_os_version == "4.15.5M-3054042.4155M"
+            - napalm_fqdn == "localhost"
+            - napalm_hostname == "localhost"
+            - napalm_interface_list == [
+                    "Ethernet1", 
+                    "Ethernet2", 
+                    "Ethernet3", 
+                    "Ethernet4", 
+                    "Management1" ]
+            - napalm_serial_number == ""
+            - napalm_uptime is defined
