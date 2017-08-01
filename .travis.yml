@@ -1,4 +1,5 @@
 language: python
+
 python:
     - 2.7
 
@@ -12,14 +13,20 @@ install:
 
 script:
     - cd tests
-    # Test configuration dry-run
     - ansible-playbook -i napalm_install_config/hosts -l "*.dry_run.*" napalm_install_config/config.yaml -C
-    # Test configuration commit
     - ansible-playbook -i napalm_install_config/hosts -l "*.commit.*" napalm_install_config/config.yaml
-    # Test configuration errrors
     - ansible-playbook -i napalm_install_config/hosts -l "*.error*" napalm_install_config/config_error.yaml
-    # Test get_facts
     - ansible-playbook -i napalm_get_facts/hosts napalm_get_facts/get_facts_ok.yaml -l multiple_facts.ok
     - ansible-playbook -i napalm_get_facts/hosts napalm_get_facts/get_facts_not_implemented.yaml -l multiple_facts.not_implemented -e "ignore_notimplemented=true"
     - ansible-playbook -i napalm_get_facts/hosts napalm_get_facts/get_facts_not_implemented.yaml -l multiple_facts.not_implemented -e "ignore_notimplemented=false"
     - ansible-playbook -i napalm_get_facts/hosts napalm_get_facts/get_facts_error.yaml -l multiple_facts.error
+    - ./test_changelog.sh
+
+deploy:
+  provider: pypi
+  user: dbarroso
+  password:
+    secure: cXZNckuwEv4qQbUz1uCx3mDnylSCPFTfTrxYISkuRJz6cgNBJZ64KGvKNdF5ygUGAXHLbx3+LtBGtYTei1Rc6Mi8L64+XAH5Johs0TZTnlor0FyezlutGZSnzJEsXSditCl31Ap2kXOtRY5u5lJi+sa/WnLDH/cAIslISsys0RmtAcfO6HYR8rhFXCuTwG4dhWoxVKwcQE2PWZcGWBV1y9vCqMYSVGNYWKXfAduZZnBXXOcHTvCvobz9KvYYYKShOK5j7D1SURXr9/qBKWnnSN4e16UKPfTgj8o/r/zS/K4gb7rONY5Tv1YkzcbN7u/YEO1fB4s43mB//Hv9gSrCZ95Xc5TPaqfUDs15s0t/mxIPNtOJmcxJwm+ewQm5HouO9U0/d7t4Aw5BXVLqVJCsOuz1xvqe5gsJeCIkwDyk2qtqPTYyuBpn3fMXJfHMCLIVcGxmmNjCdAMMdqhVZ4sJlUfTxmxPqU97KRvHlGRW2Cz3QtrVealjdN7+jNWVl7ERiQoKfbF2TjEzdQ4Tr+KZinygv7pst4TT2/wfyzf2YluPyPtISCUUMzLmEogATJbizoOZPSrN1FFrq8PCmsQzYRxxaMU+auTCoJY4gUOefEuQpZgM3m46pzpRpwuZVnvEYt1ffXUNmyggo2jaSYsRQ5wEtzpf8MGjnjDe878M4yA=
+  on:
+    tags: true
+    branch: master

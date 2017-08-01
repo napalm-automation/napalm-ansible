@@ -1,41 +1,50 @@
-napalm-ansible
-======
+# napalm-ansible
 
-Collection of ansible modules that use [napalm](https://github.com/napalm-automation/napalm) to retrieve data or modify configuration on netwroking devices.
+Collection of ansible modules that use [napalm](https://github.com/napalm-automation/napalm) to retrieve data or modify configuration on networking devices.
 
 Modules
 =======
-The following modules are currenty available:
-- napalm_get_facts
-- napalm_install_config
-- napalm_validate
-- napalm_ping
+
+The following modules are currently available:
+
+- ``napalm_diff_yang``
+- ``napalm_get_facts``
+- ``napalm_install_config``
+- ``napalm_parse_yang``
+- ``napalm_ping``
+- ``napalm_translate_yang``
+- ``napalm_validate``
 
 Install
 =======
-To install, clone the library directory into your ansible path.
 
-OR
+To install just run the command:
 
-Add the following in requirements.yml
 ```
-- src: https://github.com/napalm-automation/napalm-ansible/
-  version: master
-  name: napalm
-  path: roles
-```
-Then execute:
-```
-ansible-galaxy install -r requirements.yml --force
+pip install napalm-ansible
 ```
 
-Dependencies
-=======
-* [napalm](https://github.com/napalm-automation/napalm) 1.00.0 or later
+Configuring ansible
+===================
 
+Once you have installed ``napalm-ansible`` run the command ``napalm-ansible`` and follow the instructions. For example::
+
+```
+$ napalm-ansible
+To make sure ansible can make use of the napalm modules you will have
+to add the following configurtion to your ansible configureation
+file, i.e. `./ansible.cfg`:
+
+    [defaults]
+    library = /Users/dbarroso/workspace/napalm/napalm-ansible/napalm_ansible
+
+For more details on ansible's configuration file visit:
+https://docs.ansible.com/ansible/latest/intro_configuration.html
+```
 
 Examples
 =======
+
 Example to retreive facts from a device
 ```
  - name: get facts from device
