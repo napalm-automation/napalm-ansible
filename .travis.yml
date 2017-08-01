@@ -20,7 +20,7 @@ script:
     - ansible-playbook -i napalm_get_facts/hosts napalm_get_facts/get_facts_not_implemented.yaml -l multiple_facts.not_implemented -e "ignore_notimplemented=true"
     - ansible-playbook -i napalm_get_facts/hosts napalm_get_facts/get_facts_not_implemented.yaml -l multiple_facts.not_implemented -e "ignore_notimplemented=false"
     - ansible-playbook -i napalm_get_facts/hosts napalm_get_facts/get_facts_error.yaml -l multiple_facts.error
-    - [ ! -z "$(git diff develop... -- CHANGELOG.rst)" ]
+    - ./test_changelog.sh
 
 deploy:
   provider: pypi
