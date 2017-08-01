@@ -4,6 +4,7 @@ Collection of ansible modules that use [napalm](https://github.com/napalm-automa
 
 Modules
 =======
+
 The following modules are currently available:
 
 - ``napalm_diff_yang``
