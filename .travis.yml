@@ -1,26 +1,26 @@
 language: python
+
 python:
-- 2.7
+    - 2.7
+
 env:
-- ANSIBLE_VERSION=2.2
-- ANSIBLE_VERSION=2.3
+    - ANSIBLE_VERSION=2.2
+    - ANSIBLE_VERSION=2.3
+
 install:
-- pip install napalm-base
-- pip install "ansible>=$ANSIBLE_VERSION.0,<$ANSIBLE_VERSION.99"
+    - pip install napalm-base
+    - pip install "ansible>=$ANSIBLE_VERSION.0,<$ANSIBLE_VERSION.99"
+
 script:
-- cd tests
-- ansible-playbook -i napalm_install_config/hosts -l "*.dry_run.*" napalm_install_config/config.yaml
-  -C
-- ansible-playbook -i napalm_install_config/hosts -l "*.commit.*" napalm_install_config/config.yaml
-- ansible-playbook -i napalm_install_config/hosts -l "*.error*" napalm_install_config/config_error.yaml
-- ansible-playbook -i napalm_get_facts/hosts napalm_get_facts/get_facts_ok.yaml -l
-  multiple_facts.ok
-- ansible-playbook -i napalm_get_facts/hosts napalm_get_facts/get_facts_not_implemented.yaml
-  -l multiple_facts.not_implemented -e "ignore_notimplemented=true"
-- ansible-playbook -i napalm_get_facts/hosts napalm_get_facts/get_facts_not_implemented.yaml
-  -l multiple_facts.not_implemented -e "ignore_notimplemented=false"
-- ansible-playbook -i napalm_get_facts/hosts napalm_get_facts/get_facts_error.yaml
-  -l multiple_facts.error
+    - cd tests
+    - ansible-playbook -i napalm_install_config/hosts -l "*.dry_run.*" napalm_install_config/config.yaml -C
+    - ansible-playbook -i napalm_install_config/hosts -l "*.commit.*" napalm_install_config/config.yaml
+    - ansible-playbook -i napalm_install_config/hosts -l "*.error*" napalm_install_config/config_error.yaml
+    - ansible-playbook -i napalm_get_facts/hosts napalm_get_facts/get_facts_ok.yaml -l multiple_facts.ok
+    - ansible-playbook -i napalm_get_facts/hosts napalm_get_facts/get_facts_not_implemented.yaml -l multiple_facts.not_implemented -e "ignore_notimplemented=true"
+    - ansible-playbook -i napalm_get_facts/hosts napalm_get_facts/get_facts_not_implemented.yaml -l multiple_facts.not_implemented -e "ignore_notimplemented=false"
+    - ansible-playbook -i napalm_get_facts/hosts napalm_get_facts/get_facts_error.yaml -l multiple_facts.error
+
 deploy:
   provider: pypi
   user: dbarroso
