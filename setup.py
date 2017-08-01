@@ -1,7 +1,7 @@
 """setup.py file."""
 import uuid
 
-from setuptools import setup, find_packages
+from setuptools import setup
 from pip.req import parse_requirements
 
 
@@ -12,7 +12,7 @@ reqs = [str(ir.req) for ir in install_reqs]
 setup(
     name="napalm-ansible",
     version='0.6.1',
-    packages=find_packages(),
+    packages=["napalm_ansible"],
     author="David Barroso, Kirk Byers, Mircea Ulinic",
     author_email="dbarrosop@dravetech.com, ktbyers@twb-tech.com",
     description="Network Automation and Programmability Abstraction Layer with Multivendor support",
