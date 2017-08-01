@@ -249,6 +249,11 @@ def main():
 
     results = {}
     results['compliance_report'] = compliance_report
+    if not compliance_report['complies']:
+        msg = "Device does not comply with policy"
+        results['msg'] = msg
+        module.fail_json(**results)
+
     module.exit_json(**results)
 
 

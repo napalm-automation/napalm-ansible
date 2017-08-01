@@ -22,8 +22,8 @@
           register: napalm_facts             # store information here
         - assert:
             that:
-                - napalm_facts.ansible_facts.facts.hostname == "localhost"
-                - napalm_facts.ansible_facts.interfaces.Ethernet1.mac_address == "08:00:27:C6:00:F0"
+                - napalm_facts.ansible_facts.napalm_facts.hostname == "localhost"
+                - napalm_facts.ansible_facts.napalm_interfaces.Ethernet1.mac_address == "08:00:27:C6:00:F0"
       rescue:
         - debug:
                 var: ansible_failed_result.msg
