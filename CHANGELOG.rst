@@ -1,3 +1,8 @@
+develop
+=======
+
+    + [#77] Added ``napalm_cli`` module
+    
 0.6.1
 =====
 
