@@ -8,6 +8,7 @@ env:
     - ANSIBLE_VERSION=2.3
 
 install:
+    - pip install pylama
     - pip install napalm-base
     - pip install "ansible>=$ANSIBLE_VERSION.0,<$ANSIBLE_VERSION.99"
 
