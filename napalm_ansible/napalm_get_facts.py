@@ -258,8 +258,18 @@ def main():
     except Exception, e:
         module.fail_json(msg="cannot close device connection: " + str(e))
 
-    results = {}
-    results['ansible_facts'] = facts
+    new_facts = {}
+    # Prepend all facts with napalm_ for unique namespace
+    for filter_name, filter_value in facts.items():
+        # Make napalm get_facts to be directly accessible as variables
+        if filter_name == "facts":
+            for fact_name, fact_value in filter_value.items():
+                napalm_fact_name = "napalm_" + fact_name
+                new_facts[napalm_fact_name] = fact_value
+        new_filter_name = "napalm_" + filter_name
+        new_facts[new_filter_name] = filter_value
+    results = {'ansible_facts': new_facts}
+
     if ignore_notimplemented:
         results['not_implemented'] = sorted(implementation_errors)
 
