@@ -1,3 +1,6 @@
+from ansible.module_utils.basic import AnsibleModule, return_values
+
+
 DOCUMENTATION = '''
 ---
 module: napalm_cli
@@ -9,9 +12,9 @@ description:
 requirements:
     - napalm
 options:
-   cli_args: 
+   args:
         description:
-          - Command to run on the CLI
+          - Keyword arguments to pass to the `cli` method
         required: True
 '''
 
@@ -24,9 +27,10 @@ vars:
     dev_os: "eos"
 - napalm_cli:
     provider: "{{ napalm_provider }}"
-    cli_args:
-        - show version
-        - show snmp chassis
+    args:
+        commands:
+            - show version
+            - show snmp chassis
 '''
 
 RETURN = '''
@@ -42,7 +46,7 @@ results:
     sample:
     {
         "show snmp chassis": "Chassis: 1234\n",
-        "show version": "Arista vEOS\nHardware version:    \nSerial number:       \nSystem MAC address:  0800.27c3.5f28\n\nSoftware image version: 4.17.5M\nArchitecture:           i386\nInternal build version: 4.17.5M-4414219.4175M\nInternal build ID:      d02143c6-e42b-4fc3-99b6-97063bddb6b8\n\nUptime:                 1 hour and 21 minutes\nTotal memory:           1893416 kB\nFree memory:            956488 kB\n\n"
+        "show version": "Arista vEOS\nHardware version:    \nSerial number:       \nSystem MAC address:  0800.27c3.5f28\n\nSoftware image version: 4.17.5M\nArchitecture:           i386\nInternal build version: 4.17.5M-4414219.4175M\nInternal build ID:      d02143c6-e42b-4fc3-99b6-97063bddb6b8\n\nUptime:                 1 hour and 21 minutes\nTotal memory:           1893416 kB\nFree memory:            956488 kB\n\n"  # noqa
     }
 '''
 
@@ -53,8 +57,10 @@ except ImportError:
 else:
     napalm_found = True
 
+
 def main():
-    os_choices = ['eos', 'junos', 'ios', 'vyos', 'ros']
+    os_choices = ['eos', 'junos', 'iosxr', 'fortios', 'ibm',
+                  'ios', 'mock', 'nxos', 'panos', 'vyos', 'ros']
     module = AnsibleModule(
         argument_spec=dict(
             hostname=dict(type='str', required=False, aliases=['host']),
@@ -64,9 +70,9 @@ def main():
             timeout=dict(type='int', required=False, default=60),
             dev_os=dict(type='str', required=False, choices=os_choices),
             optional_args=dict(required=False, type='dict', default=None),
-            cli_args=dict(required=True, type='list', default=None),
+            args=dict(required=True, type='dict', default=None),
         ),
-        supports_check_mode=True
+        supports_check_mode=False
     )
 
     if not napalm_found:
@@ -87,7 +93,7 @@ def main():
     provider['hostname'] = provider.get('hostname', None) or provider.get('host', None)
     # allow local params to override provider
     for param, pvalue in provider.items():
-        if module.params.get(param) != False:
+        if module.params.get(param) is not False:
             module.params[param] = module.params.get(param) or pvalue
 
     hostname = module.params['hostname']
@@ -95,9 +101,10 @@ def main():
     dev_os = module.params['dev_os']
     password = module.params['password']
     timeout = module.params['timeout']
-    cli_args = module.params['cli_args']
+    args = module.params['args']
 
-    argument_check = { 'hostname': hostname, 'username': username, 'dev_os': dev_os, 'password': password }
+    argument_check = {'hostname': hostname, 'username': username,
+                      'dev_os': dev_os, 'password': password}
     for key, val in argument_check.items():
         if val is None:
             module.fail_json(msg=str(key) + " is required")
@@ -122,7 +129,10 @@ def main():
     except Exception, e:
         module.fail_json(msg="cannot connect to device: " + str(e))
 
-    cli_response = device.cli(cli_args)
+    try:
+        cli_response = device.cli(**args)
+    except Exception as e:
+        module.fail_json(msg="{}".format(e))
 
     try:
         device.close()
@@ -131,9 +141,6 @@ def main():
 
     module.exit_json(changed=False, results=cli_response)
 
-# standard ansible module imports
-from ansible.module_utils.basic import *
 
 if __name__ == '__main__':
     main()
-
