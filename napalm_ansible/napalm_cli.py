@@ -59,7 +59,7 @@ else:
 
 
 def main():
-    os_choices = ['eos', 'junos', 'iosxr', 'fortios', 'ibm',
+    os_choices = ['eos', 'junos', 'iosxr', 'fortios',
                   'ios', 'mock', 'nxos', 'panos', 'vyos', 'ros']
     module = AnsibleModule(
         argument_spec=dict(
