@@ -13,3 +13,5 @@ ansible-playbook -i napalm_get_facts/hosts napalm_get_facts/get_facts_error.yaml
 ansible-playbook -i napalm_cli/hosts -l multiple_commands.ok napalm_cli/multiple_commands.yaml
 ansible-playbook -i napalm_cli/hosts -l wrong_commands.err napalm_cli/wrong_args.yaml
 ansible-playbook -i napalm_cli/hosts -l multiple_commands.ok napalm_cli/check_mode.yaml -C
+
+echo "All tests successful!"
