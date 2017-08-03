@@ -1,12 +1,19 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
 from ansible.module_utils.basic import AnsibleModule, return_values
 
+napalm_found = False
 try:
-    from napalm_base import get_network_driver
-    napalm_base = True
+    from napalm import get_network_driver
+    napalm_found = True
 except ImportError:
-    napalm_base = None
+    pass
+
+# Legacy for pre-reunification napalm (remove in future)
+if not napalm_found:
+    try:
+        from napalm_base import get_network_driver  # noqa
+        napalm_found = True
+    except ImportError:
+        pass
 
 try:
     import napalm_yang
@@ -40,8 +47,8 @@ options:
         description:
           - OS of the device.
         required: False
-        choices: ['eos', 'junos', 'iosxr', 'fortios', 'ibm', 'ios', 'mock',
-                  'nxos', 'panos', 'vyos']
+        choices: ['eos', 'junos', 'iosxr', 'fortios', 'ios', 'mock',
+                  'nxos', 'nxos_ssh', 'panos', 'vyos']
     provider:
         description:
           - Dictionary which acts as a collection of arguments used to define
@@ -78,23 +85,16 @@ options:
 '''
 
 EXAMPLES = '''
-vars:
-  ios_provider:
-    hostname: "{{ inventory_hostname }}"
-    username: "napalm"
-    password: "napalm"
-    dev_os: "ios"
-
- - name: GET VALIDATION REPORT
-   napalm_validate:
+- name: GET VALIDATION REPORT
+  napalm_validate:
     username: "{{ un }}"
     password: "{{ pwd }}"
     hostname: "{{ inventory_hostname }}"
     dev_os: "{{ dev_os }}"
     validation_file: validate.yml
 
- - name: GET VALIDATION REPORT USING PROVIDER
-   napalm_validate:
+- name: GET VALIDATION REPORT USING PROVIDER
+  napalm_validate:
     provider: "{{ ios_provider }}"
     validation_file: validate.yml
 
@@ -111,6 +111,7 @@ vars:
     models:
         - models.openconfig_interfaces
   register: interfaces
+
 - name: Check all interfaces are up
   napalm_validate:
     data: "{{ interfaces.yang_model }}"
@@ -164,8 +165,7 @@ def get_device_instance(module, os_choices):
     password = module.params['password']
     timeout = module.params['timeout']
 
-    argument_check = {'hostname': hostname, 'username': username,
-                      'dev_os': dev_os, 'password': password}
+    argument_check = {'hostname': hostname, 'username': username, 'dev_os': dev_os}
     for key, val in argument_check.items():
         if val is None:
             module.fail_json(msg=str(key) + " is required")
@@ -205,8 +205,8 @@ def get_root_object(models):
 
 
 def main():
-    os_choices = ['eos', 'junos', 'iosxr', 'fortios', 'ibm',
-                  'ios', 'mock', 'nxos', 'panos', 'vyos']
+    os_choices = ['eos', 'junos', 'iosxr', 'fortios',
+                  'ios', 'mock', 'nxos', 'nxos_ssh', 'panos', 'vyos']
     module = AnsibleModule(
         argument_spec=dict(
             models=dict(type="list", required=False),
@@ -222,7 +222,7 @@ def main():
         ),
         supports_check_mode=False
     )
-    if not napalm_base:
+    if not napalm_found:
         module.fail_json(msg="the python module napalm is required")
 
     if module.params["models"]:

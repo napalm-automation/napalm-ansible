@@ -1,5 +1,4 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
+from ansible.module_utils.basic import AnsibleModule, return_values
 
 """
 (c) 2017 Jason Edelman <jason@networktocode.com>
@@ -88,14 +87,11 @@ options:
 '''
 
 EXAMPLES = '''
-vars:
-  napalm_provider:
+- napalm_ping:
     hostname: "{{ inventory_hostname }}"
     username: "napalm"
     password: "napalm"
     dev_os: "eos"
-- napalm_ping:
-    provider: "{{ napalm_provider }}"
     destination: 10.0.0.5
     vrf: MANAGEMENT
     count: 2
@@ -112,28 +108,41 @@ changed:
     returned: always
     type: bool
     sample: True
+
 results:
     description: structure response data of ping
     returned: always
     type: dict
-    sample:
     # when echo request succeeds
-    "{"success": {"packet_loss": 0, "probes_sent": 2,
+    sample: '{"success": {"packet_loss": 0, "probes_sent": 2,
             "results": [{"ip_address": "10.0.0.5:", "rtt": 1.71},
              {"ip_address": "10.0.0.5:", "rtt": 0.733}],
              "rtt_avg": 1.225, "rtt_max": 1.718, "rtt_min": 0.733,
-             "rtt_stddev": 0.493}}
+             "rtt_stddev": 0.493}}'
 
-    # when echo request fails
-    {"error": "connect: Network is unreachable\n"}}
+alt_results:
+    description: Example results key on failure
+    returned: always
+    type: dict
+    # when echo request succeeds
+    sample: '{"error": "connect: Network is unreachable\n"}}'
 '''
 
+napalm_found = False
 try:
-    from napalm_base import get_network_driver
-except ImportError:
-    napalm_found = False
-else:
+    from napalm import get_network_driver
     napalm_found = True
+except ImportError:
+    pass
+
+# Legacy for pre-reunification napalm (remove in future)
+if not napalm_found:
+    try:
+        from napalm_base import get_network_driver   # noqa
+        napalm_found = True
+    except ImportError:
+        pass
+
 
 def main():
     os_choices = ['eos', 'junos', 'ios', 'vyos', 'ros']
@@ -175,7 +184,7 @@ def main():
     provider['hostname'] = provider.get('hostname', None) or provider.get('host', None)
     # allow local params to override provider
     for param, pvalue in provider.items():
-        if module.params.get(param) != False:
+        if module.params.get(param) is not False:
             module.params[param] = module.params.get(param) or pvalue
 
     hostname = module.params['hostname']
@@ -184,12 +193,6 @@ def main():
     password = module.params['password']
     timeout = module.params['timeout']
     destination = module.params['destination']
-    source = module.params['source']
-    ttl = module.params['ttl']
-    ping_timeout = module.params['ping_timeout']
-    size = module.params['size']
-    count = module.params['count']
-    vrf = module.params['vrf']
 
     ping_optional_args = {}
     ping_args = ['source', 'ttl', 'ping_timeout', 'size', 'count', 'vrf']
@@ -200,7 +203,7 @@ def main():
         ping_optional_args['timeout'] = ping_optional_args['ping_timeout']
         ping_optional_args.pop('ping_timeout')
 
-    argument_check = { 'hostname': hostname, 'username': username, 'dev_os': dev_os, 'password': password }
+    argument_check = {'hostname': hostname, 'username': username, 'dev_os': dev_os}
     for key, val in argument_check.items():
         if val is None:
             module.fail_json(msg=str(key) + " is required")
@@ -222,20 +225,18 @@ def main():
                                 timeout=timeout,
                                 optional_args=optional_args)
         device.open()
-    except Exception, e:
+    except Exception as e:
         module.fail_json(msg="cannot connect to device: " + str(e))
 
     ping_response = device.ping(destination, **ping_optional_args)
 
     try:
         device.close()
-    except Exception, e:
+    except Exception as e:
         module.fail_json(msg="cannot close device connection: " + str(e))
 
     module.exit_json(changed=False, results=ping_response)
 
-# standard ansible module imports
-from ansible.module_utils.basic import *
 
 if __name__ == '__main__':
     main()

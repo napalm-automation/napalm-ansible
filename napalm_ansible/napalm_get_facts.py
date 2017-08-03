@@ -1,6 +1,3 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
-
 """
 (c) 2016 Elisa Jasinska <elisa@bigwaveit.org>
 
@@ -19,6 +16,8 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
 """
+from ansible.module_utils.basic import AnsibleModule, return_values
+
 
 DOCUMENTATION = '''
 ---
@@ -47,7 +46,8 @@ options:
         description:
           - OS of the device
         required: False
-        choices: ['eos', 'junos', 'iosxr', 'fortios', 'ibm', 'ios', 'mock', 'nxos', 'panos', 'vyos']
+        choices: ['eos', 'junos', 'iosxr', 'fortios', 'ios', 'mock', 'nxos', 'nxos_ssh', 'panos',
+        'vyos']
     provider:
         description:
           - Dictionary which acts as a collection of arguments used to define the characteristics
@@ -68,52 +68,47 @@ options:
         default: None
     ignore_notimplemented:
         description:
-          - Ignores NotImplementedError for filters which aren't supported by the driver. Returns
-            invalid filters in a list called: not_implemented
+          - "Ignores NotImplementedError for filters which aren't supported by the driver. Returns
+            invalid filters in a list called: not_implemented"
         required: False
         default: False
         choices: [True, False]
     filter:
         description:
-            - A list of facts to retreive from a device and provided though C(ansible_facts)
-              The list of facts available are maintained at: http://napalm.readthedocs.io/en/latest/support/
-              Note- not all getters are implemented on all supported device types
+            - "A list of facts to retreive from a device and provided though C(ansible_facts)
+              The list of facts available are maintained at:
+                  http://napalm.readthedocs.io/en/latest/support/
+              Note- not all getters are implemented on all supported device types"
         required: False
         default: ['facts']
     args:
         description:
-            - dictionary of kwargs arguments to pass to the filter. The outer key is the name of the getter (same as the filter)
-        requited: False
+            - dictionary of kwargs arguments to pass to the filter. The outer key is the name of
+              the getter (same as the filter)
+        required: False
         default: None
 '''
 
 EXAMPLES = '''
+- name: get facts from device
+  napalm_get_facts:
+    hostname: '{{ inventory_hostname }}'
+    username: '{{ user }}'
+    dev_os: '{{ os }}'
+    password: '{{ passwd }}'
+    filter: ['facts']
+  register: result
 
-vars:
-  ios_provider:
-    hostname: "{{ inventory_hostname }}"
-    username: "napalm"
-    password: "napalm"
-    dev_os: "ios"
+- name: print data
+  debug:
+    var: result
 
- - name: get facts from device
-   napalm_get_facts:
-     hostname={{ inventory_hostname }}
-     username={{ user }}
-     dev_os={{ os }}
-     password={{ passwd }}
-     filter=['facts']
-   register: result
-
- - name: print data
-   debug: var=result
-
- - name: Getters
-   napalm_get_facts:
-     provider: "{{ ios_provider }}"
-     filter:
-       - "lldp_neighbors_detail"
-       - "interfaces"
+- name: Getters
+  napalm_get_facts:
+    provider: "{{ ios_provider }}"
+    filter:
+      - "lldp_neighbors_detail"
+      - "interfaces"
 
 - name: get facts from device
   napalm_get_facts:
@@ -143,16 +138,25 @@ ansible_facts:
     type: dict
 '''
 
+napalm_found = False
 try:
-    from napalm_base import get_network_driver
-except ImportError:
-    napalm_found = False
-else:
+    from napalm import get_network_driver
     napalm_found = True
+except ImportError:
+    pass
+
+# Legacy for pre-reunification napalm (remove in future)
+if not napalm_found:
+    try:
+        from napalm_base import get_network_driver     # noqa
+        napalm_found = True
+    except ImportError:
+        pass
 
 
 def main():
-    os_choices = ['eos', 'junos', 'iosxr', 'fortios', 'ibm', 'ios', 'mock', 'nxos', 'panos', 'vyos', 'ros']
+    os_choices = ['eos', 'junos', 'iosxr', 'fortios', 'ios', 'mock', 'nxos', 'nxos_ssh', 'panos',
+                  'vyos', 'ros']
     module = AnsibleModule(
         argument_spec=dict(
             hostname=dict(type='str', required=False, aliases=['host']),
@@ -188,7 +192,7 @@ def main():
     provider['hostname'] = provider.get('hostname', None) or provider.get('host', None)
     # allow local params to override provider
     for param, pvalue in provider.items():
-        if module.params.get(param) != False:
+        if module.params.get(param) is not False:
             module.params[param] = module.params.get(param) or pvalue
 
     hostname = module.params['hostname']
@@ -201,8 +205,7 @@ def main():
     ignore_notimplemented = module.params['ignore_notimplemented']
     implementation_errors = []
 
-
-    argument_check = { 'hostname': hostname, 'username': username, 'dev_os': dev_os, 'password': password }
+    argument_check = {'hostname': hostname, 'username': username, 'dev_os': dev_os}
     for key, val in argument_check.items():
         if val is None:
             module.fail_json(msg=str(key) + " is required")
@@ -225,13 +228,13 @@ def main():
                                 timeout=timeout,
                                 optional_args=optional_args)
         device.open()
-    except Exception, e:
+    except Exception as e:
         module.fail_json(msg="cannot connect to device: " + str(e))
 
     # retreive data from device
     facts = {}
 
-    NAPALM_GETTERS=[getter for getter in dir(network_driver) if getter.startswith("get_")]
+    NAPALM_GETTERS = [getter for getter in dir(network_driver) if getter.startswith("get_")]
 
     for getter in filter_list:
         getter_function = "get_{}".format(getter)
@@ -249,13 +252,13 @@ def main():
                 module.fail_json(
                     msg="The filter {} is not supported in napalm-{} [get_{}()]".format(
                         getter, dev_os, getter))
-        except Exception, e:
+        except Exception as e:
             module.fail_json(msg="[{}] cannot retrieve device data: ".format(getter) + str(e))
 
     # close device connection
     try:
         device.close()
-    except Exception, e:
+    except Exception as e:
         module.fail_json(msg="cannot close device connection: " + str(e))
 
     new_facts = {}
@@ -275,8 +278,6 @@ def main():
 
     module.exit_json(**results)
 
-# standard ansible module imports
-from ansible.module_utils.basic import *
 
 if __name__ == '__main__':
     main()

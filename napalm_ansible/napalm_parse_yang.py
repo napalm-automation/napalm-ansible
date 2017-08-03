@@ -1,6 +1,3 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
-
 """
 (c) 2017 David Barroso <dbarrosop@dravetech.com>
 
@@ -20,16 +17,24 @@ You should have received a copy of the GNU General Public License
 along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
 """
 # standard ansible module imports
-from ansible.module_utils.basic import AnsibleModule
+from ansible.module_utils.basic import AnsibleModule, return_values
 
 import json
 
-
+napalm_found = False
 try:
-    from napalm_base import get_network_driver
-    napalm_base = True
+    from napalm import get_network_driver
+    napalm_found = True
 except ImportError:
-    napalm_base = None
+    pass
+
+# Legacy for pre-reunification napalm (remove in future)
+if not napalm_found:
+    try:
+        from napalm_base import get_network_driver    # noqa
+        napalm_found = True
+    except ImportError:
+        pass
 
 try:
     import napalm_yang
@@ -43,7 +48,6 @@ module: napalm_parse_yang
 author: "David Barroso (@dbarrosop)"
 version_added: "0.0"
 short_description: "Parse native config/state from a file or device."
-"YANG obje
 description:
     - "Parse configuration/state from a file or device and returns a dict that"
     - "represents a valid YANG object."
@@ -66,8 +70,8 @@ options:
         description:
           - OS of the device
         required: False
-        choices: ['eos', 'junos', 'iosxr', 'fortios', 'ibm', 'ios', 'mock',
-                  'nxos', 'panos', 'vyos']
+        choices: ['eos', 'junos', 'iosxr', 'fortios', 'ios', 'mock',
+                  'nxos', 'nxos_ssh', 'panos', 'vyos']
     provider:
         description:
           - Dictionary which acts as a collection of arguments used to define
@@ -89,27 +93,37 @@ options:
         default: None
     file_path:
         description:
-          - Path to a file to load native config/state from.
+          - "Path to a file to load native config/state from.
             Note: Either file_path or data to connect to a device must be
               provided.
-            Note: file_path takes precedence over a live device
+            Note: file_path takes precedence over a live device"
         required: False
         defaut: None
     mode:
         description:
-          - Whether to parse config/state or both.
-            Note: `both` is not supported in combination with `file_path`.
+          - "Whether to parse config/state or both.
+            Note: `both` is not supported in combination with `file_path`."
         required: True
         choices: ['config', 'state', 'both']
+    models:
+        description:
+          - A list that should match the SUPPORTED_MODELS in napalm-yang
+        required: True
+        choices: ""
+    profiles:
+        description:
+          - A list profiles
+        required: False
+        choices: ""
 '''
 
 EXAMPLES = '''
 - name: Parse from device
   napalm_parse_yang:
-    hostname={{ inventory_hostname }}
-    username={{ user }}
-    dev_os={{ os }}
-    password={{ passwd }}
+    hostname: '{{ inventory_hostname }}'
+    username: '{{ user }}'
+    dev_os: '{{ os }}'
+    password: '{{ passwd }}'
     mode: "config"
     profiles: ["eos"]
     models:
@@ -128,10 +142,10 @@ EXAMPLES = '''
 
 RETURN = '''
 changed:
-    description: "Dict the representes a valid YANG object"
-    returned: always
-    type: dict
-    sample: {"interfaces": {"interface": "Et1": {...}, ... }}
+  description: "Dict the representes a valid YANG object"
+  returned: always
+  type: dict
+  sample: "{'interfaces': {'interface':'Et1': {...}, ... }}"
 '''
 
 
@@ -208,8 +222,7 @@ def parse_from_device(module, os_choices):
     profiles = module.params['profiles']
 
     dev_os = module.params['dev_os']
-    argument_check = {'hostname': hostname, 'username': username,
-                      'dev_os': dev_os, 'password': password}
+    argument_check = {'hostname': hostname, 'username': username, 'dev_os': dev_os}
     for key, val in argument_check.items():
         if val is None:
             module.fail_json(msg=str(key) + " is required")
@@ -233,7 +246,7 @@ def parse_from_device(module, os_choices):
                                 timeout=timeout,
                                 optional_args=optional_args)
         device.open()
-    except Exception, e:
+    except Exception as e:
         module.fail_json(msg="cannot connect to device: {}".format(e))
 
     root = get_root_object(models)
@@ -247,15 +260,15 @@ def parse_from_device(module, os_choices):
     # close device connection
     try:
         device.close()
-    except Exception, e:
+    except Exception as e:
         module.fail_json(msg="cannot close device connection: {}".format(e))
 
     return root
 
 
 def main():
-    os_choices = ['eos', 'junos', 'iosxr', 'fortios', 'ibm', 'ios',
-                  'mock', 'nxos', 'panos', 'vyos']
+    os_choices = ['eos', 'junos', 'iosxr', 'fortios', 'ios',
+                  'mock', 'nxos', 'nxos_ssh', 'panos', 'vyos']
     module = AnsibleModule(
         argument_spec=dict(
             hostname=dict(type='str', required=False, aliases=['host']),
@@ -275,7 +288,7 @@ def main():
         supports_check_mode=True
     )
 
-    if not napalm_base:
+    if not napalm_found:
         module.fail_json(msg="the python module napalm is required")
     if not napalm_yang:
         module.fail_json(msg="the python module napalm-yang is required")

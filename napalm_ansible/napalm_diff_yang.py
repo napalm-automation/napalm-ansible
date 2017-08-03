@@ -54,12 +54,12 @@ options:
 '''
 
 EXAMPLES = '''
-      napalm_diff_yang:
-        first: "{{ candidate.yang_model }}"
-        second: "{{ running_config.yang_model }}"
-        models:
-            - models.openconfig_interfaces
-      register: diff
+- napalm_diff_yang:
+    first: "{{ candidate.yang_model }}"
+    second: "{{ running_config.yang_model }}"
+    models:
+     - models.openconfig_interfaces
+  register: diff
 '''
 
 RETURN = '''
@@ -67,7 +67,7 @@ diff:
     description: "Same output as the method napalm_yang.utils.diff"
     returned: always
     type: dict
-    sample: {
+    sample: '{
             "interfaces": {
                 "interface": {
                     "both": {
@@ -81,7 +81,7 @@ diff:
                         }
                     }
                 }
-            }
+            }'
 '''
 
 

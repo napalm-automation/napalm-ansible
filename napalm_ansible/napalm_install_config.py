@@ -1,6 +1,3 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
-
 """
 (c) 2016 Elisa Jasinska <elisa@bigwaveit.org>
     Original prototype by David Barroso <dbarrosop@dravetech.com>
@@ -20,6 +17,8 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
 """
+from ansible.module_utils.basic import AnsibleModule, return_values
+
 
 DOCUMENTATION = '''
 ---
@@ -28,8 +27,8 @@ author: "Elisa Jasinska (@fooelisa)"
 version_added: "2.1"
 short_description: "Installs the configuration taken from a file on a device supported by NAPALM"
 description:
-    - "This library will take the configuration from a file and load it into a device running any OS supported by napalm.
-      The old configuration will be replaced or merged with the new one."
+    - "This library will take the configuration from a file and load it into a device running any
+       OS supported by napalm. The old configuration will be replaced or merged with the new one."
 requirements:
     - napalm
 options:
@@ -57,7 +56,8 @@ options:
         description:
           - OS of the device
         required: False
-        choices: ['eos', 'junos', 'iosxr', 'fortios', 'ibm', 'ios', 'mock', 'nxos', 'panos', 'vyos']
+        choices: ['eos', 'junos', 'iosxr', 'fortios', 'ios', 'mock', 'nxos', 'nxos_ssh', 'panos',
+        'vyos']
     timeout:
         description:
           - Time in seconds to wait for the device to respond
@@ -78,72 +78,64 @@ options:
         required: False
     commit_changes:
         description:
-          - If set to True the configuration will be actually merged or replaced. If the set to False,
-            we will not apply the changes, just check and report the diff
+          - If set to True the configuration will be actually merged or replaced. If the set to
+            False, we will not apply the changes, just check and report the diff
         choices: [true,false]
         required: True
     replace_config:
         description:
-          - If set to True, the entire configuration on the device will be replaced during the commit.
-            If set to False, we will merge the new config with the existing one. Default- False
+          - If set to True, the entire configuration on the device will be replaced during the
+            commit. If set to False, we will merge the new config with the existing one.
         choices: [true,false]
         default: False
         required: False
     diff_file:
         description:
-          - A path to the file where we store the "diff" between the running configuration and the new
-            configuration. If not set the diff between configurations will not be saved.
+          - A path to the file where we store the "diff" between the running configuration and the
+            new configuration. If not set the diff between configurations will not be saved.
         default: None
         required: False
     get_diffs:
         description:
-            - Set to False to not have any diffs generated. Useful if platform does not support commands
-              being used to generate diffs. Note- By default diffs are generated even if the diff_file
-              param is not set.
+            - Set to False to not have any diffs generated. Useful if platform does not support
+              commands being used to generate diffs. Note- By default diffs are generated even
+              if the diff_file param is not set.
         choices: [true,false]
         default: True
         required: False
     archive_file:
         description:
-            - File to store backup of running-configuration from device. Configuration will not be retrieved
-              if not set.
+            - File to store backup of running-configuration from device. Configuration will not be
+              retrieved if not set.
         default: None
         required: False
 '''
 
 EXAMPLES = '''
-
-vars:
-  ios_provider:
-    hostname: "{{ inventory_hostname }}"
-    username: "napalm"
-    password: "napalm"
-    dev_os: "ios"
-
 - assemble:
-    src=../compiled/{{ inventory_hostname }}/
-    dest=../compiled/{{ inventory_hostname }}/running.conf
+    src: '../compiled/{{ inventory_hostname }}/'
+    dest: '../compiled/{{ inventory_hostname }}/running.conf'
 
- - name: Install Config and save diff
-   napalm_install_config:
-    hostname={{ inventory_hostname }}
-    username={{ user }}
-    dev_os={{ os }}
-    password={{ passwd }}
-    config_file=../compiled/{{ inventory_hostname }}/running.conf
-    commit_changes={{ commit_changes }}
-    replace_config={{ replace_config }}
-    get_diffs=True
-    diff_file=../compiled/{{ inventory_hostname }}/diff
+- name: Install Config and save diff
+  napalm_install_config:
+    hostname: '{{ inventory_hostname }}'
+    username: '{{ user }}'
+    dev_os: '{{ os }}'
+    password: '{{ passwd }}'
+    config_file: '../compiled/{{ inventory_hostname }}/running.conf'
+    commit_changes: '{{ commit_changes }}'
+    replace_config: '{{ replace_config }}'
+    get_diffs: True
+    diff_file: '../compiled/{{ inventory_hostname }}/diff'
 
- - name: Install Config using Provider
-   napalm_install_config:
+- name: Install Config using Provider
+  napalm_install_config:
     provider: "{{ ios_provider }}"
-    config_file=../compiled/{{ inventory_hostname }}/running.conf
-    commit_changes={{ commit_changes }}
-    replace_config={{ replace_config }}
-    get_diffs=True
-    diff_file=../compiled/{{ inventory_hostname }}/diff
+    config_file: '../compiled/{{ inventory_hostname }}/running.conf'
+    commit_changes: '{{ commit_changes }}'
+    replace_config: '{{ replace_config }}'
+    get_diffs: True
+    diff_file: '../compiled/{{ inventory_hostname }}/diff'
 '''
 
 RETURN = '''
@@ -159,12 +151,21 @@ msg:
     sample: "[edit system]\n-  host-name lab-testing;\n+  host-name lab;"
 '''
 
+napalm_found = False
 try:
-    from napalm_base import get_network_driver
-except ImportError:
-    napalm_found = False
-else:
+    from napalm import get_network_driver
     napalm_found = True
+except ImportError:
+    pass
+
+# Legacy for pre-reunification napalm (remove in future)
+if not napalm_found:
+    try:
+        from napalm_base import get_network_driver   # noqa
+        napalm_found = True
+    except ImportError:
+        pass
+
 
 def save_to_file(content, filename):
     f = open(filename, 'w')
@@ -173,8 +174,10 @@ def save_to_file(content, filename):
     finally:
         f.close()
 
+
 def main():
-    os_choices = ['eos', 'junos', 'iosxr', 'fortios', 'ibm', 'ios', 'mock', 'nxos', 'panos', 'vyos', 'ros']
+    os_choices = ['eos', 'junos', 'iosxr', 'fortios', 'ios', 'mock', 'nxos',
+                  'nxos_ssh', 'panos', 'vyos', 'ros']
     module = AnsibleModule(
         argument_spec=dict(
             hostname=dict(type='str', required=False, aliases=['host']),
@@ -213,7 +216,7 @@ def main():
     provider['hostname'] = provider.get('hostname', None) or provider.get('host', None)
     # allow local params to override provider
     for param, pvalue in provider.items():
-        if module.params.get(param) != False:
+        if module.params.get(param) is not False:
             module.params[param] = module.params.get(param) or pvalue
 
     hostname = module.params['hostname']
@@ -229,7 +232,7 @@ def main():
     get_diffs = module.params['get_diffs']
     archive_file = module.params['archive_file']
 
-    argument_check = { 'hostname': hostname, 'username': username, 'dev_os': dev_os, 'password': password }
+    argument_check = {'hostname': hostname, 'username': username, 'dev_os': dev_os}
     for key, val in argument_check.items():
         if val is None:
             module.fail_json(msg=str(key) + " is required")
@@ -251,14 +254,14 @@ def main():
                                 timeout=timeout,
                                 optional_args=optional_args)
         device.open()
-    except Exception, e:
+    except Exception as e:
         module.fail_json(msg="cannot connect to device: " + str(e))
 
     try:
         if archive_file is not None:
             running_config = device.get_config(retrieve="running")["running"]
             save_to_file(running_config, archive_file)
-    except Exception, e:
+    except Exception as e:
         module.fail_json(msg="cannot retrieve running config:" + str(e))
 
     try:
@@ -273,7 +276,7 @@ def main():
         else:
             module.fail_json(
                 msg="You have to specify either config or config_file")
-    except Exception, e:
+    except Exception as e:
         module.fail_json(msg="cannot load config: " + str(e))
 
     try:
@@ -285,7 +288,7 @@ def main():
             diff = None
         if diff_file is not None and get_diffs:
             save_to_file(diff, diff_file)
-    except Exception, e:
+    except Exception as e:
         module.fail_json(msg="cannot diff config: " + str(e))
 
     try:
@@ -294,18 +297,16 @@ def main():
         else:
             if changed:
                 device.commit_config()
-    except Exception, e:
+    except Exception as e:
         module.fail_json(msg="cannot install config: " + str(e))
 
     try:
         device.close()
-    except Exception, e:
+    except Exception as e:
         module.fail_json(msg="cannot close device connection: " + str(e))
 
     module.exit_json(changed=changed, msg=diff)
 
-# standard ansible module imports
-from ansible.module_utils.basic import *
 
 if __name__ == '__main__':
     main()
