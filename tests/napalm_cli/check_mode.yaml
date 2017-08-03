@@ -1,0 +1,22 @@
+---
+- name: Run command
+  hosts: all
+  connection: local
+  gather_facts: no
+  tasks:
+    - napalm_cli:
+        hostname: "{{ host }}"
+        username: "{{ user }}"
+        dev_os: "{{ os }}"
+        password: "{{ password }}"
+        optional_args:
+            path: "{{ playbook_dir }}/mocked/{{ inventory_hostname }}"
+            profile: "{{ profile }}"
+        args:
+            commands:
+                - show version
+                - show interfaces
+      register: result
+    - assert:
+        that:
+            - result.skipped
