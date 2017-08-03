@@ -1,5 +1,3 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
 from ansible.module_utils.basic import AnsibleModule, return_values
 
 try:
@@ -40,7 +38,7 @@ options:
         description:
           - OS of the device.
         required: False
-        choices: ['eos', 'junos', 'iosxr', 'fortios', 'ibm', 'ios', 'mock',
+        choices: ['eos', 'junos', 'iosxr', 'fortios', 'ios', 'mock',
                   'nxos', 'panos', 'vyos']
     provider:
         description:
@@ -205,7 +203,7 @@ def get_root_object(models):
 
 
 def main():
-    os_choices = ['eos', 'junos', 'iosxr', 'fortios', 'ibm',
+    os_choices = ['eos', 'junos', 'iosxr', 'fortios',
                   'ios', 'mock', 'nxos', 'panos', 'vyos']
     module = AnsibleModule(
         argument_spec=dict(
@@ -249,6 +247,11 @@ def main():
 
     results = {}
     results['compliance_report'] = compliance_report
+    if not compliance_report['complies']:
+        msg = "Device does not comply with policy"
+        results['msg'] = msg
+        module.fail_json(**results)
+
     module.exit_json(**results)
 
 

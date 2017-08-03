@@ -1,6 +1,3 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
-
 """
 (c) 2017 David Barroso <dbarrosop@dravetech.com>
 
@@ -20,7 +17,7 @@ You should have received a copy of the GNU General Public License
 along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
 """
 # standard ansible module imports
-from ansible.module_utils.basic import AnsibleModule
+from ansible.module_utils.basic import AnsibleModule, return_values
 
 import json
 
@@ -66,7 +63,7 @@ options:
         description:
           - OS of the device
         required: False
-        choices: ['eos', 'junos', 'iosxr', 'fortios', 'ibm', 'ios', 'mock',
+        choices: ['eos', 'junos', 'iosxr', 'fortios', 'ios', 'mock',
                   'nxos', 'panos', 'vyos']
     provider:
         description:
@@ -254,7 +251,7 @@ def parse_from_device(module, os_choices):
 
 
 def main():
-    os_choices = ['eos', 'junos', 'iosxr', 'fortios', 'ibm', 'ios',
+    os_choices = ['eos', 'junos', 'iosxr', 'fortios', 'ios',
                   'mock', 'nxos', 'panos', 'vyos']
     module = AnsibleModule(
         argument_spec=dict(

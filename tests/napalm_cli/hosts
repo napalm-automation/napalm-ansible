@@ -1,0 +1,6 @@
+[all]
+multiple_commands.ok              os=mock   host=127.0.0.1 user=vagrant password=vagrant profile=[eos]
+wrong_commands.err                os=mock   host=127.0.0.1 user=vagrant password=vagrant profile=[eos]
+
+[all:vars]
+ansible_python_interpreter="/usr/bin/env python"
