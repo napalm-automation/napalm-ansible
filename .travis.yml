@@ -17,6 +17,7 @@ script:
     - cd tests
     - ./run_tests.sh
     - ./test_changelog.sh
+    - cd ..
 
 deploy:
   provider: pypi
