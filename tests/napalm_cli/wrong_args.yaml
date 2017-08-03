@@ -1,0 +1,28 @@
+---
+- name: Run command
+  hosts: all
+  connection: local
+  gather_facts: no
+  tasks:
+    - block:
+        - napalm_cli:
+            hostname: "{{ host }}"
+            username: "{{ user }}"
+            dev_os: "{{ os }}"
+            password: "{{ password }}"
+            optional_args:
+                path: "{{ playbook_dir }}/mocked/{{ inventory_hostname }}"
+                profile: "{{ profile }}"
+            args:
+                commands:
+                    - show versi
+          register: result
+        - assert:
+            that:
+                - "I shouldn't be here"
+      rescue:
+        - debug:
+            var: ansible_failed_result
+        - assert:
+            that:
+                - "{{ ansible_failed_result.msg|length > 10 }}"

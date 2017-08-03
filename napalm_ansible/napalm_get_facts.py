@@ -1,6 +1,3 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
-
 """
 (c) 2016 Elisa Jasinska <elisa@bigwaveit.org>
 
@@ -19,6 +16,8 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
 """
+from ansible.module_utils.basic import AnsibleModule, return_values
+
 
 DOCUMENTATION = '''
 ---
@@ -47,7 +46,7 @@ options:
         description:
           - OS of the device
         required: False
-        choices: ['eos', 'junos', 'iosxr', 'fortios', 'ibm', 'ios', 'mock', 'nxos', 'panos', 'vyos']
+        choices: ['eos', 'junos', 'iosxr', 'fortios', 'ios', 'mock', 'nxos', 'panos', 'vyos']
     provider:
         description:
           - Dictionary which acts as a collection of arguments used to define the characteristics
@@ -76,13 +75,15 @@ options:
     filter:
         description:
             - A list of facts to retreive from a device and provided though C(ansible_facts)
-              The list of facts available are maintained at: http://napalm.readthedocs.io/en/latest/support/
+              The list of facts available are maintained at:
+                  http://napalm.readthedocs.io/en/latest/support/
               Note- not all getters are implemented on all supported device types
         required: False
         default: ['facts']
     args:
         description:
-            - dictionary of kwargs arguments to pass to the filter. The outer key is the name of the getter (same as the filter)
+            - dictionary of kwargs arguments to pass to the filter. The outer key is the name of
+              the getter (same as the filter)
         requited: False
         default: None
 '''
@@ -152,7 +153,7 @@ else:
 
 
 def main():
-    os_choices = ['eos', 'junos', 'iosxr', 'fortios', 'ibm', 'ios', 'mock', 'nxos', 'panos', 'vyos', 'ros']
+    os_choices = ['eos', 'junos', 'iosxr', 'fortios', 'ios', 'mock', 'nxos', 'panos', 'vyos', 'ros']
     module = AnsibleModule(
         argument_spec=dict(
             hostname=dict(type='str', required=False, aliases=['host']),
@@ -188,7 +189,7 @@ def main():
     provider['hostname'] = provider.get('hostname', None) or provider.get('host', None)
     # allow local params to override provider
     for param, pvalue in provider.items():
-        if module.params.get(param) != False:
+        if module.params.get(param) is not False:
             module.params[param] = module.params.get(param) or pvalue
 
     hostname = module.params['hostname']
@@ -201,8 +202,8 @@ def main():
     ignore_notimplemented = module.params['ignore_notimplemented']
     implementation_errors = []
 
-
-    argument_check = { 'hostname': hostname, 'username': username, 'dev_os': dev_os, 'password': password }
+    argument_check = {'hostname': hostname, 'username': username,
+                      'dev_os': dev_os, 'password': password}
     for key, val in argument_check.items():
         if val is None:
             module.fail_json(msg=str(key) + " is required")
@@ -231,7 +232,7 @@ def main():
     # retreive data from device
     facts = {}
 
-    NAPALM_GETTERS=[getter for getter in dir(network_driver) if getter.startswith("get_")]
+    NAPALM_GETTERS = [getter for getter in dir(network_driver) if getter.startswith("get_")]
 
     for getter in filter_list:
         getter_function = "get_{}".format(getter)
@@ -275,8 +276,6 @@ def main():
 
     module.exit_json(**results)
 
-# standard ansible module imports
-from ansible.module_utils.basic import *
 
 if __name__ == '__main__':
     main()

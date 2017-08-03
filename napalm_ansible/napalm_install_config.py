@@ -1,6 +1,3 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
-
 """
 (c) 2016 Elisa Jasinska <elisa@bigwaveit.org>
     Original prototype by David Barroso <dbarrosop@dravetech.com>
@@ -20,6 +17,8 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
 """
+from ansible.module_utils.basic import AnsibleModule, return_values
+
 
 DOCUMENTATION = '''
 ---
@@ -28,8 +27,8 @@ author: "Elisa Jasinska (@fooelisa)"
 version_added: "2.1"
 short_description: "Installs the configuration taken from a file on a device supported by NAPALM"
 description:
-    - "This library will take the configuration from a file and load it into a device running any OS supported by napalm.
-      The old configuration will be replaced or merged with the new one."
+    - "This library will take the configuration from a file and load it into a device running any
+       OS supported by napalm. The old configuration will be replaced or merged with the new one."
 requirements:
     - napalm
 options:
@@ -57,7 +56,7 @@ options:
         description:
           - OS of the device
         required: False
-        choices: ['eos', 'junos', 'iosxr', 'fortios', 'ibm', 'ios', 'mock', 'nxos', 'panos', 'vyos']
+        choices: ['eos', 'junos', 'iosxr', 'fortios', 'ios', 'mock', 'nxos', 'panos', 'vyos']
     timeout:
         description:
           - Time in seconds to wait for the device to respond
@@ -78,35 +77,36 @@ options:
         required: False
     commit_changes:
         description:
-          - If set to True the configuration will be actually merged or replaced. If the set to False,
-            we will not apply the changes, just check and report the diff
+          - If set to True the configuration will be actually merged or replaced. If the set to
+            False, we will not apply the changes, just check and report the diff
         choices: [true,false]
         required: True
     replace_config:
         description:
-          - If set to True, the entire configuration on the device will be replaced during the commit.
-            If set to False, we will merge the new config with the existing one. Default- False
+          - If set to True, the entire configuration on the device will be replaced during the
+            commit. If set to False, we will merge the new config with the existing one.
+            Default: False
         choices: [true,false]
         default: False
         required: False
     diff_file:
         description:
-          - A path to the file where we store the "diff" between the running configuration and the new
-            configuration. If not set the diff between configurations will not be saved.
+          - A path to the file where we store the "diff" between the running configuration and the
+            new configuration. If not set the diff between configurations will not be saved.
         default: None
         required: False
     get_diffs:
         description:
-            - Set to False to not have any diffs generated. Useful if platform does not support commands
-              being used to generate diffs. Note- By default diffs are generated even if the diff_file
-              param is not set.
+            - Set to False to not have any diffs generated. Useful if platform does not support
+              commands being used to generate diffs. Note- By default diffs are generated even
+              if the diff_file param is not set.
         choices: [true,false]
         default: True
         required: False
     archive_file:
         description:
-            - File to store backup of running-configuration from device. Configuration will not be retrieved
-              if not set.
+            - File to store backup of running-configuration from device. Configuration will not be
+              retrieved if not set.
         default: None
         required: False
 '''
@@ -166,6 +166,7 @@ except ImportError:
 else:
     napalm_found = True
 
+
 def save_to_file(content, filename):
     f = open(filename, 'w')
     try:
@@ -173,8 +174,9 @@ def save_to_file(content, filename):
     finally:
         f.close()
 
+
 def main():
-    os_choices = ['eos', 'junos', 'iosxr', 'fortios', 'ibm', 'ios', 'mock', 'nxos', 'panos', 'vyos', 'ros']
+    os_choices = ['eos', 'junos', 'iosxr', 'fortios', 'ios', 'mock', 'nxos', 'panos', 'vyos', 'ros']
     module = AnsibleModule(
         argument_spec=dict(
             hostname=dict(type='str', required=False, aliases=['host']),
@@ -213,7 +215,7 @@ def main():
     provider['hostname'] = provider.get('hostname', None) or provider.get('host', None)
     # allow local params to override provider
     for param, pvalue in provider.items():
-        if module.params.get(param) != False:
+        if module.params.get(param) is not False:
             module.params[param] = module.params.get(param) or pvalue
 
     hostname = module.params['hostname']
@@ -229,7 +231,8 @@ def main():
     get_diffs = module.params['get_diffs']
     archive_file = module.params['archive_file']
 
-    argument_check = { 'hostname': hostname, 'username': username, 'dev_os': dev_os, 'password': password }
+    argument_check = {'hostname': hostname, 'username': username,
+                      'dev_os': dev_os, 'password': password}
     for key, val in argument_check.items():
         if val is None:
             module.fail_json(msg=str(key) + " is required")
@@ -304,8 +307,6 @@ def main():
 
     module.exit_json(changed=changed, msg=diff)
 
-# standard ansible module imports
-from ansible.module_utils.basic import *
 
 if __name__ == '__main__':
     main()

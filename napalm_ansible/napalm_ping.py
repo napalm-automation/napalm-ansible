@@ -1,5 +1,4 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
+from ansible.module_utils.basic import AnsibleModule, return_values
 
 """
 (c) 2017 Jason Edelman <jason@networktocode.com>
@@ -135,6 +134,7 @@ except ImportError:
 else:
     napalm_found = True
 
+
 def main():
     os_choices = ['eos', 'junos', 'ios', 'vyos', 'ros']
     module = AnsibleModule(
@@ -175,7 +175,7 @@ def main():
     provider['hostname'] = provider.get('hostname', None) or provider.get('host', None)
     # allow local params to override provider
     for param, pvalue in provider.items():
-        if module.params.get(param) != False:
+        if module.params.get(param) is not False:
             module.params[param] = module.params.get(param) or pvalue
 
     hostname = module.params['hostname']
@@ -184,12 +184,6 @@ def main():
     password = module.params['password']
     timeout = module.params['timeout']
     destination = module.params['destination']
-    source = module.params['source']
-    ttl = module.params['ttl']
-    ping_timeout = module.params['ping_timeout']
-    size = module.params['size']
-    count = module.params['count']
-    vrf = module.params['vrf']
 
     ping_optional_args = {}
     ping_args = ['source', 'ttl', 'ping_timeout', 'size', 'count', 'vrf']
@@ -200,7 +194,8 @@ def main():
         ping_optional_args['timeout'] = ping_optional_args['ping_timeout']
         ping_optional_args.pop('ping_timeout')
 
-    argument_check = { 'hostname': hostname, 'username': username, 'dev_os': dev_os, 'password': password }
+    argument_check = {'hostname': hostname, 'username': username,
+                      'dev_os': dev_os, 'password': password}
     for key, val in argument_check.items():
         if val is None:
             module.fail_json(msg=str(key) + " is required")
@@ -234,8 +229,6 @@ def main():
 
     module.exit_json(changed=False, results=ping_response)
 
-# standard ansible module imports
-from ansible.module_utils.basic import *
 
 if __name__ == '__main__':
     main()
