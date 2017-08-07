@@ -8,8 +8,8 @@ class ActionModule(_ActionModule):
     def run(self, tmp=None, task_vars=None):
         pc = self._play_context
 
-        if hasattr(pc, "connection_user"): # new in ansible 2.3
-            #  populate provider values with context values if not set
+        if hasattr(pc, "connection_user"):  # new in ansible 2.3
+            # populate provider values with context values if not set
             provider = self._task.args.get('provider', {})
 
             provider['hostname'] = provider.get('hostname', provider.get('host', pc.remote_addr))
