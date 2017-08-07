@@ -39,7 +39,7 @@ options:
           - OS of the device.
         required: False
         choices: ['eos', 'junos', 'iosxr', 'fortios', 'ios', 'mock',
-                  'nxos', 'panos', 'vyos']
+                  'nxos', 'nxos_ssh', 'panos', 'vyos']
     provider:
         description:
           - Dictionary which acts as a collection of arguments used to define
@@ -204,7 +204,7 @@ def get_root_object(models):
 
 def main():
     os_choices = ['eos', 'junos', 'iosxr', 'fortios',
-                  'ios', 'mock', 'nxos', 'panos', 'vyos']
+                  'ios', 'mock', 'nxos', 'nxos_ssh', 'panos', 'vyos']
     module = AnsibleModule(
         argument_spec=dict(
             models=dict(type="list", required=False),

@@ -1,3 +1,8 @@
+0.7.1 (develop)
+=====
+
+    - Add support for ``nxos_ssh`` driver
+
 0.7.0
 =====
 
