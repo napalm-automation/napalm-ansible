@@ -46,7 +46,8 @@ options:
         description:
           - OS of the device
         required: False
-        choices: ['eos', 'junos', 'iosxr', 'fortios', 'ios', 'mock', 'nxos', 'panos', 'vyos']
+        choices: ['eos', 'junos', 'iosxr', 'fortios', 'ios', 'mock', 'nxos', 'nxos_ssh', 'panos',
+        'vyos']
     provider:
         description:
           - Dictionary which acts as a collection of arguments used to define the characteristics
@@ -153,7 +154,8 @@ else:
 
 
 def main():
-    os_choices = ['eos', 'junos', 'iosxr', 'fortios', 'ios', 'mock', 'nxos', 'panos', 'vyos', 'ros']
+    os_choices = ['eos', 'junos', 'iosxr', 'fortios', 'ios', 'mock', 'nxos', 'nxos_ssh', 'panos', 
+                  'vyos', 'ros']
     module = AnsibleModule(
         argument_spec=dict(
             hostname=dict(type='str', required=False, aliases=['host']),
