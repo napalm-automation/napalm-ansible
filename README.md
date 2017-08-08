@@ -47,7 +47,7 @@ file, i.e. `./ansible.cfg`:
 
     [defaults]
     library = /Users/dbarroso/workspace/napalm/napalm-ansible/napalm_ansible
-    action_plugins = /Users/dbarroso/workspace/napalm/napalm-ansible/napalm_ansible/action_plugins
+    action_plugins = /Users/dbarroso/workspace/napalm/napalm-ansible/action_plugins
 
 For more details on ansible's configuration file visit:
 https://docs.ansible.com/ansible/latest/intro_configuration.html

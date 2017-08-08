@@ -16,5 +16,5 @@ https://docs.ansible.com/ansible/latest/intro_configuration.html
 
 def main():
     path = os.path.dirname(__file__)
-    action_path = os.path.join(path,  'action_plugins')
+    action_path = os.path.abspath(os.path.join(path, '..', 'action_plugins'))
     print(message.format(path=path, action_path=action_path).strip())
