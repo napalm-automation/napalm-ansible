@@ -15,6 +15,16 @@ The following modules are currently available:
 - ``napalm_translate_yang``
 - ``napalm_validate``
 
+Actions
+=======
+
+Actions will only work with ansible version greater than 2.3.
+They provides default parameters for the hostname, username, password and timeout paramters.
+* hostname is set to the current host
+* username is set the the remote user from ansible (can be set from anvironment variable, playbook variable, command argument)
+* password can be set with the -k command argument
+* timeout is set from ansible timeout parameter
+
 Install
 =======
 
@@ -37,6 +47,7 @@ file, i.e. `./ansible.cfg`:
 
     [defaults]
     library = /Users/dbarroso/workspace/napalm/napalm-ansible/napalm_ansible
+    action_plugins = /Users/dbarroso/workspace/napalm/napalm-ansible/napalm_ansible/action_plugins
 
 For more details on ansible's configuration file visit:
 https://docs.ansible.com/ansible/latest/intro_configuration.html
@@ -92,4 +103,12 @@ Example to get compliance report
     hostname: "{{ inventory_hostname }}"
     dev_os: "{{ dev_os }}"
     validation_file: validate.yml
+```
+
+Example to use default connection paramters:
+```
+ - name: get facts from device
+   napalm_get_facts:
+     dev_os={{ os }}
+     filter='facts,interfaces,bgp_neighbors'
 ```
