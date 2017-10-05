@@ -2,6 +2,7 @@
 =====
 
     - Add support for ``nxos_ssh`` driver
+    - Add action plugin to allow connection with ansible user
 
 0.7.0
 =====

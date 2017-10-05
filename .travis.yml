@@ -13,6 +13,11 @@ install:
     - pip install napalm-base
     - pip install "ansible>=$ANSIBLE_VERSION.0,<$ANSIBLE_VERSION.99"
 
+addons:
+    apt:
+        packages:
+            - sshpass
+
 script:
     - pylama
     - cd tests
