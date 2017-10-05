@@ -11,7 +11,7 @@ reqs = [str(ir.req) for ir in install_reqs]
 
 setup(
     name="napalm-ansible",
-    version='0.7.1',
+    version='0.7.2',
     packages=["napalm_ansible"],
     author="David Barroso, Kirk Byers, Mircea Ulinic",
     author_email="dbarrosop@dravetech.com, ktbyers@twb-tech.com",
