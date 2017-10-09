@@ -20,11 +20,11 @@
                     protocol: static
                     destination: 8.8.8.8
             ignore_notimplemented: "{{ ignore_notimplemented }}"
-          register: napalm_facts             # store information here
+          register: test_napalm         # store information here
         - assert:
             that:
-                - napalm_facts.ansible_facts.napalm_facts.hostname == "localhost"
-                - napalm_facts.ansible_facts.napalm_interfaces.Ethernet1.mac_address == "08:00:27:C6:00:F0"
+                - test_napalm.ansible_facts.napalm_facts.hostname == "localhost"
+                - test_napalm.ansible_facts.napalm_interfaces.Ethernet1.mac_address == "08:00:27:C6:00:F0"
       rescue:
         - fail:
               msg: Whe shouldn't be here

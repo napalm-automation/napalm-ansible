@@ -1,3 +1,12 @@
+0.7.2 (develop)
+=====
+
+0.7.1
+=====
+
+    - Add support for ``nxos_ssh`` driver
+    - Update unit tests to support Ansible 2.4
+
 0.7.0
 =====
 
