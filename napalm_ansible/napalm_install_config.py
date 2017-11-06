@@ -160,12 +160,20 @@ msg:
     sample: "[edit system]\n-  host-name lab-testing;\n+  host-name lab;"
 '''
 
+napalm_found = False
 try:
-    from napalm_base import get_network_driver
-except ImportError:
-    napalm_found = False
-else:
+    from napalm import get_network_driver
     napalm_found = True
+except ImportError:
+    pass
+
+# Legacy for pre-reunification napalm (remove in future)
+if not napalm_found:
+    try:
+        from napalm_base import get_network_driver   # noqa
+        napalm_found = True
+    except ImportError:
+        pass
 
 
 def save_to_file(content, filename):
@@ -256,14 +264,14 @@ def main():
                                 timeout=timeout,
                                 optional_args=optional_args)
         device.open()
-    except Exception, e:
+    except Exception as e:
         module.fail_json(msg="cannot connect to device: " + str(e))
 
     try:
         if archive_file is not None:
             running_config = device.get_config(retrieve="running")["running"]
             save_to_file(running_config, archive_file)
-    except Exception, e:
+    except Exception as e:
         module.fail_json(msg="cannot retrieve running config:" + str(e))
 
     try:
@@ -278,7 +286,7 @@ def main():
         else:
             module.fail_json(
                 msg="You have to specify either config or config_file")
-    except Exception, e:
+    except Exception as e:
         module.fail_json(msg="cannot load config: " + str(e))
 
     try:
@@ -290,7 +298,7 @@ def main():
             diff = None
         if diff_file is not None and get_diffs:
             save_to_file(diff, diff_file)
-    except Exception, e:
+    except Exception as e:
         module.fail_json(msg="cannot diff config: " + str(e))
 
     try:
@@ -299,12 +307,12 @@ def main():
         else:
             if changed:
                 device.commit_config()
-    except Exception, e:
+    except Exception as e:
         module.fail_json(msg="cannot install config: " + str(e))
 
     try:
         device.close()
-    except Exception, e:
+    except Exception as e:
         module.fail_json(msg="cannot close device connection: " + str(e))
 
     module.exit_json(changed=changed, msg=diff)
