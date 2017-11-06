@@ -127,12 +127,20 @@ results:
     {"error": "connect: Network is unreachable\n"}}
 '''
 
+napalm_found = False
 try:
-    from napalm_base import get_network_driver
-except ImportError:
-    napalm_found = False
-else:
+    from napalm import get_network_driver
     napalm_found = True
+except ImportError:
+    pass
+
+# Legacy for pre-reunification napalm (remove in future)
+if not napalm_found:
+    try:
+        from napalm_base import get_network_driver   # noqa
+        napalm_found = True
+    except ImportError:
+        pass
 
 
 def main():
