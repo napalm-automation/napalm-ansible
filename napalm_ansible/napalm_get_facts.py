@@ -236,7 +236,7 @@ def main():
                                 timeout=timeout,
                                 optional_args=optional_args)
         device.open()
-    except Exception, e:
+    except Exception as e:
         module.fail_json(msg="cannot connect to device: " + str(e))
 
     # retreive data from device
@@ -260,13 +260,13 @@ def main():
                 module.fail_json(
                     msg="The filter {} is not supported in napalm-{} [get_{}()]".format(
                         getter, dev_os, getter))
-        except Exception, e:
+        except Exception as e:
             module.fail_json(msg="[{}] cannot retrieve device data: ".format(getter) + str(e))
 
     # close device connection
     try:
         device.close()
-    except Exception, e:
+    except Exception as e:
         module.fail_json(msg="cannot close device connection: " + str(e))
 
     new_facts = {}

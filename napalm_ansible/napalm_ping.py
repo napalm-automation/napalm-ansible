@@ -225,14 +225,14 @@ def main():
                                 timeout=timeout,
                                 optional_args=optional_args)
         device.open()
-    except Exception, e:
+    except Exception as e:
         module.fail_json(msg="cannot connect to device: " + str(e))
 
     ping_response = device.ping(destination, **ping_optional_args)
 
     try:
         device.close()
-    except Exception, e:
+    except Exception as e:
         module.fail_json(msg="cannot close device connection: " + str(e))
 
     module.exit_json(changed=False, results=ping_response)

@@ -238,7 +238,7 @@ def parse_from_device(module, os_choices):
                                 timeout=timeout,
                                 optional_args=optional_args)
         device.open()
-    except Exception, e:
+    except Exception as e:
         module.fail_json(msg="cannot connect to device: {}".format(e))
 
     root = get_root_object(models)
@@ -252,7 +252,7 @@ def parse_from_device(module, os_choices):
     # close device connection
     try:
         device.close()
-    except Exception, e:
+    except Exception as e:
         module.fail_json(msg="cannot close device connection: {}".format(e))
 
     return root

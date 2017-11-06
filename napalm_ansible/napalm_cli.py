@@ -134,7 +134,7 @@ def main():
                                 timeout=timeout,
                                 optional_args=optional_args)
         device.open()
-    except Exception, e:
+    except Exception as e:
         module.fail_json(msg="cannot connect to device: " + str(e))
 
     try:
@@ -144,7 +144,7 @@ def main():
 
     try:
         device.close()
-    except Exception, e:
+    except Exception as e:
         module.fail_json(msg="cannot close device connection: " + str(e))
 
     module.exit_json(changed=False, results=cli_response)
