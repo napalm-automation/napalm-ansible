@@ -250,7 +250,7 @@ def main():
         # close device connection
         try:
             device.close()
-        except Exception as err:
+        except Exception:
             pass
 
     results = {}
