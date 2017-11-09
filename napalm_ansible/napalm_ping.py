@@ -233,7 +233,7 @@ def main():
     try:
         device.close()
     except Exception as e:
-        module.fail_json(msg="cannot close device connection: " + str(e))
+        pass
 
     module.exit_json(changed=False, results=ping_response)
 

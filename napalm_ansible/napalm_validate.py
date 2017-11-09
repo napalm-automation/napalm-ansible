@@ -250,9 +250,8 @@ def main():
         # close device connection
         try:
             device.close()
-        except Exception as err:
-            module.fail_json(
-                msg="cannot close device connection: {0}".format(str(err)))
+        except Exception:
+            pass
 
     results = {}
     results['compliance_report'] = compliance_report
