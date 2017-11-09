@@ -267,7 +267,7 @@ def main():
     try:
         device.close()
     except Exception as e:
-        module.fail_json(msg="cannot close device connection: " + str(e))
+        pass
 
     new_facts = {}
     # Prepend all facts with napalm_ for unique namespace
