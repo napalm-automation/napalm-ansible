@@ -1,7 +1,14 @@
-0.7.2 (develop)
+develop
 =====
 
-0.7.1
+
+0.8.0
+=====
+    
+    - Fix import so that reunified napalm gets tried first
+    - Fix except statements to that they are compatible with Python3
+
+0.7.2
 =====
 
     - Add support for ``nxos_ssh`` driver

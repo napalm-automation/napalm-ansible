@@ -50,12 +50,20 @@ results:
     }
 '''
 
+napalm_found = False
 try:
-    from napalm_base import get_network_driver
-except ImportError:
-    napalm_found = False
-else:
+    from napalm import get_network_driver
     napalm_found = True
+except ImportError:
+    pass
+
+# Legacy for pre-reunification napalm (remove in future)
+if not napalm_found:
+    try:
+        from napalm_base import get_network_driver   # noqa
+        napalm_found = True
+    except ImportError:
+        pass
 
 
 def main():
@@ -126,7 +134,7 @@ def main():
                                 timeout=timeout,
                                 optional_args=optional_args)
         device.open()
-    except Exception, e:
+    except Exception as e:
         module.fail_json(msg="cannot connect to device: " + str(e))
 
     try:
@@ -136,7 +144,7 @@ def main():
 
     try:
         device.close()
-    except Exception, e:
+    except Exception as e:
         module.fail_json(msg="cannot close device connection: " + str(e))
 
     module.exit_json(changed=False, results=cli_response)

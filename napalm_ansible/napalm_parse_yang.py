@@ -21,12 +21,20 @@ from ansible.module_utils.basic import AnsibleModule, return_values
 
 import json
 
-
+napalm_found = False
 try:
-    from napalm_base import get_network_driver
-    napalm_base = True
+    from napalm import get_network_driver
+    napalm_found = True
 except ImportError:
-    napalm_base = None
+    pass
+
+# Legacy for pre-reunification napalm (remove in future)
+if not napalm_found:
+    try:
+        from napalm_base import get_network_driver    # noqa
+        napalm_found = True
+    except ImportError:
+        pass
 
 try:
     import napalm_yang
@@ -230,7 +238,7 @@ def parse_from_device(module, os_choices):
                                 timeout=timeout,
                                 optional_args=optional_args)
         device.open()
-    except Exception, e:
+    except Exception as e:
         module.fail_json(msg="cannot connect to device: {}".format(e))
 
     root = get_root_object(models)
@@ -244,7 +252,7 @@ def parse_from_device(module, os_choices):
     # close device connection
     try:
         device.close()
-    except Exception, e:
+    except Exception as e:
         module.fail_json(msg="cannot close device connection: {}".format(e))
 
     return root
@@ -272,7 +280,7 @@ def main():
         supports_check_mode=True
     )
 
-    if not napalm_base:
+    if not napalm_found:
         module.fail_json(msg="the python module napalm is required")
     if not napalm_yang:
         module.fail_json(msg="the python module napalm-yang is required")
