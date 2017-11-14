@@ -32,7 +32,7 @@ Once you have installed ``napalm-ansible`` run the command ``napalm-ansible`` an
 ```
 $ napalm-ansible
 To make sure ansible can make use of the napalm modules you will have
-to add the following configurtion to your ansible configureation
+to add the following configuration to your ansible configuration
 file, i.e. `./ansible.cfg`:
 
     [defaults]
@@ -45,7 +45,7 @@ https://docs.ansible.com/ansible/latest/intro_configuration.html
 Examples
 =======
 
-Example to retreive facts from a device
+Example to retrieve facts from a device
 ```
  - name: get facts from device
    napalm_get_facts:
