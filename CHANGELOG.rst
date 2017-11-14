@@ -1,5 +1,9 @@
 develop
 =====
+
+
+0.8.0
+=====
     
     - Fix import so that reunified napalm gets tried first
     - Fix except statements to that they are compatible with Python3
