@@ -48,7 +48,6 @@ module: napalm_parse_yang
 author: "David Barroso (@dbarrosop)"
 version_added: "0.0"
 short_description: "Parse native config/state from a file or device."
-"YANG obje
 description:
     - "Parse configuration/state from a file or device and returns a dict that"
     - "represents a valid YANG object."
@@ -94,16 +93,16 @@ options:
         default: None
     file_path:
         description:
-          - Path to a file to load native config/state from.
+          - "Path to a file to load native config/state from.
             Note: Either file_path or data to connect to a device must be
               provided.
-            Note: file_path takes precedence over a live device
+            Note: file_path takes precedence over a live device"
         required: False
         defaut: None
     mode:
         description:
-          - Whether to parse config/state or both.
-            Note: `both` is not supported in combination with `file_path`.
+          - "Whether to parse config/state or both.
+            Note: `both` is not supported in combination with `file_path`."
         required: True
         choices: ['config', 'state', 'both']
 '''

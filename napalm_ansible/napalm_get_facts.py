@@ -68,17 +68,17 @@ options:
         default: None
     ignore_notimplemented:
         description:
-          - Ignores NotImplementedError for filters which aren't supported by the driver. Returns
-            invalid filters in a list called: not_implemented
+          - "Ignores NotImplementedError for filters which aren't supported by the driver. Returns
+            invalid filters in a list called: not_implemented"
         required: False
         default: False
         choices: [True, False]
     filter:
         description:
-            - A list of facts to retreive from a device and provided though C(ansible_facts)
+            - "A list of facts to retreive from a device and provided though C(ansible_facts)
               The list of facts available are maintained at:
                   http://napalm.readthedocs.io/en/latest/support/
-              Note- not all getters are implemented on all supported device types
+              Note- not all getters are implemented on all supported device types"
         required: False
         default: ['facts']
     args:

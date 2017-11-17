@@ -86,7 +86,6 @@ options:
         description:
           - If set to True, the entire configuration on the device will be replaced during the
             commit. If set to False, we will merge the new config with the existing one.
-            Default: False
         choices: [true,false]
         default: False
         required: False
