@@ -10,7 +10,7 @@ env:
 
 install:
     - pip install pylama
-    - pip install napalm-base
+    - pip install napalm
     - pip install "ansible>=$ANSIBLE_VERSION.0,<$ANSIBLE_VERSION.99"
 
 script:
