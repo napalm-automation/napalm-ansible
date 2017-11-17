@@ -22,3 +22,8 @@ def test_module_documentation_exists(ansible_module):
 def test_module_documentation_format(ansible_module):
     module = import_module(ansible_module)
     yaml.load(module.DOCUMENTATION)
+
+
+def test_module_examples_format(ansible_module):
+    module = import_module(ansible_module)
+    yaml.load(module.EXAMPLES)
