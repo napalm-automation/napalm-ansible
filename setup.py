@@ -27,7 +27,7 @@ setup(
         'Operating System :: POSIX :: Linux',
         'Operating System :: MacOS',
     ],
-    url="https://github.com/napalm-automation/napalm-base",
+    url="https://github.com/napalm-automation/napalm-ansible",
     include_package_data=True,
     install_requires=reqs,
     entry_points={
