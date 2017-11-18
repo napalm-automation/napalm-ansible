@@ -47,8 +47,9 @@ def test_module_return_format(ansible_module):
 def test_build_docs(ansible_module):
     try:
         os.mkdir('module_docs')
-    except:
+    except Exception:
         pass
+
     module = import_module(ansible_module)
     content = {}
     content['doc'] = yaml.load(module.DOCUMENTATION)
