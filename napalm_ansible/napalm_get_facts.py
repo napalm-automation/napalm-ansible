@@ -85,7 +85,7 @@ options:
         description:
             - dictionary of kwargs arguments to pass to the filter. The outer key is the name of
               the getter (same as the filter)
-        requited: False
+        required: False
         default: None
 '''
 
