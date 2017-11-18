@@ -110,10 +110,10 @@ options:
 EXAMPLES = '''
 - name: Parse from device
   napalm_parse_yang:
-    hostname={{ inventory_hostname }}
-    username={{ user }}
-    dev_os={{ os }}
-    password={{ passwd }}
+    hostname: '{{ inventory_hostname }}'
+    username: '{{ user }}'
+    dev_os: '{{ os }}'
+    password: '{{ passwd }}'
     mode: "config"
     profiles: ["eos"]
     models:

@@ -87,14 +87,11 @@ options:
 '''
 
 EXAMPLES = '''
-vars:
-  napalm_provider:
+- napalm_ping:
     hostname: "{{ inventory_hostname }}"
     username: "napalm"
     password: "napalm"
     dev_os: "eos"
-- napalm_ping:
-    provider: "{{ napalm_provider }}"
     destination: 10.0.0.5
     vrf: MANAGEMENT
     count: 2

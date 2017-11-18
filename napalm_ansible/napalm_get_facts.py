@@ -90,32 +90,24 @@ options:
 '''
 
 EXAMPLES = '''
+- name: get facts from device
+  napalm_get_facts:
+    hostname={{ inventory_hostname }}
+    username={{ user }}
+    dev_os={{ os }}
+    password={{ passwd }}
+    filter=['facts']
+  register: result
 
-vars:
-  ios_provider:
-    hostname: "{{ inventory_hostname }}"
-    username: "napalm"
-    password: "napalm"
-    dev_os: "ios"
+- name: print data
+  debug: var=result
 
- - name: get facts from device
-   napalm_get_facts:
-     hostname={{ inventory_hostname }}
-     username={{ user }}
-     dev_os={{ os }}
-     password={{ passwd }}
-     filter=['facts']
-   register: result
-
- - name: print data
-   debug: var=result
-
- - name: Getters
-   napalm_get_facts:
-     provider: "{{ ios_provider }}"
-     filter:
-       - "lldp_neighbors_detail"
-       - "interfaces"
+- name: Getters
+  napalm_get_facts:
+    provider: "{{ ios_provider }}"
+    filter:
+      - "lldp_neighbors_detail"
+      - "interfaces"
 
 - name: get facts from device
   napalm_get_facts:

@@ -112,38 +112,30 @@ options:
 '''
 
 EXAMPLES = '''
-
-vars:
-  ios_provider:
-    hostname: "{{ inventory_hostname }}"
-    username: "napalm"
-    password: "napalm"
-    dev_os: "ios"
-
 - assemble:
-    src=../compiled/{{ inventory_hostname }}/
-    dest=../compiled/{{ inventory_hostname }}/running.conf
+    src: '../compiled/{{ inventory_hostname }}/'
+    dest: '../compiled/{{ inventory_hostname }}/running.conf'
 
- - name: Install Config and save diff
-   napalm_install_config:
-    hostname={{ inventory_hostname }}
-    username={{ user }}
-    dev_os={{ os }}
-    password={{ passwd }}
-    config_file=../compiled/{{ inventory_hostname }}/running.conf
-    commit_changes={{ commit_changes }}
-    replace_config={{ replace_config }}
-    get_diffs=True
-    diff_file=../compiled/{{ inventory_hostname }}/diff
+- name: Install Config and save diff
+  napalm_install_config:
+    hostname: '{{ inventory_hostname }}'
+    username: '{{ user }}'
+    dev_os: '{{ os }}'
+    password: '{{ passwd }}'
+    config_file: '../compiled/{{ inventory_hostname }}/running.conf'
+    commit_changes: '{{ commit_changes }}'
+    replace_config: '{{ replace_config }}'
+    get_diffs: True
+    diff_file: '../compiled/{{ inventory_hostname }}/diff'
 
- - name: Install Config using Provider
-   napalm_install_config:
+- name: Install Config using Provider
+  napalm_install_config:
     provider: "{{ ios_provider }}"
-    config_file=../compiled/{{ inventory_hostname }}/running.conf
-    commit_changes={{ commit_changes }}
-    replace_config={{ replace_config }}
-    get_diffs=True
-    diff_file=../compiled/{{ inventory_hostname }}/diff
+    config_file: '../compiled/{{ inventory_hostname }}/running.conf'
+    commit_changes: '{{ commit_changes }}'
+    replace_config: '{{ replace_config }}'
+    get_diffs: True
+    diff_file: '../compiled/{{ inventory_hostname }}/diff'
 '''
 
 RETURN = '''

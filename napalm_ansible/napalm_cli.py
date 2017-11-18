@@ -19,12 +19,16 @@ options:
 '''
 
 EXAMPLES = '''
-vars:
-  napalm_provider:
+- napalm_cli:
     hostname: "{{ inventory_hostname }}"
     username: "napalm"
     password: "napalm"
     dev_os: "eos"
+    args:
+        commands:
+            - show version
+            - show snmp chassis
+
 - napalm_cli:
     provider: "{{ napalm_provider }}"
     args:
