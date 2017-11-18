@@ -74,10 +74,10 @@ EXAMPLES = '''
 
 RETURN = '''
 config:
-    description: "Native configuration"
-    returned: always
-    type: string
-    sample: interface Ethernet2\n no switchport\n ip address 192.168.0.1/24 \n
+  description: "Native configuration"
+  returned: always
+  type: string
+  sample: "interface Ethernet2\n no switchport\n ip address 192.168.0.1/24 \n"
 '''
 
 

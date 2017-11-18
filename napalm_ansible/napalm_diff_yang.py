@@ -67,7 +67,7 @@ diff:
     description: "Same output as the method napalm_yang.utils.diff"
     returned: always
     type: dict
-    sample: {
+    sample: '{
             "interfaces": {
                 "interface": {
                     "both": {
@@ -81,7 +81,7 @@ diff:
                         }
                     }
                 }
-            }
+            }'
 '''
 
 

@@ -47,11 +47,10 @@ results:
     description: string of command output
     returned: always
     type: dict
-    sample:
-    {
+    sample: '{
         "show snmp chassis": "Chassis: 1234\n",
         "show version": "Arista vEOS\nHardware version:    \nSerial number:       \nSystem MAC address:  0800.27c3.5f28\n\nSoftware image version: 4.17.5M\nArchitecture:           i386\nInternal build version: 4.17.5M-4414219.4175M\nInternal build ID:      d02143c6-e42b-4fc3-99b6-97063bddb6b8\n\nUptime:                 1 hour and 21 minutes\nTotal memory:           1893416 kB\nFree memory:            956488 kB\n\n"  # noqa
-    }
+    }'
 '''
 
 napalm_found = False

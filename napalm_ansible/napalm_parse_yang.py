@@ -132,10 +132,10 @@ EXAMPLES = '''
 
 RETURN = '''
 changed:
-    description: "Dict the representes a valid YANG object"
-    returned: always
-    type: dict
-    sample: {"interfaces": {"interface": "Et1": {...}, ... }}
+  description: "Dict the representes a valid YANG object"
+  returned: always
+  type: dict
+  sample: "{'interfaces': {'interface':'Et1': {...}, ... }}"
 '''
 
 
