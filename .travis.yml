@@ -12,7 +12,7 @@ install:
     - pip install pylama
     - pip install napalm
     - pip install "ansible>=$ANSIBLE_VERSION.0,<$ANSIBLE_VERSION.99"
-    - pip install tox
+    - pip install -r requirements-dev.txt
 
 script:
     - pylama
@@ -20,7 +20,7 @@ script:
     - ./run_tests.sh
     - ./test_changelog.sh
     - cd ..
-    - tox
+    - py.test
 
 deploy:
   provider: pypi
