@@ -1,6 +1,6 @@
 develop
 =====
-
+    - Fix old napalm_base references
 
 0.8.0
 =====
