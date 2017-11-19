@@ -12,10 +12,37 @@ description:
 requirements:
     - napalm
 options:
-   args:
+    hostname:
+        description:
+          - IP or FQDN of the device you want to connect to
+        required: False
+    username:
+        description:
+          - Username
+        required: False
+    password:
+        description:
+          - Password
+        required: False
+    args:
         description:
           - Keyword arguments to pass to the `cli` method
         required: True
+    dev_os:
+        description:
+          - OS of the device
+        required: False
+        choices: ['eos', 'junos', 'iosxr', 'fortios', 'ios', 'mock', 'nxos', 'nxos_ssh', 'panos',
+        'vyos']
+    provider:
+        description:
+          - Dictionary which acts as a collection of arguments used to define the characteristics
+            of how to connect to the device.
+            Note - hostname, username, password and dev_os must be defined in either provider
+            or local param
+            Note - local param takes precedence, e.g. hostname is preferred to provider['hostname']
+        required: False
+
 '''
 
 EXAMPLES = '''

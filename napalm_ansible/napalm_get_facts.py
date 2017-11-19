@@ -92,15 +92,16 @@ options:
 EXAMPLES = '''
 - name: get facts from device
   napalm_get_facts:
-    hostname={{ inventory_hostname }}
-    username={{ user }}
-    dev_os={{ os }}
-    password={{ passwd }}
-    filter=['facts']
+    hostname: '{{ inventory_hostname }}'
+    username: '{{ user }}'
+    dev_os: '{{ os }}'
+    password: '{{ passwd }}'
+    filter: ['facts']
   register: result
 
 - name: print data
-  debug: var=result
+  debug:
+    var: result
 
 - name: Getters
   napalm_get_facts:

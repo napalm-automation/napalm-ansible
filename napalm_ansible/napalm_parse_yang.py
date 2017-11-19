@@ -105,6 +105,16 @@ options:
             Note: `both` is not supported in combination with `file_path`."
         required: True
         choices: ['config', 'state', 'both']
+    models:
+        description:
+          - A list that should match the SUPPORTED_MODELS in napalm-yang
+        required: True
+        choices: ""
+    profiles:
+        description:
+          - A list profiles
+        required: False
+        choices: ""
 '''
 
 EXAMPLES = '''

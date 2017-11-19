@@ -54,12 +54,12 @@ options:
 '''
 
 EXAMPLES = '''
-      napalm_diff_yang:
-        first: "{{ candidate.yang_model }}"
-        second: "{{ running_config.yang_model }}"
-        models:
-            - models.openconfig_interfaces
-      register: diff
+- napalm_diff_yang:
+    first: "{{ candidate.yang_model }}"
+    second: "{{ running_config.yang_model }}"
+    models:
+     - models.openconfig_interfaces
+  register: diff
 '''
 
 RETURN = '''
