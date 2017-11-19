@@ -61,7 +61,8 @@ def test_build_docs(ansible_module):
     content['doc'] = yaml.load(module.DOCUMENTATION)
     content['examples'] = module.EXAMPLES
     content['example_lines'] = module.EXAMPLES.split('\n')
-    content['return'] = yaml.load(module.RETURN)
+    content['return_values'] = yaml.load(module.RETURN)
     module_name = ansible_module.replace('napalm_ansible.', '')
+
     with open('module_docs/{0}.json'.format(module_name), 'w') as f:
         json.dump(content, f, indent=4, sort_keys=False)
