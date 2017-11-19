@@ -36,7 +36,13 @@ def test_module_documentation_format(ansible_module):
 
 def test_module_examples_format(ansible_module):
     module = import_module(ansible_module)
-    yaml.load(module.EXAMPLES)
+    module_name = ansible_module.replace('napalm_ansible.', '')
+    examples = yaml.load(module.EXAMPLES)
+    params = yaml.load(module.DOCUMENTATION)['options'].keys()
+    for example in examples:
+        if module_name in example.keys():
+            for param in example[module_name]:
+                assert param in params
 
 
 def test_module_return_format(ansible_module):
@@ -53,8 +59,9 @@ def test_build_docs(ansible_module):
     module = import_module(ansible_module)
     content = {}
     content['doc'] = yaml.load(module.DOCUMENTATION)
-    content['examples'] = yaml.load(module.EXAMPLES)
+    content['examples'] = module.EXAMPLES
+    content['example_lines'] = module.EXAMPLES.split('\n')
     content['return'] = yaml.load(module.RETURN)
-    module = ansible_module.replace('napalm_ansible.', '')
-    with open('module_docs/{0}.json'.format(module), 'w') as f:
-        json.dump(content, f, indent=4, sort_keys=True)
+    module_name = ansible_module.replace('napalm_ansible.', '')
+    with open('module_docs/{0}.json'.format(module_name), 'w') as f:
+        json.dump(content, f, indent=4, sort_keys=False)
