@@ -12,19 +12,50 @@ description:
 requirements:
     - napalm
 options:
-   args:
+    hostname:
+        description:
+          - IP or FQDN of the device you want to connect to
+        required: False
+    username:
+        description:
+          - Username
+        required: False
+    password:
+        description:
+          - Password
+        required: False
+    args:
         description:
           - Keyword arguments to pass to the `cli` method
         required: True
+    dev_os:
+        description:
+          - OS of the device
+        required: False
+        choices: ['eos', 'junos', 'iosxr', 'fortios', 'ios', 'mock', 'nxos', 'nxos_ssh', 'panos',
+        'vyos']
+    provider:
+        description:
+          - Dictionary which acts as a collection of arguments used to define the characteristics
+            of how to connect to the device.
+            Note - hostname, username, password and dev_os must be defined in either provider
+            or local param
+            Note - local param takes precedence, e.g. hostname is preferred to provider['hostname']
+        required: False
+
 '''
 
 EXAMPLES = '''
-vars:
-  napalm_provider:
+- napalm_cli:
     hostname: "{{ inventory_hostname }}"
     username: "napalm"
     password: "napalm"
     dev_os: "eos"
+    args:
+        commands:
+            - show version
+            - show snmp chassis
+
 - napalm_cli:
     provider: "{{ napalm_provider }}"
     args:
@@ -43,11 +74,10 @@ results:
     description: string of command output
     returned: always
     type: dict
-    sample:
-    {
+    sample: '{
         "show snmp chassis": "Chassis: 1234\n",
         "show version": "Arista vEOS\nHardware version:    \nSerial number:       \nSystem MAC address:  0800.27c3.5f28\n\nSoftware image version: 4.17.5M\nArchitecture:           i386\nInternal build version: 4.17.5M-4414219.4175M\nInternal build ID:      d02143c6-e42b-4fc3-99b6-97063bddb6b8\n\nUptime:                 1 hour and 21 minutes\nTotal memory:           1893416 kB\nFree memory:            956488 kB\n\n"  # noqa
-    }
+    }'
 '''
 
 napalm_found = False

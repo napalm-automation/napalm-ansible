@@ -85,23 +85,16 @@ options:
 '''
 
 EXAMPLES = '''
-vars:
-  ios_provider:
-    hostname: "{{ inventory_hostname }}"
-    username: "napalm"
-    password: "napalm"
-    dev_os: "ios"
-
- - name: GET VALIDATION REPORT
-   napalm_validate:
+- name: GET VALIDATION REPORT
+  napalm_validate:
     username: "{{ un }}"
     password: "{{ pwd }}"
     hostname: "{{ inventory_hostname }}"
     dev_os: "{{ dev_os }}"
     validation_file: validate.yml
 
- - name: GET VALIDATION REPORT USING PROVIDER
-   napalm_validate:
+- name: GET VALIDATION REPORT USING PROVIDER
+  napalm_validate:
     provider: "{{ ios_provider }}"
     validation_file: validate.yml
 
@@ -118,6 +111,7 @@ vars:
     models:
         - models.openconfig_interfaces
   register: interfaces
+
 - name: Check all interfaces are up
   napalm_validate:
     data: "{{ interfaces.yang_model }}"

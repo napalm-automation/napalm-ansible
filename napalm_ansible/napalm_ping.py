@@ -87,14 +87,11 @@ options:
 '''
 
 EXAMPLES = '''
-vars:
-  napalm_provider:
+- napalm_ping:
     hostname: "{{ inventory_hostname }}"
     username: "napalm"
     password: "napalm"
     dev_os: "eos"
-- napalm_ping:
-    provider: "{{ napalm_provider }}"
     destination: 10.0.0.5
     vrf: MANAGEMENT
     count: 2
@@ -111,20 +108,24 @@ changed:
     returned: always
     type: bool
     sample: True
+
 results:
     description: structure response data of ping
     returned: always
     type: dict
-    sample:
     # when echo request succeeds
-    "{"success": {"packet_loss": 0, "probes_sent": 2,
+    sample: '{"success": {"packet_loss": 0, "probes_sent": 2,
             "results": [{"ip_address": "10.0.0.5:", "rtt": 1.71},
              {"ip_address": "10.0.0.5:", "rtt": 0.733}],
              "rtt_avg": 1.225, "rtt_max": 1.718, "rtt_min": 0.733,
-             "rtt_stddev": 0.493}}
+             "rtt_stddev": 0.493}}'
 
-    # when echo request fails
-    {"error": "connect: Network is unreachable\n"}}
+alt_results:
+    description: Example results key on failure
+    returned: always
+    type: dict
+    # when echo request succeeds
+    sample: '{"error": "connect: Network is unreachable\n"}}'
 '''
 
 napalm_found = False

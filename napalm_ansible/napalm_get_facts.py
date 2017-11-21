@@ -68,54 +68,47 @@ options:
         default: None
     ignore_notimplemented:
         description:
-          - Ignores NotImplementedError for filters which aren't supported by the driver. Returns
-            invalid filters in a list called: not_implemented
+          - "Ignores NotImplementedError for filters which aren't supported by the driver. Returns
+            invalid filters in a list called: not_implemented"
         required: False
         default: False
         choices: [True, False]
     filter:
         description:
-            - A list of facts to retreive from a device and provided though C(ansible_facts)
+            - "A list of facts to retreive from a device and provided though C(ansible_facts)
               The list of facts available are maintained at:
                   http://napalm.readthedocs.io/en/latest/support/
-              Note- not all getters are implemented on all supported device types
+              Note- not all getters are implemented on all supported device types"
         required: False
         default: ['facts']
     args:
         description:
             - dictionary of kwargs arguments to pass to the filter. The outer key is the name of
               the getter (same as the filter)
-        requited: False
+        required: False
         default: None
 '''
 
 EXAMPLES = '''
+- name: get facts from device
+  napalm_get_facts:
+    hostname: '{{ inventory_hostname }}'
+    username: '{{ user }}'
+    dev_os: '{{ os }}'
+    password: '{{ passwd }}'
+    filter: ['facts']
+  register: result
 
-vars:
-  ios_provider:
-    hostname: "{{ inventory_hostname }}"
-    username: "napalm"
-    password: "napalm"
-    dev_os: "ios"
+- name: print data
+  debug:
+    var: result
 
- - name: get facts from device
-   napalm_get_facts:
-     hostname={{ inventory_hostname }}
-     username={{ user }}
-     dev_os={{ os }}
-     password={{ passwd }}
-     filter=['facts']
-   register: result
-
- - name: print data
-   debug: var=result
-
- - name: Getters
-   napalm_get_facts:
-     provider: "{{ ios_provider }}"
-     filter:
-       - "lldp_neighbors_detail"
-       - "interfaces"
+- name: Getters
+  napalm_get_facts:
+    provider: "{{ ios_provider }}"
+    filter:
+      - "lldp_neighbors_detail"
+      - "interfaces"
 
 - name: get facts from device
   napalm_get_facts:

@@ -12,6 +12,8 @@ install:
     - pip install pylama
     - pip install napalm
     - pip install "ansible>=$ANSIBLE_VERSION.0,<$ANSIBLE_VERSION.99"
+    - pip install -r requirements-dev.txt
+    - pip install -e .
 
 script:
     - pylama
@@ -19,6 +21,7 @@ script:
     - ./run_tests.sh
     - ./test_changelog.sh
     - cd ..
+    - py.test
 
 deploy:
   provider: pypi
