@@ -141,8 +141,7 @@ def main():
     timeout = module.params['timeout']
     args = module.params['args']
 
-    argument_check = {'hostname': hostname, 'username': username,
-                      'dev_os': dev_os, 'password': password}
+    argument_check = {'hostname': hostname, 'username': username, 'dev_os': dev_os}
     for key, val in argument_check.items():
         if val is None:
             module.fail_json(msg=str(key) + " is required")

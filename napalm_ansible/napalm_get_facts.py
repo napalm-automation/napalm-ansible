@@ -205,8 +205,7 @@ def main():
     ignore_notimplemented = module.params['ignore_notimplemented']
     implementation_errors = []
 
-    argument_check = {'hostname': hostname, 'username': username,
-                      'dev_os': dev_os, 'password': password}
+    argument_check = {'hostname': hostname, 'username': username, 'dev_os': dev_os}
     for key, val in argument_check.items():
         if val is None:
             module.fail_json(msg=str(key) + " is required")
