@@ -222,8 +222,7 @@ def parse_from_device(module, os_choices):
     profiles = module.params['profiles']
 
     dev_os = module.params['dev_os']
-    argument_check = {'hostname': hostname, 'username': username,
-                      'dev_os': dev_os, 'password': password}
+    argument_check = {'hostname': hostname, 'username': username, 'dev_os': dev_os}
     for key, val in argument_check.items():
         if val is None:
             module.fail_json(msg=str(key) + " is required")
