@@ -5,7 +5,7 @@ import yaml
 from glob import glob
 from importlib import import_module
 
-module_files = glob('napalm_ansible/napalm_*.py')
+module_files = glob('napalm_ansible/modules/napalm_*.py')
 modules = [module.split('.')[0].replace('/', '.') for module in module_files]
 
 
@@ -62,7 +62,7 @@ def test_build_docs(ansible_module):
     content['examples'] = module.EXAMPLES
     content['example_lines'] = module.EXAMPLES.split('\n')
     content['return_values'] = yaml.load(module.RETURN)
-    module_name = ansible_module.replace('napalm_ansible.', '')
+    module_name = ansible_module.replace('napalm_ansible.', '').split('.')[-1]
 
     with open('module_docs/{0}.json'.format(module_name), 'w') as f:
         json.dump(content, f, indent=4, sort_keys=False)

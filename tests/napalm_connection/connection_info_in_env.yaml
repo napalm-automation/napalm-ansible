@@ -1,0 +1,19 @@
+---
+- name: Get facts
+  hosts: all
+  connection: local                       # code is run locally
+  gather_facts: no                        # don't gather facts
+  tasks:
+    - block:
+      - name: get facts from device
+        napalm_get_facts:                   # NAPALM plugin
+          dev_os: "{{ os }}"
+          optional_args:
+            path: "{{ playbook_dir }}/mocked"
+            profile: "{{ profile }}"
+          filter: ['facts']
+        register: napalm_facts             # store information here
+      rescue:
+        # This is expected to fail in ansible < 2.3
+        - assert:
+            that: "{{ ansible_version.full | version_compare('2.3', 'lt') }}"
