@@ -8,7 +8,7 @@ to add the following configurtion to your ansible configureation
 file, i.e. `./ansible.cfg`:
 
     [defaults]
-    library = {path}
+    library = {path}/modules
     {action_plugins}
 
 For more details on ansible's configuration file visit:
@@ -23,7 +23,7 @@ def main():
     if LooseVersion(ansible.__version__) < LooseVersion('2.3.0.0'):
         action_plugins = ""
     else:
-        action_path = os.path.abspath(os.path.join(path, '..', 'action_plugins'))
+        action_path = os.path.abspath(os.path.join(path, '..', 'plugins/action'))
         action_plugins = message_plugins.format(action_path=action_path)
 
     print(message.format(path=path, action_plugins=action_plugins).strip())
