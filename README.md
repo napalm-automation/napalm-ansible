@@ -109,7 +109,6 @@ Example to use default connection paramters:
 ```
  - name: get facts from device
    napalm_get_facts:
-     provider: "{{ provider }}"
      dev_os: "{{ os }}"
      filter: facts,interfaces,bgp_neighbors
 ```
