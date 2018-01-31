@@ -1,5 +1,5 @@
 [all]
-dummy              os=mock   profile=[eos]
+dummy              os=mock   profile=[eos] password=vagrant
 
 [all:vars]
 ansible_python_interpreter="/usr/bin/env python"
