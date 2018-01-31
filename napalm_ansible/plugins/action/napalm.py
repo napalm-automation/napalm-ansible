@@ -15,7 +15,8 @@ class ActionModule(_ActionModule):
             provider['hostname'] = provider.get('hostname', provider.get('host', pc.remote_addr))
             provider['username'] = provider.get('username', pc.connection_user)
             provider['password'] = provider.get('password', pc.password)
-            provider['timeout'] = provider.get('timeout', pc.timeout)
+            # Timeout can't be passed via command-line as Ansible defaults to a 10 second timeout
+            provider['timeout'] = provider.get('timeout', 60)
 
             self._task.args['provider'] = provider
 
