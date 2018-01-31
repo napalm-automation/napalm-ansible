@@ -18,12 +18,12 @@ The following modules are currently available:
 Actions
 =======
 
-Actions will only work with ansible version greater than 2.3.
+Actions will only work with Ansible version 2.3 or greater.
 They provides default parameters for the hostname, username, password and timeout paramters.
-* hostname is set to the current host
-* username is set the the remote user from ansible (can be set from anvironment variable, playbook variable, command argument)
-* password can be set with the -k command argument
-* timeout is set from ansible timeout parameter
+* hostname is set to the first of provider {{ hostname }}, provider {{ host }}, play-context remote_addr.
+* username is set to the first of provider {{ username }}, play-context connection_user.
+* password is set to the first of provider {{ password }}, play-context password (-k argument).
+* timeout is set to the provider {{ timeout }}, or else defaults to 60 seconds (can't be passed via command-line).
 
 Install
 =======
@@ -109,6 +109,7 @@ Example to use default connection paramters:
 ```
  - name: get facts from device
    napalm_get_facts:
-     dev_os={{ os }}
-     filter='facts,interfaces,bgp_neighbors'
+     provider: "{{ provider }}"
+     dev_os: "{{ os }}"
+     filter: facts,interfaces,bgp_neighbors
 ```
