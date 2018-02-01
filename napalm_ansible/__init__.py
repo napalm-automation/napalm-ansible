@@ -2,7 +2,7 @@ import os
 
 message = """
 To make sure ansible can make use of the napalm modules you will have
-to add the following configurtion to your ansible configureation
+to add the following configuration to your ansible configuration
 file, i.e. `./ansible.cfg`:
 
     [defaults]
