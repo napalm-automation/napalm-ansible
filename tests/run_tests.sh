@@ -1,6 +1,11 @@
 #!/bin/sh
 set -e
 
+ansible-playbook -i napalm_connection/hosts napalm_connection/connection_info_missing.yaml
+ansible-playbook -i napalm_connection/hosts napalm_connection/connection_info_in_vars.yaml
+ansible-playbook -i napalm_connection/hosts napalm_connection/connection_info_in_args.yaml -u vagrant
+ANSIBLE_REMOTE_USER=vagrant ansible-playbook -i napalm_connection/hosts napalm_connection/connection_info_in_env.yaml 
+
 ansible-playbook -i napalm_install_config/hosts -l "*.dry_run.*" napalm_install_config/config.yaml -C
 ansible-playbook -i napalm_install_config/hosts -l "*.commit.*" napalm_install_config/config.yaml
 ansible-playbook -i napalm_install_config/hosts -l "*.error*" napalm_install_config/config_error.yaml
