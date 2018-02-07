@@ -1,5 +1,9 @@
 develop
 =====
+
+0.9.0
+=====
+
     - Fix old napalm_base references
     - Various documentation fixes
     - Add action plugin to better support command-line arguments
