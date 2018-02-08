@@ -1,0 +1,18 @@
+---
+- name: Get facts
+  hosts: all
+  connection: local                       # code is run locally
+  gather_facts: no                        # don't gather facts
+  tasks:
+    - block:
+      - name: get facts from device
+        napalm_get_facts:                   # NAPALM plugin
+          dev_os: "{{ os }}"
+          optional_args:
+            path: "{{ playbook_dir }}/mocked"
+            profile: "{{ profile }}"
+          filter: ['facts']
+        register: napalm_facts             # store information here
+      rescue:
+        - assert:
+            that: "napalm_facts.failed == True"
