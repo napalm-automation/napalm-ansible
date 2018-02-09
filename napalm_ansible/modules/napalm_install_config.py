@@ -19,6 +19,13 @@ along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
 """
 from ansible.module_utils.basic import AnsibleModule, return_values
 
+try:
+    from napalm_ansible.common import DOCS, napalm_args_spec
+    napalm_ansible_found = True
+except ImportError:
+    napalm_ansible_found = False
+    napalm_args_spec = {}
+
 
 DOCUMENTATION = '''
 ---
@@ -32,42 +39,6 @@ description:
 requirements:
     - napalm
 options:
-    hostname:
-        description:
-          - IP or FQDN of the device you want to connect to
-        required: False
-    username:
-        description:
-          - Username
-        required: False
-    password:
-        description:
-          - Password
-        required: False
-    provider:
-        description:
-          - Dictionary which acts as a collection of arguments used to define the characteristics
-            of how to connect to the device.
-            Note - hostname, username, password and dev_os must be defined in either provider
-            or local param
-            Note - local param takes precedence, e.g. hostname is preferred to provider['hostname']
-        required: False
-    dev_os:
-        description:
-          - OS of the device
-        required: False
-        choices: ['eos', 'junos', 'iosxr', 'fortios', 'ios', 'mock', 'nxos', 'nxos_ssh', 'panos',
-        'vyos']
-    timeout:
-        description:
-          - Time in seconds to wait for the device to respond
-        required: False
-        default: 60
-    optional_args:
-        description:
-          - Dictionary of additional arguments passed to underlying driver
-        required: False
-        default: None
     config_file:
         description:
           - Path to the file to load the configuration from. Either config or config_file is needed.
@@ -110,6 +81,10 @@ options:
         default: None
         required: False
 '''
+
+if napalm_ansible_found:
+    DOCUMENTATION += DOCS
+
 
 EXAMPLES = '''
 - assemble:
@@ -176,27 +151,25 @@ def save_to_file(content, filename):
 
 
 def main():
-    os_choices = ['eos', 'junos', 'iosxr', 'fortios', 'ios', 'mock', 'nxos',
-                  'nxos_ssh', 'panos', 'vyos', 'ros']
+
+    module_args = dict(
+        config_file=dict(type='str', required=False),
+        config=dict(type='str', required=False),
+        commit_changes=dict(type='bool', required=True),
+        replace_config=dict(type='bool', required=False, default=False),
+        diff_file=dict(type='str', required=False, default=None),
+        get_diffs=dict(type='bool', required=False, default=True),
+        archive_file=dict(type='str', required=False, default=None))
+
+    module_args.update(napalm_args_spec)
+
     module = AnsibleModule(
-        argument_spec=dict(
-            hostname=dict(type='str', required=False, aliases=['host']),
-            username=dict(type='str', required=False),
-            password=dict(type='str', required=False, no_log=True),
-            provider=dict(type='dict', required=False),
-            timeout=dict(type='int', required=False, default=60),
-            optional_args=dict(required=False, type='dict', default=None),
-            config_file=dict(type='str', required=False),
-            config=dict(type='str', required=False),
-            dev_os=dict(type='str', required=False, choices=os_choices),
-            commit_changes=dict(type='bool', required=True),
-            replace_config=dict(type='bool', required=False, default=False),
-            diff_file=dict(type='str', required=False, default=None),
-            get_diffs=dict(type='bool', required=False, default=True),
-            archive_file=dict(type='str', required=False, default=None)
-        ),
+        argument_spec=module_args,
         supports_check_mode=True
     )
+
+    if not napalm_ansible_found:
+        module.fail_json(msg="the python module napalm-ansible is required")
 
     if not napalm_found:
         module.fail_json(msg="the python module napalm is required")
