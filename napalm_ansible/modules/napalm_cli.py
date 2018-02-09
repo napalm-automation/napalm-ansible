@@ -1,5 +1,12 @@
 from ansible.module_utils.basic import AnsibleModule, return_values
 
+try:
+    from napalm_ansible.common import DOCS, napalm_args_spec
+    napalm_ansible_found = True
+except ImportError:
+    napalm_ansible_found = False
+    napalm_args_spec = {}
+
 
 DOCUMENTATION = '''
 ---
@@ -12,37 +19,10 @@ description:
 requirements:
     - napalm
 options:
-    hostname:
-        description:
-          - IP or FQDN of the device you want to connect to
-        required: False
-    username:
-        description:
-          - Username
-        required: False
-    password:
-        description:
-          - Password
-        required: False
     args:
         description:
           - Keyword arguments to pass to the `cli` method
         required: True
-    dev_os:
-        description:
-          - OS of the device
-        required: False
-        choices: ['eos', 'junos', 'iosxr', 'fortios', 'ios', 'mock', 'nxos', 'nxos_ssh', 'panos',
-        'vyos']
-    provider:
-        description:
-          - Dictionary which acts as a collection of arguments used to define the characteristics
-            of how to connect to the device.
-            Note - hostname, username, password and dev_os must be defined in either provider
-            or local param
-            Note - local param takes precedence, e.g. hostname is preferred to provider['hostname']
-        required: False
-
 '''
 
 EXAMPLES = '''
@@ -80,6 +60,9 @@ results:
     }'
 '''
 
+if napalm_ansible_found:
+    DOCUMENTATION += DOCS
+
 napalm_found = False
 try:
     from napalm import get_network_driver
@@ -97,21 +80,20 @@ if not napalm_found:
 
 
 def main():
-    os_choices = ['eos', 'junos', 'iosxr', 'fortios',
-                  'ios', 'mock', 'nxos', 'nxos_ssh', 'panos', 'vyos', 'ros']
-    module = AnsibleModule(
-        argument_spec=dict(
-            hostname=dict(type='str', required=False, aliases=['host']),
-            username=dict(type='str', required=False),
-            password=dict(type='str', required=False, no_log=True),
-            provider=dict(type='dict', required=False),
-            timeout=dict(type='int', required=False, default=60),
-            dev_os=dict(type='str', required=False, choices=os_choices),
-            optional_args=dict(required=False, type='dict', default=None),
-            args=dict(required=True, type='dict', default=None),
-        ),
-        supports_check_mode=False
+
+    module_args = dict(
+        args=dict(required=True, type='dict', default=None)
     )
+
+    module_args.update(napalm_args_spec)
+
+    module = AnsibleModule(
+        argument_spec=module_args,
+        supports_check_mode=True
+    )
+
+    if not napalm_ansible_found:
+        module.fail_json(msg="the python module napalm-ansible is required")
 
     if not napalm_found:
         module.fail_json(msg="the python module napalm is required")
