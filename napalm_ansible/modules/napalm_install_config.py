@@ -193,7 +193,8 @@ def main():
             replace_config=dict(type='bool', required=False, default=False),
             diff_file=dict(type='str', required=False, default=None),
             get_diffs=dict(type='bool', required=False, default=True),
-            archive_file=dict(type='str', required=False, default=None)
+            archive_file=dict(type='str', required=False, default=None),
+            candidate_file=dict(type='str', required=False, default=None)
         ),
         supports_check_mode=True
     )
@@ -231,6 +232,7 @@ def main():
     diff_file = module.params['diff_file']
     get_diffs = module.params['get_diffs']
     archive_file = module.params['archive_file']
+    candidate_file = module.params['candidate_file']
 
     argument_check = {'hostname': hostname, 'username': username, 'dev_os': dev_os}
     for key, val in argument_check.items():
@@ -290,6 +292,13 @@ def main():
             save_to_file(diff, diff_file)
     except Exception as e:
         module.fail_json(msg="cannot diff config: " + str(e))
+
+    try:
+        if candidate_file is not None:
+            running_config = device.get_config(retrieve="candidate")["candidate"]
+            save_to_file(running_config, candidate_file)
+    except Exception, e:
+        module.fail_json(msg="cannot retrieve running config:" + str(e))
 
     try:
         if module.check_mode or not commit_changes:
