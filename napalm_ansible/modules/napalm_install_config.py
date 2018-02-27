@@ -109,6 +109,13 @@ options:
               retrieved if not set.
         default: None
         required: False
+    candidate_file:
+        description:
+            - File to store backup of candidate config from device. This is the
+              config we are intending to install, before we roll back to the
+              running_config.
+        default: None
+        required: False
 '''
 
 EXAMPLES = '''
