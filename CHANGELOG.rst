@@ -1,6 +1,8 @@
 develop
 =====
 
+    - Add support for saving `candidate_file` during the config install
+
 0.9.0
 =====
 
