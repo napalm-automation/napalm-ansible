@@ -304,7 +304,7 @@ def main():
         if candidate_file is not None:
             running_config = device.get_config(retrieve="candidate")["candidate"]
             save_to_file(running_config, candidate_file)
-    except Exception, e:
+    except Exception as e:
         module.fail_json(msg="cannot retrieve running config:" + str(e))
 
     try:
