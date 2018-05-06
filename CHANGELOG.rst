@@ -2,6 +2,7 @@ develop
 =====
 
     - Add support for saving `candidate_file` during the config install
+    - Fix issue with an exception in napalm_install_config
 
 0.9.0
 =====
