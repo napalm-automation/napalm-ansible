@@ -177,7 +177,10 @@ if not napalm_found:
 def save_to_file(content, filename):
     f = open(filename, 'w')
     try:
-        f.write(content)
+        if type(content) is bytes:
+            f.write(content.decode())
+        else:
+            f.write(content)
     finally:
         f.close()
 
