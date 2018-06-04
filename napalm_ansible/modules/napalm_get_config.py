@@ -18,8 +18,11 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
 """
-from ansible.module_utils.basic import AnsibleModule, return_values
 
+import os.path
+import hashlib
+
+from ansible.module_utils.basic import AnsibleModule, return_values
 
 DOCUMENTATION = '''
 ---
@@ -71,7 +74,7 @@ options:
         default: None
     dest:
         description:
-            - File where to save retreived configuration from device. Configuration won't be
+            - File where to save retrieved configuration from a device. Configuration won't be
               retrieved if not set.
         default: None
         required: True
@@ -85,7 +88,7 @@ options:
 '''
 
 EXAMPLES = '''
-- name: get running config
+- name: get the running config
   napalm_get_config:
     hostname: "{{ inventory_hostname }}"
     username: "{{ username }}"
@@ -94,7 +97,7 @@ EXAMPLES = '''
     dest: "../backup/{{ inventory_hostname }}"
     type: running
     
-- name: get startup config using provider
+- name: get the startup config using provider
   napalm_get_config:
     provider: "{{ ios_provider }}"
     dest: "../backup/{{ inventory_hostname }}"
@@ -107,6 +110,12 @@ changed:
     returned: always
     type: bool
     sample: True
+
+msg:
+    description: retrieved config file
+    returned: always
+    type: string
+    sample: "## Last commit: 2018-05-30 13:52:39 UTC by root ..."
 '''
 
 napalm_found = False
@@ -211,8 +220,22 @@ def main():
         # if retrieved config is empty retrieve "running" type instead
         if len(config) == 0:
             config = device.get_config(retrieve="running")["running"]
-        save_to_file(config, dest)
-        changed = True
+        
+        # check whether the config already exists 
+        if os.path.isfile(dest):
+            config_checksum = hashlib.sha1(config).hexdigest()
+            dest_checksum = module.sha1(dest)
+
+            # if they are different, save the new version
+            if dest_checksum != config_checksum:
+                save_to_file(config, dest)
+                changed = True
+            else:
+                changed = False
+        else:
+            save_to_file(config, dest)
+            changed = True
+
     except Exception as e:
         module.fail_json(msg="cannot retrieve config:" + str(e))
 
@@ -221,7 +244,7 @@ def main():
     except Exception as e:
         module.fail_json(msg="cannot close device connection: " + str(e))
 
-    module.exit_json(changed=changed)
+    module.exit_json(changed=changed, msg=config)
 
 
 if __name__ == '__main__':
