@@ -46,8 +46,6 @@ options:
         description:
           - OS of the device
         required: False
-        choices: ['eos', 'junos', 'iosxr', 'fortios', 'ios', 'mock', 'nxos', 'nxos_ssh', 'panos',
-        'vyos']
     provider:
         description:
           - Dictionary which acts as a collection of arguments used to define the characteristics
@@ -155,15 +153,13 @@ if not napalm_found:
 
 
 def main():
-    os_choices = ['eos', 'junos', 'iosxr', 'fortios', 'ios', 'mock', 'nxos', 'nxos_ssh', 'panos',
-                  'vyos', 'ros']
     module = AnsibleModule(
         argument_spec=dict(
             hostname=dict(type='str', required=False, aliases=['host']),
             username=dict(type='str', required=False),
             password=dict(type='str', required=False, no_log=True),
             provider=dict(type='dict', required=False),
-            dev_os=dict(type='str', required=False, choices=os_choices),
+            dev_os=dict(type='str', required=False),
             timeout=dict(type='int', required=False, default=60),
             ignore_notimplemented=dict(type='bool', required=False, default=False),
             args=dict(type='dict', required=False, default=None),
@@ -209,10 +205,6 @@ def main():
     for key, val in argument_check.items():
         if val is None:
             module.fail_json(msg=str(key) + " is required")
-
-    # use checks outside of ansible defined checks, since params come can come from provider
-    if dev_os not in os_choices:
-        module.fail_json(msg="dev_os is not set to " + str(os_choices))
 
     if module.params['optional_args'] is None:
         optional_args = {}

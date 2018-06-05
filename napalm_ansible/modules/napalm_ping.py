@@ -51,7 +51,6 @@ options:
         description:
           - OS of the device
         required: False
-        choices: ['eos', 'junos', 'ios', 'vyos', 'ros']
     timeout:
         description:
           - Time in seconds to wait for the device to respond
@@ -145,7 +144,6 @@ if not napalm_found:
 
 
 def main():
-    os_choices = ['eos', 'junos', 'ios', 'vyos', 'ros']
     module = AnsibleModule(
         argument_spec=dict(
             hostname=dict(type='str', required=False, aliases=['host']),
@@ -154,7 +152,7 @@ def main():
             provider=dict(type='dict', required=False),
             timeout=dict(type='int', required=False, default=60),
             optional_args=dict(required=False, type='dict', default=None),
-            dev_os=dict(type='str', required=False, choices=os_choices),
+            dev_os=dict(type='str', required=False),
             destination=dict(type='str', required=True),
             source=dict(type='str', required=False),
             ttl=dict(type='str', required=False),
@@ -207,10 +205,6 @@ def main():
     for key, val in argument_check.items():
         if val is None:
             module.fail_json(msg=str(key) + " is required")
-
-    # use checks outside of ansible defined checks, since params come can come from provider
-    if dev_os not in os_choices:
-        module.fail_json(msg="dev_os is not set to " + str(os_choices))
 
     if module.params['optional_args'] is None:
         optional_args = {}
