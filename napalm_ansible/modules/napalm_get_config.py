@@ -19,6 +19,7 @@ You should have received a copy of the GNU General Public License
 along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+import re
 import os.path
 import hashlib
 
@@ -28,7 +29,7 @@ DOCUMENTATION = '''
 ---
 module: napalm_get_config
 author: "Dmitry Zykov (@dmitryzykov)"
-version_added: "1.0"
+version_added: "1.1"
 short_description: "Get and save to file config taken from a device supported by NAPALM"
 description:
     - "This module will get configuration from a device with any
@@ -85,10 +86,15 @@ options:
         default: running
         required: False
         choices: ['running', 'candidate', 'startup']
+    strip_comments:
+        description:
+            - Strip comments with timestamps from the config to behave in idempotent way. 
+        default: False
+        required: False
 '''
 
 EXAMPLES = '''
-- name: get the running config
+- name: get the running config with stripped comments
   napalm_get_config:
     hostname: "{{ inventory_hostname }}"
     username: "{{ username }}"
@@ -96,6 +102,7 @@ EXAMPLES = '''
     password: "{{ password }}"
     dest: "../backup/{{ inventory_hostname }}"
     type: running
+    strip_comments: True
     
 - name: get the startup config using provider
   napalm_get_config:
@@ -157,6 +164,7 @@ def main():
             dev_os=dict(type='str', required=False, choices=os_choices),
             dest=dict(type='str', required=False, default=None),
             type=dict(type='str', required=False, choices=config_types, default="running"),
+            strip_comments=dict(type='bool', required=False, default=False),
         ),
         supports_check_mode=True
     )
@@ -189,6 +197,7 @@ def main():
     timeout = module.params['timeout']
     dest = module.params['dest']
     type = module.params['type']
+    strip_comments = module.params['strip_comments']
 
     argument_check = {'hostname': hostname, 'username': username, 'dev_os': dev_os, 'dest': dest}
     for key, val in argument_check.items():
@@ -220,7 +229,21 @@ def main():
         # if retrieved config is empty retrieve "running" type instead
         if len(config) == 0:
             config = device.get_config(retrieve="running")["running"]
-        
+
+        # strip comments from the config:
+        # (?m) enables the multiline mode
+        # ^ asserts that we are at the start
+        # <space>*# matches the character # at the start with or without preceding spaces
+        # .* matches all the following characters except line breaks
+        # replacing those matched characters with empty string
+        if strip_comments:
+            if dev_os in ['junos']:
+                # strip comments with leading #
+                config = re.sub(r'(?m)^ *#.*\n?', '', config)
+            elif dev_os in ['ios', 'iosxr','nxos', 'nxos_ssh', 'eos']:
+                # strip comments with leading !
+                config = re.sub(r'(?m)^ *!.*\n?', '', config)
+
         # check whether the config already exists 
         if os.path.isfile(dest):
             config_checksum = hashlib.sha1(config).hexdigest()
