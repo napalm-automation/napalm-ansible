@@ -73,10 +73,9 @@ options:
         default: None
     dest:
         description:
-            - File where to save retrieved configuration from a device. Configuration won't be
-              retrieved if not set.
+            - File where to save retrieved configuration from a device.
         default: None
-        required: True
+        required: False
     type:
         description:
             - Config type to retreive from device. If retrieved config is empty retrieve 
@@ -166,6 +165,8 @@ def main():
         supports_check_mode=True
     )
 
+    changed = False
+
     if not napalm_found:
         module.fail_json(msg="the python module napalm is required")
 
@@ -196,7 +197,7 @@ def main():
     type = module.params['type']
     strip_comments = module.params['strip_comments']
 
-    argument_check = {'hostname': hostname, 'username': username, 'dev_os': dev_os, 'dest': dest}
+    argument_check = {'hostname': hostname, 'username': username, 'dev_os': dev_os}
     for key, val in argument_check.items():
         if val is None:
             module.fail_json(msg=str(key) + " is required")
@@ -236,21 +237,20 @@ def main():
             elif dev_os in ['ios', 'iosxr', 'nxos', 'nxos_ssh', 'eos']:
                 # strip comments with leading !
                 config = re.sub(r'(?m)^ *!.*\n?', '', config)
+        
+        if dest:
+            # check whether the config already exists 
+            if os.path.isfile(dest):
+                config_checksum = hashlib.sha1(config).hexdigest()
+                dest_checksum = module.sha1(dest)
 
-        # check whether the config already exists 
-        if os.path.isfile(dest):
-            config_checksum = hashlib.sha1(config).hexdigest()
-            dest_checksum = module.sha1(dest)
-
-            # if they are different, save the new version
-            if dest_checksum != config_checksum:
+                # if they are different, save the new version
+                if dest_checksum != config_checksum:
+                    save_to_file(config, dest)
+                    changed = True
+            else:
                 save_to_file(config, dest)
                 changed = True
-            else:
-                changed = False
-        else:
-            save_to_file(config, dest)
-            changed = True
 
     except Exception as e:
         module.fail_json(msg="cannot retrieve config:" + str(e))
