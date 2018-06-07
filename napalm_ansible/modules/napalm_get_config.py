@@ -78,14 +78,14 @@ options:
         required: False
     type:
         description:
-            - Config type to retreive from device. If retrieved config is empty retrieve 
+            - Config type to retreive from device. If retrieved config is empty retrieve
               "running" type instead.
         default: running
         required: False
         choices: ['running', 'candidate', 'startup']
     strip_comments:
         description:
-            - Strip comments with timestamps from the config to behave in idempotent way. 
+            - Strip comments with timestamps from the config to behave in idempotent way.
         default: False
         required: False
 '''
@@ -100,7 +100,7 @@ EXAMPLES = '''
     dest: "../backup/{{ inventory_hostname }}"
     type: running
     strip_comments: True
-    
+
 - name: get the startup config using provider
   napalm_get_config:
     provider: "{{ ios_provider }}"
@@ -237,9 +237,9 @@ def main():
             elif dev_os in ['ios', 'iosxr', 'nxos', 'nxos_ssh', 'eos']:
                 # strip comments with leading !
                 config = re.sub(r'(?m)^ *!.*\n?', '', config)
-        
+
         if dest:
-            # check whether the config already exists 
+            # check whether the config already exists
             if os.path.isfile(dest):
                 config_checksum = hashlib.sha1(config).hexdigest()
                 dest_checksum = module.sha1(dest)
