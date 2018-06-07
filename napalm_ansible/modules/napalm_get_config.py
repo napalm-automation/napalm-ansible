@@ -79,7 +79,7 @@ options:
     type:
         description:
             - Config type to retreive from device. If retrieved config is empty retrieve 
-            "running" type instead.
+              "running" type instead.
         default: running
         required: False
         choices: ['running', 'candidate', 'startup']
