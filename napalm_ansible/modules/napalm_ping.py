@@ -212,7 +212,7 @@ def main():
         optional_args = {}
     else:
         optional_args = module.params['optional_args']
- 
+
     try:
         network_driver = get_network_driver(dev_os)
     except ModuleImportError as e:
