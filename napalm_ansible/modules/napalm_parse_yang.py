@@ -18,12 +18,12 @@ along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
 """
 # standard ansible module imports
 from ansible.module_utils.basic import AnsibleModule, return_values
-
 import json
 
 napalm_found = False
 try:
     from napalm import get_network_driver
+    from napalm.base import ModuleImportError
     napalm_found = True
 except ImportError:
     pass
@@ -32,6 +32,7 @@ except ImportError:
 if not napalm_found:
     try:
         from napalm_base import get_network_driver    # noqa
+        from napalm_base import ModuleImportError    # noqa
         napalm_found = True
     except ImportError:
         pass
@@ -232,6 +233,10 @@ def parse_from_device(module):
 
     try:
         network_driver = get_network_driver(dev_os)
+    except ModuleImportError as e:
+        module.fail_json(msg="Failed to import napalm driver: " + str(e))
+
+    try:
         device = network_driver(hostname=hostname,
                                 username=username,
                                 password=password,
