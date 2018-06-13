@@ -213,10 +213,6 @@ def main():
     else:
         optional_args = module.params['optional_args']
 
-
-    from napalm.base import ModuleImportError
-        from napalm_base import ModuleImportError    # noqa
- 
     try:
         network_driver = get_network_driver(dev_os)
     except ModuleImportError as e:
