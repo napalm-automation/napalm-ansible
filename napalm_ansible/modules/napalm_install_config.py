@@ -268,6 +268,8 @@ def main():
         if archive_file is not None:
             running_config = device.get_config(retrieve="running")["running"]
             save_to_file(running_config, archive_file)
+    except TypeError:
+            save_to_file(str(running_config, 'utf-8'), archive_file)
     except Exception as e:
         module.fail_json(msg="cannot retrieve running config:" + str(e))
 
@@ -295,6 +297,8 @@ def main():
             diff = None
         if diff_file is not None and get_diffs:
             save_to_file(diff, diff_file)
+    except TypeError:
+            save_to_file(str(diff, 'utf-8'), diff_file)
     except Exception as e:
         module.fail_json(msg="cannot diff config: " + str(e))
 
@@ -302,6 +306,8 @@ def main():
         if candidate_file is not None:
             running_config = device.get_config(retrieve="candidate")["candidate"]
             save_to_file(running_config, candidate_file)
+    except TypeError:
+            save_to_file(str(running_config, 'utf-8'), candidate_file)
     except Exception as e:
         module.fail_json(msg="cannot retrieve running config:" + str(e))
 
