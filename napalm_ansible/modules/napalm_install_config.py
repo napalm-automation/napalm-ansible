@@ -289,6 +289,8 @@ def main():
     try:
         if get_diffs:
             diff = device.compare_config().encode('utf-8')
+            if isinstance(diff, bytes):
+                diff = diff.decode()
             changed = len(diff) > 0
         else:
             changed = True
