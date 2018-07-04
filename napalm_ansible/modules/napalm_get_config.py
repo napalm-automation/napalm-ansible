@@ -78,7 +78,7 @@ options:
         required: False
     type:
         description:
-            - Config type to retreive from device. 
+            - Config type to retreive from device.
         default: running
         required: False
         choices: ['running', 'candidate', 'startup']
