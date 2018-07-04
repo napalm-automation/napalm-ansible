@@ -78,8 +78,7 @@ options:
         required: False
     type:
         description:
-            - Config type to retreive from device. If retrieved config is empty retrieve
-              "running" type instead.
+            - Config type to retreive from device. 
         default: running
         required: False
         choices: ['running', 'candidate', 'startup']
@@ -94,9 +93,9 @@ EXAMPLES = '''
 - name: get the running config with stripped comments
   napalm_get_config:
     hostname: "{{ inventory_hostname }}"
-    username: "{{ username }}"
-    dev_os: "{{ os }}"
-    password: "{{ password }}"
+    username: "{{ ansible_user }}"
+    dev_os: "{{ ansible_network_os }}"
+    password: "{{ ansible_password }}"
     dest: "../backup/{{ inventory_hostname }}"
     type: running
     strip_comments: True
@@ -194,7 +193,7 @@ def main():
     password = module.params['password']
     timeout = module.params['timeout']
     dest = module.params['dest']
-    type = module.params['type']
+    config_type = module.params['type']
     strip_comments = module.params['strip_comments']
 
     argument_check = {'hostname': hostname, 'username': username, 'dev_os': dev_os}
@@ -219,10 +218,9 @@ def main():
         module.fail_json(msg="cannot connect to device: " + str(e))
 
     try:
-        config = device.get_config(retrieve=type)[type]
-        # if retrieved config is empty retrieve "running" type instead
+        config = device.get_config(retrieve=config_type)[config_type]
         if len(config) == 0:
-            config = device.get_config(retrieve="running")["running"]
+            module.fail_json(msg="retieved config is empty")
 
         # strip comments from the config:
         # (?m) enables the multiline mode
