@@ -7,6 +7,7 @@
     - block:
         - name: get facts from device
           napalm_get_facts:                   # NAPALM plugin
+            provider: {}
             hostname: "{{ host }}"            # start of connection parameters
             username: "{{ user }}"
             dev_os: "{{ os }}"
@@ -29,4 +30,5 @@
                 var: ansible_failed_result.msg
         - assert:
             that:
-                - "{{ ansible_failed_result.msg == \"[interfaces] cannot retrieve device data: u'Key blah is not present'\" }}"
+                - "{{ '[interfaces] cannot retrieve device data' in ansible_failed_result.msg }}"
+                - "{{ 'Key blah is not present' in ansible_failed_result.msg }}"
