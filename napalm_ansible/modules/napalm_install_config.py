@@ -17,6 +17,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
 """
+from __future__ import unicode_literals, print_function
 from ansible.module_utils.basic import AnsibleModule, return_values
 
 
@@ -175,11 +176,8 @@ if not napalm_found:
 
 
 def save_to_file(content, filename):
-    f = open(filename, 'w')
-    try:
+    with open(filename, 'w') as f:
         f.write(content)
-    finally:
-        f.close()
 
 
 def main():
@@ -288,7 +286,7 @@ def main():
 
     try:
         if get_diffs:
-            diff = device.compare_config().encode('utf-8')
+            diff = device.compare_config()
             changed = len(diff) > 0
         else:
             changed = True
