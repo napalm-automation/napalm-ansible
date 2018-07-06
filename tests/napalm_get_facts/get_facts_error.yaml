@@ -7,7 +7,6 @@
     - block:
         - name: get facts from device
           napalm_get_facts:                   # NAPALM plugin
-            provider: {}
             hostname: "{{ host }}"            # start of connection parameters
             username: "{{ user }}"
             dev_os: "{{ os }}"
