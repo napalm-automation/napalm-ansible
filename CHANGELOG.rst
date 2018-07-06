@@ -1,6 +1,7 @@
 develop
 =====
 
+    - Add Python3 support
     - Add support for saving `candidate_file` during the config install
     - Fix issue with an exception in napalm_install_config
 
