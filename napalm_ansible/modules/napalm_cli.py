@@ -1,3 +1,4 @@
+from __future__ import unicode_literals, print_function
 from ansible.module_utils.basic import AnsibleModule, return_values
 
 

@@ -1,4 +1,4 @@
-from __future__ import (absolute_import, division, print_function)
+from __future__ import absolute_import, division, print_function, unicode_literals
 __metaclass__ = type
 
 from ansible.plugins.action.normal import ActionModule as _ActionModule
