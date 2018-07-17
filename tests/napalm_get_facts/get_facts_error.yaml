@@ -29,4 +29,5 @@
                 var: ansible_failed_result.msg
         - assert:
             that:
-                - "{{ ansible_failed_result.msg == \"[interfaces] cannot retrieve device data: u'Key blah is not present'\" }}"
+                - "{{ '[interfaces] cannot retrieve device data' in ansible_failed_result.msg }}"
+                - "{{ 'Key blah is not present' in ansible_failed_result.msg }}"

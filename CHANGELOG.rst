@@ -1,6 +1,16 @@
 develop
 =====
 
+0.10.0
+=====
+
+    - Python3 support
+    - Fix issue with an exception in napalm_install_config
+
+0.9.1
+=====
+
+    - Fix PIP10 compatibility issue
     - Add support for saving `candidate_file` during the config install
 
 0.9.0

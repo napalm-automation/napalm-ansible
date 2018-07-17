@@ -1,5 +1,3 @@
-from ansible.module_utils.basic import AnsibleModule, return_values
-
 """
 (c) 2017 Jason Edelman <jason@networktocode.com>
 
@@ -15,6 +13,9 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
 """
+from __future__ import unicode_literals, print_function
+from ansible.module_utils.basic import AnsibleModule, return_values
+
 
 DOCUMENTATION = '''
 ---
@@ -51,7 +52,6 @@ options:
         description:
           - OS of the device
         required: False
-        choices: ['eos', 'junos', 'ios', 'vyos', 'ros']
     timeout:
         description:
           - Time in seconds to wait for the device to respond
@@ -131,6 +131,7 @@ alt_results:
 napalm_found = False
 try:
     from napalm import get_network_driver
+    from napalm.base import ModuleImportError
     napalm_found = True
 except ImportError:
     pass
@@ -139,13 +140,13 @@ except ImportError:
 if not napalm_found:
     try:
         from napalm_base import get_network_driver   # noqa
+        from napalm_base import ModuleImportError    # noqa
         napalm_found = True
     except ImportError:
         pass
 
 
 def main():
-    os_choices = ['eos', 'junos', 'ios', 'vyos', 'ros']
     module = AnsibleModule(
         argument_spec=dict(
             hostname=dict(type='str', required=False, aliases=['host']),
@@ -154,7 +155,7 @@ def main():
             provider=dict(type='dict', required=False),
             timeout=dict(type='int', required=False, default=60),
             optional_args=dict(required=False, type='dict', default=None),
-            dev_os=dict(type='str', required=False, choices=os_choices),
+            dev_os=dict(type='str', required=False),
             destination=dict(type='str', required=True),
             source=dict(type='str', required=False),
             ttl=dict(type='str', required=False),
@@ -208,10 +209,6 @@ def main():
         if val is None:
             module.fail_json(msg=str(key) + " is required")
 
-    # use checks outside of ansible defined checks, since params come can come from provider
-    if dev_os not in os_choices:
-        module.fail_json(msg="dev_os is not set to " + str(os_choices))
-
     if module.params['optional_args'] is None:
         optional_args = {}
     else:
@@ -219,6 +216,10 @@ def main():
 
     try:
         network_driver = get_network_driver(dev_os)
+    except ModuleImportError as e:
+        module.fail_json(msg="Failed to import napalm driver: " + str(e))
+
+    try:
         device = network_driver(hostname=hostname,
                                 username=username,
                                 password=password,

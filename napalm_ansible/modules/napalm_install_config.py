@@ -17,6 +17,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
 """
+from __future__ import unicode_literals, print_function
 from ansible.module_utils.basic import AnsibleModule, return_values
 
 
@@ -56,8 +57,6 @@ options:
         description:
           - OS of the device
         required: False
-        choices: ['eos', 'junos', 'iosxr', 'fortios', 'ios', 'mock', 'nxos', 'nxos_ssh', 'panos',
-        'vyos']
     timeout:
         description:
           - Time in seconds to wait for the device to respond
@@ -161,6 +160,7 @@ msg:
 napalm_found = False
 try:
     from napalm import get_network_driver
+    from napalm.base import ModuleImportError
     napalm_found = True
 except ImportError:
     pass
@@ -169,22 +169,18 @@ except ImportError:
 if not napalm_found:
     try:
         from napalm_base import get_network_driver   # noqa
+        from napalm_base import ModuleImportError    # noqa
         napalm_found = True
     except ImportError:
         pass
 
 
 def save_to_file(content, filename):
-    f = open(filename, 'w')
-    try:
+    with open(filename, 'w') as f:
         f.write(content)
-    finally:
-        f.close()
 
 
 def main():
-    os_choices = ['eos', 'junos', 'iosxr', 'fortios', 'ios', 'mock', 'nxos',
-                  'nxos_ssh', 'panos', 'vyos', 'ros']
     module = AnsibleModule(
         argument_spec=dict(
             hostname=dict(type='str', required=False, aliases=['host']),
@@ -195,7 +191,7 @@ def main():
             optional_args=dict(required=False, type='dict', default=None),
             config_file=dict(type='str', required=False),
             config=dict(type='str', required=False),
-            dev_os=dict(type='str', required=False, choices=os_choices),
+            dev_os=dict(type='str', required=False),
             commit_changes=dict(type='bool', required=True),
             replace_config=dict(type='bool', required=False, default=False),
             diff_file=dict(type='str', required=False, default=None),
@@ -246,10 +242,6 @@ def main():
         if val is None:
             module.fail_json(msg=str(key) + " is required")
 
-    # use checks outside of ansible defined checks, since params come can come from provider
-    if dev_os not in os_choices:
-        module.fail_json(msg="dev_os is not set to " + str(os_choices))
-
     if module.params['optional_args'] is None:
         optional_args = {}
     else:
@@ -257,6 +249,10 @@ def main():
 
     try:
         network_driver = get_network_driver(dev_os)
+    except ModuleImportError as e:
+        module.fail_json(msg="Failed to import napalm driver: " + str(e))
+
+    try:
         device = network_driver(hostname=hostname,
                                 username=username,
                                 password=password,
@@ -290,7 +286,7 @@ def main():
 
     try:
         if get_diffs:
-            diff = device.compare_config().encode('utf-8')
+            diff = device.compare_config()
             changed = len(diff) > 0
         else:
             changed = True
@@ -304,7 +300,7 @@ def main():
         if candidate_file is not None:
             running_config = device.get_config(retrieve="candidate")["candidate"]
             save_to_file(running_config, candidate_file)
-    except Exception, e:
+    except Exception as e:
         module.fail_json(msg="cannot retrieve running config:" + str(e))
 
     try:
