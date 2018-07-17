@@ -6,7 +6,7 @@ with open("requirements.txt", "r") as fs:
 
 setup(
     name="napalm-ansible",
-    version='0.9.1',
+    version='0.10.0',
     packages=find_packages(exclude=("test*", "library")),
     author="David Barroso, Kirk Byers, Mircea Ulinic",
     author_email="dbarrosop@dravetech.com, ktbyers@twb-tech.com",
