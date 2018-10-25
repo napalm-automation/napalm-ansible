@@ -1,6 +1,8 @@
 develop
 =====
 
+    - Add support for ansible_network_os
+
 0.10.0
 =====
 
