@@ -105,7 +105,7 @@ Example to get compliance report
     validation_file: validate.yml
 ```
 
-Example to use default connection paramters:
+Example to use default connection parameters:
 ```
  - name: get facts from device
    napalm_get_facts:

@@ -2,6 +2,7 @@ develop
 =====
 
     - Add support for ansible_network_os
+    - Fix spelling for parameters in README.md
 
 0.10.0
 =====
