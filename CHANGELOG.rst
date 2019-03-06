@@ -3,6 +3,7 @@ develop
 
     - Add support for ansible_network_os
     - Fix spelling for parameters in README.md
+    - Expand filenames for `*_file` parameters
 
 0.10.0
 =====
