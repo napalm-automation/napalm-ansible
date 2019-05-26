@@ -1,5 +1,6 @@
 from __future__ import unicode_literals, print_function
-from ansible.module_utils.basic import AnsibleModule, return_values
+from ansible.module_utils.basic import AnsibleModule
+from ansible.module_utils.common.parameters import _return_datastructure_name as return_values
 
 napalm_found = False
 try:

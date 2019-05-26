@@ -17,7 +17,8 @@ You should have received a copy of the GNU General Public License
 along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
 """
 from __future__ import unicode_literals, print_function
-from ansible.module_utils.basic import AnsibleModule, return_values
+from ansible.module_utils.basic import AnsibleModule
+from ansible.module_utils.common.parameters import _return_datastructure_name as return_values
 import json
 
 napalm_found = False

@@ -1,5 +1,6 @@
 from __future__ import unicode_literals, print_function
-from ansible.module_utils.basic import AnsibleModule, return_values
+from ansible.module_utils.basic import AnsibleModule
+from ansible.module_utils.common.parameters import _return_datastructure_name as return_values
 
 
 DOCUMENTATION = '''
@@ -175,7 +176,7 @@ def main():
     except Exception as e:
         module.fail_json(msg="cannot close device connection: " + str(e))
 
-    module.exit_json(changed=False, results=cli_response)
+    module.exit_json(changed=False, cli_results=cli_response)
 
 
 if __name__ == '__main__':

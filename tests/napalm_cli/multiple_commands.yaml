@@ -19,5 +19,5 @@
       register: result
     - assert:
         that:
-            - "{{ result.results['show version']|length > 10 }}"
-            - "{{ result.results['show interfaces']|length > 10 }}"
+            - "{{ result.cli_results['show version']|length > 10 }}"
+            - "{{ result.cli_results['show interfaces']|length > 10 }}"
