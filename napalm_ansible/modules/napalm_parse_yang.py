@@ -18,7 +18,12 @@ along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
 """
 from __future__ import unicode_literals, print_function
 from ansible.module_utils.basic import AnsibleModule
-from ansible.module_utils.common.parameters import _return_datastructure_name as return_values
+try:
+    # < Ansible 2.8
+    from ansible.module_utils.basic import return_values
+except ImportError:
+    # >= Ansible 2.8
+    from ansible.module_utils.common.parameters import _return_datastructure_name as return_values
 import json
 
 napalm_found = False
@@ -28,15 +33,6 @@ try:
     napalm_found = True
 except ImportError:
     pass
-
-# Legacy for pre-reunification napalm (remove in future)
-if not napalm_found:
-    try:
-        from napalm_base import get_network_driver    # noqa
-        from napalm_base import ModuleImportError    # noqa
-        napalm_found = True
-    except ImportError:
-        pass
 
 try:
     import napalm_yang
