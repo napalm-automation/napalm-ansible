@@ -15,12 +15,41 @@ along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
 """
 from __future__ import unicode_literals, print_function
 from ansible.module_utils.basic import AnsibleModule
-try:
-    # < Ansible 2.8
-    from ansible.module_utils.basic import return_values
-except ImportError:
-    # >= Ansible 2.8
-    from ansible.module_utils.common.parameters import _return_datastructure_name as return_values
+
+from six import (
+    binary_type,
+    integer_types,
+    text_type,
+)
+from ansible.module_utils._text import to_native
+from ansible.module_utils.common._collections_compat import Mapping
+from ansible.module_utils.common.collections import is_iterable
+NoneType = type(None)
+
+
+def return_values(obj):
+    """ Return native stringified values from datastructures.
+
+    For use with removing sensitive values pre-jsonification."""
+    if isinstance(obj, (text_type, binary_type)):
+        if obj:
+            yield to_native(obj, errors='surrogate_or_strict')
+        return
+    elif isinstance(obj, Mapping):
+        for element in obj.items():
+            for subelement in return_values(element[1]):
+                yield subelement
+    elif is_iterable(obj):
+        for element in obj:
+            for subelement in return_values(element):
+                yield subelement
+    elif isinstance(obj, (bool, NoneType)):
+        # This must come before int because bools are also ints
+        return
+    elif isinstance(obj, tuple(list(integer_types) + [float])):
+        yield to_native(obj, nonstring='simplerepr')
+    else:
+        raise TypeError('Unknown parameter type: %s, %s' % (type(obj), obj))
 
 
 DOCUMENTATION = '''
