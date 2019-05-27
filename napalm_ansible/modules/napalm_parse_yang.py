@@ -25,11 +25,20 @@ from six import (
     integer_types,
     text_type,
 )
+from collections import Mapping
 from ansible.module_utils._text import to_native
-from ansible.module_utils.common._collections_compat import Mapping
-from ansible.module_utils.common.collections import is_iterable
 NoneType = type(None)
 
+def is_iterable(seq, include_strings=False):
+    """Identify whether the input is an iterable."""
+    if not include_strings and is_string(seq):
+        return False
+
+    try:
+        iter(seq)
+        return True
+    except TypeError:
+        return False
 
 def return_values(obj):
     """ Return native stringified values from datastructures.
