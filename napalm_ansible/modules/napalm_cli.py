@@ -1,25 +1,11 @@
 from __future__ import unicode_literals, print_function
 from ansible.module_utils.basic import AnsibleModule
-
 from six import (
     binary_type,
-    integer_types,
     text_type,
 )
-from collections import Mapping
 from ansible.module_utils._text import to_native
-NoneType = type(None)
 
-def is_iterable(seq, include_strings=False):
-    """Identify whether the input is an iterable."""
-    if not include_strings and is_string(seq):
-        return False
-
-    try:
-        iter(seq)
-        return True
-    except TypeError:
-        return False
 
 def return_values(obj):
     """ Return native stringified values from datastructures.
@@ -29,21 +15,6 @@ def return_values(obj):
         if obj:
             yield to_native(obj, errors='surrogate_or_strict')
         return
-    elif isinstance(obj, Mapping):
-        for element in obj.items():
-            for subelement in return_values(element[1]):
-                yield subelement
-    elif is_iterable(obj):
-        for element in obj:
-            for subelement in return_values(element):
-                yield subelement
-    elif isinstance(obj, (bool, NoneType)):
-        # This must come before int because bools are also ints
-        return
-    elif isinstance(obj, tuple(list(integer_types) + [float])):
-        yield to_native(obj, nonstring='simplerepr')
-    else:
-        raise TypeError('Unknown parameter type: %s, %s' % (type(obj), obj))
 
 
 DOCUMENTATION = '''
