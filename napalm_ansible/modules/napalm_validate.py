@@ -1,23 +1,6 @@
 from __future__ import unicode_literals, print_function
 from ansible.module_utils.basic import AnsibleModule
 
-from six import (
-    binary_type,
-    text_type,
-)
-from ansible.module_utils._text import to_native
-
-
-def return_values(obj):
-    """ Return native stringified values from datastructures.
-
-    For use with removing sensitive values pre-jsonification."""
-    if isinstance(obj, (text_type, binary_type)):
-        if obj:
-            yield to_native(obj, errors='surrogate_or_strict')
-        return
-
-
 napalm_found = False
 try:
     from napalm import get_network_driver
@@ -30,6 +13,15 @@ try:
     import napalm_yang
 except ImportError:
     napalm_yang = None
+
+
+# FIX for Ansible 2.8 moving this function and making it private
+# greatly simplified for napalm-ansible's use
+def return_values(obj):
+    """ Return native stringified values from datastructures.
+
+    For use with removing sensitive values pre-jsonification."""
+    yield str(obj)
 
 
 DOCUMENTATION = '''
