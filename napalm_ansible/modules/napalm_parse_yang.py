@@ -17,7 +17,7 @@ You should have received a copy of the GNU General Public License
 along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
 """
 from __future__ import unicode_literals, print_function
-from ansible.module_utils.basic import AnsibleModule, return_values
+from ansible.module_utils.basic import AnsibleModule
 import json
 
 napalm_found = False
@@ -28,19 +28,19 @@ try:
 except ImportError:
     pass
 
-# Legacy for pre-reunification napalm (remove in future)
-if not napalm_found:
-    try:
-        from napalm_base import get_network_driver    # noqa
-        from napalm_base import ModuleImportError    # noqa
-        napalm_found = True
-    except ImportError:
-        pass
-
 try:
     import napalm_yang
 except ImportError:
     napalm_yang = None
+
+
+# FIX for Ansible 2.8 moving this function and making it private
+# greatly simplified for napalm-ansible's use
+def return_values(obj):
+    """ Return native stringified values from datastructures.
+
+    For use with removing sensitive values pre-jsonification."""
+    yield str(obj)
 
 
 DOCUMENTATION = '''

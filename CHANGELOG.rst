@@ -4,6 +4,10 @@ develop
     - Add support for ansible_network_os
     - Fix spelling for parameters in README.md
     - Expand filenames for `*_file` parameters
+    - Fixing Ansible 2.8 backwards incompatible changes
+    - Removing support of legacy napalm_ansible
+    - Changing napalm_cli to cli_results; napalm_ping to ping_results (ansible 2.8 forced change)
+    - Use yaml safe_load for tests
 
 0.10.0
 =====
