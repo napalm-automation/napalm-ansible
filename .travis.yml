@@ -6,14 +6,14 @@ python:
     - 3.6
 
 env:
-    - ANSIBLE_VERSION=2.3
-    - ANSIBLE_VERSION=2.4
     - ANSIBLE_VERSION=2.5
     - ANSIBLE_VERSION=2.6
+    - ANSIBLE_VERSION=2.7
+    - ANSIBLE_VERSION=2.8
 
 install:
     - pip install pylama
-    - pip install napalm
+    - pip install -r requirements.txt
     - pip install "ansible>=$ANSIBLE_VERSION.0,<$ANSIBLE_VERSION.99"
     - pip install -r requirements-dev.txt
     - pip install -e .

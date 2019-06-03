@@ -18,7 +18,17 @@ You should have received a copy of the GNU General Public License
 along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
 """
 from __future__ import unicode_literals, print_function
-from ansible.module_utils.basic import AnsibleModule, return_values
+import os.path
+from ansible.module_utils.basic import AnsibleModule
+
+
+# FIX for Ansible 2.8 moving this function and making it private
+# greatly simplified for napalm-ansible's use
+def return_values(obj):
+    """ Return native stringified values from datastructures.
+
+    For use with removing sensitive values pre-jsonification."""
+    yield str(obj)
 
 
 DOCUMENTATION = '''
@@ -165,15 +175,6 @@ try:
 except ImportError:
     pass
 
-# Legacy for pre-reunification napalm (remove in future)
-if not napalm_found:
-    try:
-        from napalm_base import get_network_driver   # noqa
-        from napalm_base import ModuleImportError    # noqa
-        napalm_found = True
-    except ImportError:
-        pass
-
 
 def save_to_file(content, filename):
     with open(filename, 'w') as f:
@@ -236,6 +237,14 @@ def main():
     get_diffs = module.params['get_diffs']
     archive_file = module.params['archive_file']
     candidate_file = module.params['candidate_file']
+    if config_file:
+        config_file = os.path.expanduser(os.path.expandvars(config_file))
+    if diff_file:
+        diff_file = os.path.expanduser(os.path.expandvars(diff_file))
+    if archive_file:
+        archive_file = os.path.expanduser(os.path.expandvars(archive_file))
+    if candidate_file:
+        candidate_file = os.path.expanduser(os.path.expandvars(candidate_file))
 
     argument_check = {'hostname': hostname, 'username': username, 'dev_os': dev_os}
     for key, val in argument_check.items():
