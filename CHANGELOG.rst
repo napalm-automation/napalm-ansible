@@ -1,3 +1,8 @@
+develop
+=====
+    - Fix issue with -u <username> not working.
+    - Update tests to use newer Python and Ansible versions
+
 1.0.0
 =====
 
