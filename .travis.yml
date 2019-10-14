@@ -9,7 +9,7 @@ env:
     - ANSIBLE_VERSION=2.6
     - ANSIBLE_VERSION=2.7
     - ANSIBLE_VERSION=2.8
-    - ANSIBLE_VERSION=2.9.0rc3
+    # - ANSIBLE_VERSION=2.9.0rc3
 
 install:
     - pip install pylama
