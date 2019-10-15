@@ -2,14 +2,14 @@ language: python
 
 python:
     - 2.7
-    - 3.5
     - 3.6
+    - 3.7
 
 env:
-    - ANSIBLE_VERSION=2.5
     - ANSIBLE_VERSION=2.6
     - ANSIBLE_VERSION=2.7
     - ANSIBLE_VERSION=2.8
+    # - ANSIBLE_VERSION=2.9.0rc3
 
 install:
     - pip install pylama
