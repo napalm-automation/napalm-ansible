@@ -76,7 +76,7 @@ Examples
 
 ```INI
 [cisco]
-cisco1 ansible_host=cisco1.domain.com
+cisco5 ansible_host=cisco5.domain.com
 
 [cisco:vars]
 # Must match Python that NAPALM is installed into.
@@ -92,7 +92,7 @@ ansible_ssh_pass=my_password
 ```YAML
 ---
 - name: NAPALM get_facts and get_interfaces
-  hosts: cisco1
+  hosts: cisco5
   gather_facts: False
   tasks:
     - name: napalm get_facts
@@ -111,7 +111,7 @@ $ ansible-playbook napalm_get_ios.yml
 PLAY [NAPALM get_facts and get_interfaces] *********
 
 TASK [napalm get_facts] ****************************
-ok: [cisco1]
+ok: [cisco5]
 
 TASK [debug] ***************************************
 ok: [cisco5] => {
@@ -136,7 +136,7 @@ ok: [cisco5] => {
 }
 
 PLAY RECAP *****************************************
-cisco1 : ok=2 changed=0 unreachable=0 failed=0 skipped=0 rescued=0 ignored=0   
+cisco5 : ok=2 changed=0 unreachable=0 failed=0 skipped=0 rescued=0 ignored=0   
 
 ```
 
@@ -154,6 +154,8 @@ ansible_python_interpreter=/path/to/venv/bin/python
 ansible_network_os=eos
 # Continue using 'network_cli' (NAPALM module itself will use eAPI)
 ansible_connection=network_cli
+ansible_user=admin
+ansible_ssh_pass=my_password
 ```
 
 #### Playbook (EOS)
