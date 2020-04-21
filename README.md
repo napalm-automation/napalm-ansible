@@ -70,9 +70,9 @@ Dependencies
 Examples
 =======
 
-These examples assume you have an Ansible inventory similar to the following:
+### Cisco IOS 
 
-### Cisco IOS Inventory
+#### Inventory Example
 
 ```INI
 [cisco]
@@ -86,6 +86,60 @@ ansible_connection=network_cli
 ansible_user=admin
 ansible_ssh_pass=my_password
 ```
+
+#### IOS Playbook Example
+
+```YAML
+---
+- name: NAPALM get_facts and get_interfaces
+  hosts: cisco1
+  gather_facts: False
+  tasks:
+    - name: napalm get_facts
+      napalm_get_facts:
+        filter: facts,interfaces
+
+    - debug:
+        var: napalm_facts
+```
+
+#### IOS Playbook Output (Ansible 2.9.7)
+
+```JSON
+$ ansible-playbook napalm_get_ios.yml
+
+PLAY [NAPALM get_facts and get_interfaces] *********
+
+TASK [napalm get_facts] ****************************
+ok: [cisco1]
+
+TASK [debug] ***************************************
+ok: [cisco5] => {
+    "napalm_facts": {
+        "fqdn": "cisco5.domain.com",
+        "hostname": "cisco5",
+        "interface_list": [
+            "GigabitEthernet1",
+            "GigabitEthernet2",
+            "GigabitEthernet3",
+            "GigabitEthernet4",
+            "GigabitEthernet5",
+            "GigabitEthernet6",
+            "GigabitEthernet7"
+        ],
+        "model": "CSR1000V",
+        "os_version": "Virtual XE Software (X86_64_LINUX_IOSD-UNIVERSALK9-M), Version 16.9.3, RELEASE SOFTWARE (fc2)",
+        "serial_number": "9700000000P",
+        "uptime": 13999500,
+        "vendor": "Cisco"
+    }
+}
+
+PLAY RECAP *****************************************
+cisco1 : ok=2 changed=0 unreachable=0 failed=0 skipped=0 rescued=0 ignored=0   
+
+```
+
 
 ### Arista Inventory
 
