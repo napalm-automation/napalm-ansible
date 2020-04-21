@@ -128,7 +128,7 @@ ok: [cisco5] => {
             "GigabitEthernet7"
         ],
         "model": "CSR1000V",
-        "os_version": "Virtual XE Software (X86_64_LINUX_IOSD-UNIVERSALK9-M), Version 16.9.3, RELEASE SOFTWARE (fc2)",
+        "os_version": "Virtual XE Software, Version 16.9.3, RELEASE SOFTWARE (fc2)",
         "serial_number": "9700000000P",
         "uptime": 13999500,
         "vendor": "Cisco"
@@ -140,12 +140,13 @@ cisco1 : ok=2 changed=0 unreachable=0 failed=0 skipped=0 rescued=0 ignored=0
 
 ```
 
+### Arista EOS
 
-### Arista Inventory
+#### Inventory (EOS)
 
 ```INI
 [arista]
-arista1 ansible_host=arista1.domain.com
+arista5 ansible_host=arista5.domain.com
 
 [arista:vars]
 # Must match Python that NAPALM is installed into.
@@ -153,6 +154,60 @@ ansible_python_interpreter=/path/to/venv/bin/python
 ansible_network_os=eos
 # Continue using 'network_cli' (NAPALM module itself will use eAPI)
 ansible_connection=network_cli
+```
+
+#### Playbook (EOS)
+
+```YAML
+---
+- name: NAPALM get_facts and get_interfaces
+  hosts: arista5
+  gather_facts: False
+  tasks:
+    - name: napalm get_facts
+      napalm_get_facts:
+        filter: facts,interfaces
+
+    - debug:
+        var: napalm_facts
+```
+
+#### Playbook Output (EOS)
+
+```INI
+$ ansible-playbook napalm_get_arista.yml
+
+PLAY [NAPALM get_facts and get_interfaces] *********
+
+TASK [napalm get_facts] ****************************
+ok: [arista5]
+
+TASK [debug] ***************************************
+ok: [arista5] => {
+    "napalm_facts": {
+        "fqdn": "arista5",
+        "hostname": "arista5",
+        "interface_list": [
+            "Ethernet1",
+            "Ethernet2",
+            "Ethernet3",
+            "Ethernet4",
+            "Ethernet5",
+            "Ethernet6",
+            "Ethernet7",
+            "Management1",
+            "Vlan1"
+        ],
+        "model": "vEOS",
+        "os_version": "4.20.10M-10040268.42010M",
+        "serial_number": "",
+        "uptime": 12858220,
+        "vendor": "Arista"
+    }
+}
+
+PLAY RECAP ****************************************
+arista5 : ok=2 changed=0 unreachable=0 failed=0 skipped=0 rescued=0 ignored=0   
 ```
 
 ### NX-OS Inventory
