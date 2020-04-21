@@ -72,7 +72,7 @@ Examples
 
 ### Cisco IOS 
 
-#### Inventory Example
+#### Inventory (IOS)
 
 ```INI
 [cisco]
@@ -87,7 +87,7 @@ ansible_user=admin
 ansible_ssh_pass=my_password
 ```
 
-#### IOS Playbook Example
+#### Playbook (IOS)
 
 ```YAML
 ---
@@ -103,9 +103,9 @@ ansible_ssh_pass=my_password
         var: napalm_facts
 ```
 
-#### IOS Playbook Output (Ansible 2.9.7)
+#### Playbook Output (IOS)
 
-```JSON
+```INI
 $ ansible-playbook napalm_get_ios.yml
 
 PLAY [NAPALM get_facts and get_interfaces] *********
