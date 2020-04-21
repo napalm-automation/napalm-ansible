@@ -16,10 +16,10 @@ The following modules are currently available:
 - ``napalm_translate_yang``
 - ``napalm_validate``
 
-Actions
+Action-Plugins
 =======
 
-Actions should be used to make napalm-ansible more consistent with the behavior of other Ansible modules (eliminate the need of a provider and of individual task arguments for hostname, username, password, and timeout).
+Action-Plugins should be used to make napalm-ansible more consistent with the behavior of other Ansible modules (eliminate the need of a provider and of individual task arguments for hostname, username, password, and timeout).
 
 They provide default parameters for the hostname, username, password and timeout paramters.
 * hostname is set to the first of provider {{ hostname }}, provider {{ host }}, play-context remote_addr.
@@ -70,7 +70,9 @@ Dependencies
 Examples
 =======
 
-These examples assume you have the following configured in Ansible inventory:
+These examples assume you have an Ansible inventory similar to the following:
+
+### Cisco IOS Inventory
 
 ```INI
 [cisco]
@@ -80,6 +82,22 @@ cisco1 ansible_host=cisco1.domain.com
 # Must match Python that NAPALM is installed into.
 ansible_python_interpreter=/path/to/venv/bin/python
 ansible_network_os=ios
+ansible_connection=network_cli
+ansible_user=admin
+ansible_ssh_pass=my_password
+```
+
+### Arista Inventory
+
+```INI
+[arista]
+arista1 ansible_host=arista1.domain.com
+
+[arista:vars]
+# Must match Python that NAPALM is installed into.
+ansible_python_interpreter=/home/student5/VENV/ansible/bin/python
+ansible_network_os=eos
+# Continue using 'network_cli' (NAPALM module itself will use eAPI)
 ansible_connection=network_cli
 ansible_user=admin
 ansible_ssh_pass=my_password
