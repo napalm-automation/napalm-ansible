@@ -95,7 +95,7 @@ arista1 ansible_host=arista1.domain.com
 
 [arista:vars]
 # Must match Python that NAPALM is installed into.
-ansible_python_interpreter=/home/student5/VENV/ansible/bin/python
+ansible_python_interpreter=/path/to/venv/bin/python
 ansible_network_os=eos
 # Continue using 'network_cli' (NAPALM module itself will use eAPI)
 ansible_connection=network_cli
