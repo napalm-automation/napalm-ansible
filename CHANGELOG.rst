@@ -1,8 +1,8 @@
 develop
 =====
     - Fix issue with -u <username> not working.
-    - Update tests to use newer Python and to use Ansible 2.8.x or 2.9.x
-    
+    - Update tests to use newer Python and to use Ansible 2.8.x or 2.9.x.
+    - Improving documentation.
 
 1.0.0
 =====

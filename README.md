@@ -7,6 +7,7 @@ Modules
 
 The following modules are currently available:
 
+- ``napalm_cli``
 - ``napalm_diff_yang``
 - ``napalm_get_facts``
 - ``napalm_install_config``
@@ -18,8 +19,9 @@ The following modules are currently available:
 Actions
 =======
 
-Actions will only work with Ansible version 2.3 or greater.
-They provides default parameters for the hostname, username, password and timeout paramters.
+Actions should be used to make napalm-ansible more consistent with the behavior of other Ansible modules (eliminate the need of a provider and of individual task arguments for hostname, username, password, and timeout).
+
+They provide default parameters for the hostname, username, password and timeout paramters.
 * hostname is set to the first of provider {{ hostname }}, provider {{ host }}, play-context remote_addr.
 * username is set to the first of provider {{ username }}, play-context connection_user.
 * password is set to the first of provider {{ password }}, play-context password (-k argument).
@@ -28,26 +30,32 @@ They provides default parameters for the hostname, username, password and timeou
 Install
 =======
 
-To install just run the command:
+To install run either:
 
 ```
 pip install napalm-ansible
+pip install napalm
 ```
 
-Configuring ansible
+Or:
+
+```
+git clone https://github.com/napalm-automation/napalm-ansible
+pip install napalm
+```
+
+Configuring Ansible
 ===================
 
-Once you have installed ``napalm-ansible`` run the command ``napalm-ansible`` and follow the instructions. For example::
+Once you have installed ``napalm-ansible`` then you need to add napalm-ansible to your ``library`` and ``action_plugins`` paths in ``ansible.cfg``. If you used pip to install napalm-ansible, then you can just run the ``napalm-ansible`` command and follow the instructions specified there.
 
 ```
-$ napalm-ansible
-To make sure ansible can make use of the napalm modules you will have
-to add the following configuration to your ansible configuration
-file, i.e. `./ansible.cfg`:
+$ cat .ansible.cfg
 
-    [defaults]
-    library = /Users/dbarroso/workspace/napalm/napalm-ansible/napalm_ansible
-    action_plugins = /Users/dbarroso/workspace/napalm/napalm-ansible/action_plugins
+[defaults]
+library = ~/napalm-ansible/napalm_ansible/modules
+action_plugins = ~/napalm-ansible/napalm_ansible/plugins/action
+...
 
 For more details on ansible's configuration file visit:
 https://docs.ansible.com/ansible/latest/intro_configuration.html
@@ -55,28 +63,45 @@ https://docs.ansible.com/ansible/latest/intro_configuration.html
 
 Dependencies
 =======
-* [napalm](https://github.com/napalm-automation/napalm) 2.3.0 or later
-* [ansible](https://github.com/ansible/ansible) 2.2.0.0 or later
+* [napalm](https://github.com/napalm-automation/napalm) 2.5.0 or later
+* [ansible](https://github.com/ansible/ansible) 2.8.11 or later
 
 
 Examples
 =======
 
-Example to retrieve facts from a device
-```
- - name: get facts from device
-   napalm_get_facts:
-     hostname={{ inventory_hostname }}
-     username={{ user }}
-     dev_os={{ os }}
-     password={{ passwd }}
-     filter='facts,interfaces,bgp_neighbors'
-   register: result
+These examples assume you have the following configured in Ansible inventory:
 
- - name: print data
-   debug: var=result
+```INI
+[cisco]
+cisco1 ansible_host=cisco1.domain.com
+
+[cisco:vars]
+# Must match Python that NAPALM is installed into.
+ansible_python_interpreter=/path/to/venv/bin/python
+ansible_network_os=ios
+ansible_connection=network_cli
+ansible_user=admin
+ansible_ssh_pass=my_password
 ```
+
+Example to retrieve facts and interfaces from a device:
+
+```YAML
+---
+- name: NAPALM get_facts and get_interfaces
+  hosts: cisco1
+  tasks:
+    - name: Retrieve get_facts and get_interfaces
+      napalm_get_facts:
+        filter: facts,interfaces
+
+    - debug:
+        var: napalm_facts
+```
+
 Example to install config on a device
+
 ```
 - assemble:
     src=../compiled/{{ inventory_hostname }}/
