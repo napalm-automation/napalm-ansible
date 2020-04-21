@@ -99,6 +99,38 @@ ansible_python_interpreter=/path/to/venv/bin/python
 ansible_network_os=eos
 # Continue using 'network_cli' (NAPALM module itself will use eAPI)
 ansible_connection=network_cli
+```
+
+### NX-OS Inventory
+
+```INI
+[nxos]
+nxos1 ansible_host=nxos1.domain.com
+
+[nxos:vars]
+# Must match Python that NAPALM is installed into.
+ansible_python_interpreter=/path/to/venv/bin/python
+# NX-API port is specified in the playbook in 'optional_args'
+# Use SSH by specifying 'dev_os: nxos_ssh' in task arguments
+ansible_network_os=nxos
+# Continue using 'network_cli' (NAPALM module itself will use NX-API)
+ansible_connection=network_cli
+ansible_user=admin
+ansible_ssh_pass=my_password
+```
+
+### Junos Inventory
+
+```INI
+[juniper]
+juniper1 ansible_host=juniper1.domain.com
+
+[juniper:vars]
+# Must match Python that NAPALM is installed into.
+ansible_python_interpreter=/path/to/venv/bin/python
+ansible_network_os=junos
+# Continue using 'network_cli' (NAPALM module itself will use NETCONF)
+ansible_connection=network_cli
 ansible_user=admin
 ansible_ssh_pass=my_password
 ```
