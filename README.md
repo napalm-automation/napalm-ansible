@@ -428,7 +428,7 @@ juniper1 : ok=2 changed=0 unreachable=0 failed=0 skipped=0 rescued=0 ignored=0
 
 #### Example to install config on a device
 
-```
+```INI
 - assemble:
     src=../compiled/{{ inventory_hostname }}/
     dest=../compiled/{{ inventory_hostname }}/running.conf
@@ -445,21 +445,15 @@ juniper1 : ok=2 changed=0 unreachable=0 failed=0 skipped=0 rescued=0 ignored=0
     diff_file=../compiled/{{ inventory_hostname }}/diff
 ```
 
-Example to get compliance report
-```
+#### Example to get compliance report
+
+```YAML
 - name: GET VALIDATION REPORT
   napalm_validate:
-    username: "{{ un }}"
-    password: "{{ pwd }}"
+    username: "{{ user }}"
+    password: "{{ passwd }}"
     hostname: "{{ inventory_hostname }}"
     dev_os: "{{ dev_os }}"
     validation_file: validate.yml
 ```
 
-Example to use default connection parameters:
-```
- - name: get facts from device
-   napalm_get_facts:
-     dev_os: "{{ os }}"
-     filter: facts,interfaces,bgp_neighbors
-```
