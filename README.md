@@ -210,7 +210,9 @@ PLAY RECAP ****************************************
 arista5 : ok=2 changed=0 unreachable=0 failed=0 skipped=0 rescued=0 ignored=0   
 ```
 
-### NX-OS Inventory
+### Cisco NX-OS
+
+#### Inventory (NX-OS)
 
 ```INI
 [nxos]
@@ -219,8 +221,6 @@ nxos1 ansible_host=nxos1.domain.com
 [nxos:vars]
 # Must match Python that NAPALM is installed into.
 ansible_python_interpreter=/path/to/venv/bin/python
-# NX-API port is specified in the playbook in 'optional_args'
-# Use SSH by specifying 'dev_os: nxos_ssh' in task arguments
 ansible_network_os=nxos
 # Continue using 'network_cli' (NAPALM module itself will use NX-API)
 ansible_connection=network_cli
@@ -228,7 +228,115 @@ ansible_user=admin
 ansible_ssh_pass=my_password
 ```
 
-### Junos Inventory
+#### Playbook (NX-OS NX-API)
+
+```YAML
+---
+- name: napalm 
+  hosts: nxos1
+  gather_facts: False
+  tasks:
+    - name: Retrieve get_facts, get_interfaces
+      napalm_get_facts:
+        filter: facts,interfaces
+        # Specify NX-API Port
+        optional_args:
+          port: 8443
+
+    - debug:
+        var: napalm_facts
+```
+
+#### Playbook Output (NX-OS NX-API)
+
+```INI
+$ ansible-playbook napalm_get_nxos.yml
+
+PLAY [napalm] ***************************************
+
+TASK [Retrieve get_facts, get_interfaces] ***********
+ok: [nxos1]
+
+TASK [debug] ****************************************
+ok: [nxos1] => {
+    "napalm_facts": {
+        "fqdn": "nxos1.domain.com",
+        "hostname": "nxos1",
+        "interface_list": [
+            "mgmt0",
+            "Ethernet1/1",
+            "Ethernet1/2",
+            "Ethernet1/3",
+            "Ethernet1/4",
+            "Vlan1"
+        ],
+        "model": "Nexus9000 9000v Chassis",
+        "os_version": "",
+        "serial_number": "9B00000000S",
+        "uptime": 12767664,
+        "vendor": "Cisco"
+    }
+}
+
+PLAY RECAP ******************************************
+nxos1 : ok=2 changed=0 unreachable=0 failed=0 skipped=0 rescued=0 ignored=0   
+```
+
+#### Playbook (NX-OS SSH)
+
+```YAML
+---
+- name: napalm nxos_ssh
+  hosts: nxos1
+  tasks:
+    - name: Retrieve get_facts, get_interfaces
+      napalm_get_facts:
+        filter: facts,interfaces
+        # Instruct NAPALM module to use SSH
+        dev_os: nxos_ssh
+
+    - debug:
+        var: napalm_facts
+```
+
+#### Playbook Output (NX-OS SSH)
+
+```INI
+$ ansible-playbook napalm_get_nxos_ssh.yml
+
+PLAY [napalm nxos_ssh] ********************************
+
+TASK [Retrieve get_facts, get_interfaces] *************
+ok: [nxos1]
+
+TASK [debug] ******************************************
+ok: [nxos1] => {
+    "napalm_facts": {
+        "fqdn": "nxos1.domain.com",
+        "hostname": "nxos1",
+        "interface_list": [
+            "mgmt0",
+            "Ethernet1/1",
+            "Ethernet1/2",
+            "Ethernet1/3",
+            "Ethernet1/4",
+            "Vlan1"
+        ],
+        "model": "Nexus9000 9000v Chassis",
+        "os_version": "9.2(3)",
+        "serial_number": "9000000000S",
+        "uptime": 12767973,
+        "vendor": "Cisco"
+    }
+}
+
+PLAY RECAP ********************************************
+nxos1 : ok=3 changed=0 unreachable=0 failed=0 skipped=0 rescued=0 ignored=0   
+```
+
+### Juniper Junos
+
+#### Inventory (Junos)
 
 ```INI
 [juniper]
@@ -244,14 +352,15 @@ ansible_user=admin
 ansible_ssh_pass=my_password
 ```
 
-Example to retrieve facts and interfaces from a device:
+#### Playbook (Junos)
 
 ```YAML
 ---
-- name: NAPALM get_facts and get_interfaces
-  hosts: cisco1
+- name: napalm 
+  hosts: juniper
+  gather_facts: False
   tasks:
-    - name: Retrieve get_facts and get_interfaces
+    - name: Retrieve get_facts, get_interfaces
       napalm_get_facts:
         filter: facts,interfaces
 
@@ -259,7 +368,63 @@ Example to retrieve facts and interfaces from a device:
         var: napalm_facts
 ```
 
-Example to install config on a device
+#### Playbook Output (Junos)
+
+```INI
+$ ansible-playbook napalm_get_junos.yml -i
+
+PLAY [napalm] *****************************************
+
+TASK [Retrieve get_facts, get_interfaces] *************
+ok: [juniper1]
+
+TASK [debug] ******************************************
+ok: [juniper1] => {
+    "napalm_facts": {
+        "fqdn": "juniper1",
+        "hostname": "juniper1",
+        "interface_list": [
+            "fe-0/0/0",
+            "gr-0/0/0",
+            "ip-0/0/0",
+            "lt-0/0/0",
+            "mt-0/0/0",
+            "sp-0/0/0",
+            "fe-0/0/1",
+            "fe-0/0/2",
+            "fe-0/0/3",
+            "fe-0/0/4",
+            "fe-0/0/5",
+            "fe-0/0/6",
+            "fe-0/0/7",
+            "gre",
+            "ipip",
+            "irb",
+            "lo0",
+            "lsi",
+            "mtun",
+            "pimd",
+            "pime",
+            "pp0",
+            "ppd0",
+            "ppe0",
+            "st0",
+            "tap",
+            "vlan"
+        ],
+        "model": "SRX100H2",
+        "os_version": "12.1X44-D35.5",
+        "serial_number": "BZ0000000008",
+        "uptime": 119586097,
+        "vendor": "Juniper"
+    }
+}
+
+PLAY RECAP *******************************************
+juniper1 : ok=2 changed=0 unreachable=0 failed=0 skipped=0 rescued=0 ignored=0   
+```
+
+#### Example to install config on a device
 
 ```
 - assemble:
