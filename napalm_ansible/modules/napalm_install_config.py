@@ -1,4 +1,5 @@
 """
+(c) 2020 Kirk Byers <ktbyers@twb-tech.com>
 (c) 2016 Elisa Jasinska <elisa@bigwaveit.org>
     Original prototype by David Barroso <dbarrosop@dravetech.com>
 
@@ -58,10 +59,8 @@ options:
     provider:
         description:
           - Dictionary which acts as a collection of arguments used to define the characteristics
-            of how to connect to the device.
-            Note - hostname, username, password and dev_os must be defined in either provider
-            or local param
-            Note - local param takes precedence, e.g. hostname is preferred to provider['hostname']
+            of how to connect to the device. Connection arguments can be inferred from inventory
+            and CLI arguments or specified in a provider or specified individually.
         required: False
     dev_os:
         description:
@@ -120,9 +119,7 @@ options:
         required: False
     candidate_file:
         description:
-            - File to store backup of candidate config from device. This is the
-              config we are intending to install, before we roll back to the
-              running_config.
+            - Store a backup of candidate config from device prior to a commit.
         default: None
         required: False
 '''
