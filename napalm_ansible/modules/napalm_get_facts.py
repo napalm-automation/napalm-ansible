@@ -1,4 +1,5 @@
 """
+(c) 2020 Kirk Byers <ktbyers@twb-tech.com>
 (c) 2016 Elisa Jasinska <elisa@bigwaveit.org>
 
 This file is part of Ansible
@@ -233,6 +234,9 @@ def main():
     facts = {}
 
     NAPALM_GETTERS = [getter for getter in dir(network_driver) if getter.startswith("get_")]
+    # Allow NX-OS checkpoint file to be retrieved via Ansible for use with replace config
+    if dev_os.lower() in ["nxos", "nxos_ssh"]:
+        NAPALM_GETTERS.append("get_checkpoint_file")
 
     for getter in filter_list:
         getter_function = "get_{}".format(getter)
@@ -240,6 +244,8 @@ def main():
             module.fail_json(msg="filter not recognized: " + getter)
 
         try:
+            if getter_function == "get_checkpoint_file":
+                getter_function = "_get_checkpoint_file"
             get_func = getattr(device, getter_function)
             result = get_func(**args.get(getter, {}))
             facts[getter] = result
