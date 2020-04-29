@@ -235,8 +235,7 @@ def main():
 
     NAPALM_GETTERS = [getter for getter in dir(network_driver) if getter.startswith("get_")]
     # Allow NX-OS checkpoint file to be retrieved via Ansible for use with replace config
-    if dev_os.lower() in ["nxos", "nxos_ssh"]:
-        NAPALM_GETTERS.append("get_checkpoint_file")
+    NAPALM_GETTERS.append("get_checkpoint_file")
 
     for getter in filter_list:
         getter_function = "get_{}".format(getter)
