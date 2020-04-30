@@ -4,6 +4,7 @@ develop
     - Update tests to use newer Python and to use Ansible 2.8.x or 2.9.x.
     - Improving documentation.
     - Update module docstring.
+    - Update napalm_get_facts to allow _get_checkpoint_file for NX-OS
 
 1.0.0
 =====
