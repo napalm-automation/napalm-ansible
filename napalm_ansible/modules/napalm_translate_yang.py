@@ -27,7 +27,7 @@ except ImportError:
     napalm_yang = None
 
 
-DOCUMENTATION = '''
+DOCUMENTATION = """
 ---
 module: napalm_translate_yang
 author: "David Barroso (@dbarrosop)"
@@ -59,9 +59,9 @@ options:
         description:
           - When translating config, replace resulting config here
         required: False
-'''
+"""
 
-EXAMPLES = '''
+EXAMPLES = """
 - name: "Translate config"
   napalm_translate_yang:
     data: "{{ interfaces.yang_model }}"
@@ -69,15 +69,15 @@ EXAMPLES = '''
     models:
         - models.openconfig_interfaces
   register: config
-'''
+"""
 
-RETURN = '''
+RETURN = """
 config:
   description: "Native configuration"
   returned: always
   type: string
   sample: "interface Ethernet2\n no switchport\n ip address 192.168.0.1/24 \n"
-'''
+"""
 
 
 def get_root_object(models):
@@ -100,11 +100,11 @@ def main():
         argument_spec=dict(
             models=dict(type="list", required=True),
             profiles=dict(type="list", required=False),
-            data=dict(type='dict', required=True),
-            merge=dict(type='dict', required=False),
-            replace=dict(type='dict', required=False),
+            data=dict(type="dict", required=True),
+            merge=dict(type="dict", required=False),
+            replace=dict(type="dict", required=False),
         ),
-        supports_check_mode=True
+        supports_check_mode=True,
     )
 
     if not napalm_yang:
@@ -128,5 +128,5 @@ def main():
     module.exit_json(config=config)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

@@ -24,6 +24,7 @@ napalm_found = False
 try:
     from napalm import get_network_driver
     from napalm.base import ModuleImportError
+
     napalm_found = True
 except ImportError:
     pass
@@ -43,7 +44,7 @@ def return_values(obj):
     yield str(obj)
 
 
-DOCUMENTATION = '''
+DOCUMENTATION = """
 ---
 module: napalm_parse_yang
 author: "David Barroso (@dbarrosop)"
@@ -114,9 +115,9 @@ options:
           - A list profiles
         required: False
         choices: ""
-'''
+"""
 
-EXAMPLES = '''
+EXAMPLES = """
 - name: Parse from device
   napalm_parse_yang:
     hostname: '{{ inventory_hostname }}'
@@ -137,32 +138,37 @@ EXAMPLES = '''
     models:
         - models.openconfig_interfaces
   register: config
-'''
+"""
 
-RETURN = '''
+RETURN = """
 changed:
   description: "Dict the representes a valid YANG object"
   returned: always
   type: dict
   sample: "{'interfaces': {'interface':'Et1': {...}, ... }}"
-'''
+"""
 
 
 def update_module_provider_data(module):
-    provider = module.params['provider'] or {}
+    provider = module.params["provider"] or {}
 
-    no_log = ['password', 'secret']
+    no_log = ["password", "secret"]
     for param in no_log:
         if provider.get(param):
             module.no_log_values.update(return_values(provider[param]))
-        if provider.get('optional_args') and provider['optional_args'].get(param):
-            module.no_log_values.update(return_values(provider['optional_args'].get(param)))
-        if module.params.get('optional_args') and module.params['optional_args'].get(param):
-            module.no_log_values.update(return_values(module.params['optional_args'].get(param)))
+        if provider.get("optional_args") and provider["optional_args"].get(param):
+            module.no_log_values.update(
+                return_values(provider["optional_args"].get(param))
+            )
+        if module.params.get("optional_args") and module.params["optional_args"].get(
+            param
+        ):
+            module.no_log_values.update(
+                return_values(module.params["optional_args"].get(param))
+            )
 
     # allow host or hostname
-    provider['hostname'] = provider.get('hostname', None) \
-        or provider.get('host', None)
+    provider["hostname"] = provider.get("hostname", None) or provider.get("host", None)
     # allow local params to override provider
     for param, pvalue in provider.items():
         if module.params.get(param) is not False:
@@ -204,32 +210,31 @@ def parse_from_file(module):
     elif mode == "state":
         root.parse_state(native=native, profile=profiles)
     else:
-        module.fail_json(
-            msg="You can't parse both at the same time from a file")
+        module.fail_json(msg="You can't parse both at the same time from a file")
     return root
 
 
 def parse_from_device(module):
     update_module_provider_data(module)
 
-    hostname = module.params['hostname']
-    username = module.params['username']
-    password = module.params['password']
-    timeout = module.params['timeout']
-    models = module.params['models']
-    mode = module.params['mode']
-    profiles = module.params['profiles']
+    hostname = module.params["hostname"]
+    username = module.params["username"]
+    password = module.params["password"]
+    timeout = module.params["timeout"]
+    models = module.params["models"]
+    mode = module.params["mode"]
+    profiles = module.params["profiles"]
 
-    dev_os = module.params['dev_os']
-    argument_check = {'hostname': hostname, 'username': username, 'dev_os': dev_os}
+    dev_os = module.params["dev_os"]
+    argument_check = {"hostname": hostname, "username": username, "dev_os": dev_os}
     for key, val in argument_check.items():
         if val is None:
             module.fail_json(msg=str(key) + " is required")
 
-    if module.params['optional_args'] is None:
+    if module.params["optional_args"] is None:
         optional_args = {}
     else:
-        optional_args = module.params['optional_args']
+        optional_args = module.params["optional_args"]
 
     try:
         network_driver = get_network_driver(dev_os)
@@ -237,11 +242,13 @@ def parse_from_device(module):
         module.fail_json(msg="Failed to import napalm driver: " + str(e))
 
     try:
-        device = network_driver(hostname=hostname,
-                                username=username,
-                                password=password,
-                                timeout=timeout,
-                                optional_args=optional_args)
+        device = network_driver(
+            hostname=hostname,
+            username=username,
+            password=password,
+            timeout=timeout,
+            optional_args=optional_args,
+        )
         device.open()
     except Exception as e:
         module.fail_json(msg="cannot connect to device: {}".format(e))
@@ -266,21 +273,19 @@ def parse_from_device(module):
 def main():
     module = AnsibleModule(
         argument_spec=dict(
-            hostname=dict(type='str', required=False, aliases=['host']),
-            username=dict(type='str', required=False),
-            password=dict(type='str', required=False, no_log=True),
-            provider=dict(type='dict', required=False),
-            file_path=dict(type='str', required=False),
-            mode=dict(type='str', required=True,
-                      choices=["config", "state", "both"]),
+            hostname=dict(type="str", required=False, aliases=["host"]),
+            username=dict(type="str", required=False),
+            password=dict(type="str", required=False, no_log=True),
+            provider=dict(type="dict", required=False),
+            file_path=dict(type="str", required=False),
+            mode=dict(type="str", required=True, choices=["config", "state", "both"]),
             models=dict(type="list", required=True),
             profiles=dict(type="list", required=False),
-            dev_os=dict(type='str', required=False),
-            timeout=dict(type='int', required=False, default=60),
-            optional_args=dict(type='dict', required=False, default=None),
-
+            dev_os=dict(type="str", required=False),
+            timeout=dict(type="int", required=False, default=60),
+            optional_args=dict(type="dict", required=False, default=None),
         ),
-        supports_check_mode=True
+        supports_check_mode=True,
     )
 
     if not napalm_found:
@@ -296,5 +301,5 @@ def main():
     module.exit_json(yang_model=yang_model.to_dict(filter=True))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

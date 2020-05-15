@@ -32,7 +32,7 @@ def return_values(obj):
     yield str(obj)
 
 
-DOCUMENTATION = '''
+DOCUMENTATION = """
 ---
 module: napalm_install_config
 author: "Elisa Jasinska (@fooelisa)"
@@ -122,9 +122,9 @@ options:
             - Store a backup of candidate config from device prior to a commit.
         default: None
         required: False
-'''
+"""
 
-EXAMPLES = '''
+EXAMPLES = """
 - assemble:
     src: '../compiled/{{ inventory_hostname }}/'
     dest: '../compiled/{{ inventory_hostname }}/running.conf'
@@ -149,9 +149,9 @@ EXAMPLES = '''
     replace_config: '{{ replace_config }}'
     get_diffs: True
     diff_file: '../compiled/{{ inventory_hostname }}/diff'
-'''
+"""
 
-RETURN = '''
+RETURN = """
 changed:
     description: whether the config on the device was changed
     returned: always
@@ -162,78 +162,85 @@ msg:
     returned: always
     type: string
     sample: "[edit system]\n-  host-name lab-testing;\n+  host-name lab;"
-'''
+"""
 
 napalm_found = False
 try:
     from napalm import get_network_driver
     from napalm.base import ModuleImportError
+
     napalm_found = True
 except ImportError:
     pass
 
 
 def save_to_file(content, filename):
-    with open(filename, 'w') as f:
+    with open(filename, "w") as f:
         f.write(content)
 
 
 def main():
     module = AnsibleModule(
         argument_spec=dict(
-            hostname=dict(type='str', required=False, aliases=['host']),
-            username=dict(type='str', required=False),
-            password=dict(type='str', required=False, no_log=True),
-            provider=dict(type='dict', required=False),
-            timeout=dict(type='int', required=False, default=60),
-            optional_args=dict(required=False, type='dict', default=None),
-            config_file=dict(type='str', required=False),
-            config=dict(type='str', required=False),
-            dev_os=dict(type='str', required=False),
-            commit_changes=dict(type='bool', required=True),
-            replace_config=dict(type='bool', required=False, default=False),
-            diff_file=dict(type='str', required=False, default=None),
-            get_diffs=dict(type='bool', required=False, default=True),
-            archive_file=dict(type='str', required=False, default=None),
-            candidate_file=dict(type='str', required=False, default=None)
+            hostname=dict(type="str", required=False, aliases=["host"]),
+            username=dict(type="str", required=False),
+            password=dict(type="str", required=False, no_log=True),
+            provider=dict(type="dict", required=False),
+            timeout=dict(type="int", required=False, default=60),
+            optional_args=dict(required=False, type="dict", default=None),
+            config_file=dict(type="str", required=False),
+            config=dict(type="str", required=False),
+            dev_os=dict(type="str", required=False),
+            commit_changes=dict(type="bool", required=True),
+            replace_config=dict(type="bool", required=False, default=False),
+            diff_file=dict(type="str", required=False, default=None),
+            get_diffs=dict(type="bool", required=False, default=True),
+            archive_file=dict(type="str", required=False, default=None),
+            candidate_file=dict(type="str", required=False, default=None),
         ),
-        supports_check_mode=True
+        supports_check_mode=True,
     )
 
     if not napalm_found:
         module.fail_json(msg="the python module napalm is required")
 
-    provider = module.params['provider'] or {}
+    provider = module.params["provider"] or {}
 
-    no_log = ['password', 'secret']
+    no_log = ["password", "secret"]
     for param in no_log:
         if provider.get(param):
             module.no_log_values.update(return_values(provider[param]))
-        if provider.get('optional_args') and provider['optional_args'].get(param):
-            module.no_log_values.update(return_values(provider['optional_args'].get(param)))
-        if module.params.get('optional_args') and module.params['optional_args'].get(param):
-            module.no_log_values.update(return_values(module.params['optional_args'].get(param)))
+        if provider.get("optional_args") and provider["optional_args"].get(param):
+            module.no_log_values.update(
+                return_values(provider["optional_args"].get(param))
+            )
+        if module.params.get("optional_args") and module.params["optional_args"].get(
+            param
+        ):
+            module.no_log_values.update(
+                return_values(module.params["optional_args"].get(param))
+            )
 
     # allow host or hostname
-    provider['hostname'] = provider.get('hostname', None) or provider.get('host', None)
+    provider["hostname"] = provider.get("hostname", None) or provider.get("host", None)
     # allow local params to override provider
     for param, pvalue in provider.items():
         if module.params.get(param) is not False:
             module.params[param] = module.params.get(param) or pvalue
 
-    hostname = module.params['hostname']
-    username = module.params['username']
-    dev_os = module.params['dev_os']
-    password = module.params['password']
-    timeout = module.params['timeout']
-    config_file = module.params['config_file']
-    config = module.params['config']
-    commit_changes = module.params['commit_changes']
-    replace_config = module.params['replace_config']
-    diff_file = module.params['diff_file']
-    get_diffs = module.params['get_diffs']
-    archive_file = module.params['archive_file']
-    candidate_file = module.params['candidate_file']
+    hostname = module.params["hostname"]
+    username = module.params["username"]
+    dev_os = module.params["dev_os"]
+    password = module.params["password"]
+    timeout = module.params["timeout"]
+    config_file = module.params["config_file"]
+    config = module.params["config"]
+    commit_changes = module.params["commit_changes"]
+    replace_config = module.params["replace_config"]
+    diff_file = module.params["diff_file"]
+    get_diffs = module.params["get_diffs"]
+    archive_file = module.params["archive_file"]
+    candidate_file = module.params["candidate_file"]
     if config_file:
         config_file = os.path.expanduser(os.path.expandvars(config_file))
     if diff_file:
@@ -243,15 +250,15 @@ def main():
     if candidate_file:
         candidate_file = os.path.expanduser(os.path.expandvars(candidate_file))
 
-    argument_check = {'hostname': hostname, 'username': username, 'dev_os': dev_os}
+    argument_check = {"hostname": hostname, "username": username, "dev_os": dev_os}
     for key, val in argument_check.items():
         if val is None:
             module.fail_json(msg=str(key) + " is required")
 
-    if module.params['optional_args'] is None:
+    if module.params["optional_args"] is None:
         optional_args = {}
     else:
-        optional_args = module.params['optional_args']
+        optional_args = module.params["optional_args"]
 
     try:
         network_driver = get_network_driver(dev_os)
@@ -259,11 +266,13 @@ def main():
         module.fail_json(msg="Failed to import napalm driver: " + str(e))
 
     try:
-        device = network_driver(hostname=hostname,
-                                username=username,
-                                password=password,
-                                timeout=timeout,
-                                optional_args=optional_args)
+        device = network_driver(
+            hostname=hostname,
+            username=username,
+            password=password,
+            timeout=timeout,
+            optional_args=optional_args,
+        )
         device.open()
     except Exception as e:
         module.fail_json(msg="cannot connect to device: " + str(e))
@@ -285,8 +294,7 @@ def main():
         elif not replace_config and config:
             device.load_merge_candidate(config=config)
         else:
-            module.fail_json(
-                msg="You have to specify either config or config_file")
+            module.fail_json(msg="You have to specify either config or config_file")
     except Exception as e:
         module.fail_json(msg="cannot load config: " + str(e))
 
@@ -326,5 +334,5 @@ def main():
     module.exit_json(changed=changed, msg=diff)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

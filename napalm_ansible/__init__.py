@@ -19,7 +19,7 @@ https://docs.ansible.com/ansible/latest/intro_configuration.html
 
 def main():
     path = os.path.dirname(__file__)
-    if LooseVersion(ansible.__version__) < LooseVersion('2.3.0.0'):
+    if LooseVersion(ansible.__version__) < LooseVersion("2.3.0.0"):
         action_plugins = ""
     else:
         action_plugins = "action_plugins = {path}/plugins/action".format(path=path)
