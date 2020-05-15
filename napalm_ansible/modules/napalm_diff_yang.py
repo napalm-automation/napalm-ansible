@@ -27,7 +27,7 @@ except ImportError:
     napalm_yang = None
 
 
-DOCUMENTATION = '''
+DOCUMENTATION = """
 ---
 module: napalm_diff_yang
 author: "David Barroso (@dbarrosop)"
@@ -51,18 +51,18 @@ options:
         description:
           - Dictionary with the data to load into the second YANG object
         required: True
-'''
+"""
 
-EXAMPLES = '''
+EXAMPLES = """
 - napalm_diff_yang:
     first: "{{ candidate.yang_model }}"
     second: "{{ running_config.yang_model }}"
     models:
      - models.openconfig_interfaces
   register: diff
-'''
+"""
 
-RETURN = '''
+RETURN = """
 diff:
     description: "Same output as the method napalm_yang.utils.diff"
     returned: always
@@ -82,7 +82,7 @@ diff:
                     }
                 }
             }'
-'''
+"""
 
 
 def get_root_object(models):
@@ -104,10 +104,10 @@ def main():
     module = AnsibleModule(
         argument_spec=dict(
             models=dict(type="list", required=True),
-            first=dict(type='dict', required=True),
-            second=dict(type='dict', required=True),
+            first=dict(type="dict", required=True),
+            second=dict(type="dict", required=True),
         ),
-        supports_check_mode=True
+        supports_check_mode=True,
     )
 
     if not napalm_yang:
@@ -124,5 +124,5 @@ def main():
     module.exit_json(yang_diff=diff)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
