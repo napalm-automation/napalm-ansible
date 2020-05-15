@@ -6,7 +6,7 @@ develop
     - Update module docstring.
     - Update napalm_get_facts to allow _get_checkpoint_file for NX-OS
     - Update dev tooling to pin dependencies and to install black
-    - Blacken the code base
+    - Blacken the code base; exclude from PY27 install
 
 1.0.0
 =====
