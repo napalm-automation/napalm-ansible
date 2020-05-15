@@ -1,3 +1,5 @@
+pylama==7.7.1
+pytest==5.4.2
+black==18.9b0
 ansible
-pytest
 -r requirements.txt
