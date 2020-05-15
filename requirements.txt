@@ -1,2 +1,5 @@
-napalm
+netmiko==2.4.2; python_version == '2.7'
+netmiko>=3.1.0; python_version >= '3.6'
+napalm==2.5.0; python_version == '2.7'
+napalm>=3.0.1; python_version >= '3.6'
 six
