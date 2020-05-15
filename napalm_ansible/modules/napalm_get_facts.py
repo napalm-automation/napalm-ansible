@@ -1,4 +1,5 @@
 """
+(c) 2020 Kirk Byers <ktbyers@twb-tech.com>
 (c) 2016 Elisa Jasinska <elisa@bigwaveit.org>
 
 This file is part of Ansible
@@ -29,7 +30,7 @@ def return_values(obj):
     yield str(obj)
 
 
-DOCUMENTATION = '''
+DOCUMENTATION = """
 ---
 module: napalm_get_facts
 author: "Elisa Jasinska (@fooelisa)"
@@ -95,9 +96,9 @@ options:
               the getter (same as the filter)
         required: False
         default: None
-'''
+"""
 
-EXAMPLES = '''
+EXAMPLES = """
 - name: get facts from device
   napalm_get_facts:
     hostname: '{{ inventory_hostname }}'
@@ -132,9 +133,9 @@ EXAMPLES = '''
             protocol: static
             destination: 8.8.8.8
 
-'''
+"""
 
-RETURN = '''
+RETURN = """
 changed:
     description: "whether the command has been executed on the device"
     returned: always
@@ -144,12 +145,13 @@ ansible_facts:
     description: "Facts gathered on the device provided via C(ansible_facts)"
     returned: certain keys are returned depending on filter
     type: dict
-'''
+"""
 
 napalm_found = False
 try:
     from napalm import get_network_driver
     from napalm.base import ModuleImportError
+
     napalm_found = True
 except ImportError:
     pass
@@ -158,61 +160,66 @@ except ImportError:
 def main():
     module = AnsibleModule(
         argument_spec=dict(
-            hostname=dict(type='str', required=False, aliases=['host']),
-            username=dict(type='str', required=False),
-            password=dict(type='str', required=False, no_log=True),
-            provider=dict(type='dict', required=False),
-            dev_os=dict(type='str', required=False),
-            timeout=dict(type='int', required=False, default=60),
-            ignore_notimplemented=dict(type='bool', required=False, default=False),
-            args=dict(type='dict', required=False, default=None),
-            optional_args=dict(type='dict', required=False, default=None),
-            filter=dict(type='list', required=False, default=['facts']),
-
+            hostname=dict(type="str", required=False, aliases=["host"]),
+            username=dict(type="str", required=False),
+            password=dict(type="str", required=False, no_log=True),
+            provider=dict(type="dict", required=False),
+            dev_os=dict(type="str", required=False),
+            timeout=dict(type="int", required=False, default=60),
+            ignore_notimplemented=dict(type="bool", required=False, default=False),
+            args=dict(type="dict", required=False, default=None),
+            optional_args=dict(type="dict", required=False, default=None),
+            filter=dict(type="list", required=False, default=["facts"]),
         ),
-        supports_check_mode=True
+        supports_check_mode=True,
     )
 
     if not napalm_found:
         module.fail_json(msg="the python module napalm is required")
 
-    provider = module.params['provider'] or {}
+    provider = module.params["provider"] or {}
 
-    no_log = ['password', 'secret']
+    no_log = ["password", "secret"]
     for param in no_log:
         if provider.get(param):
             module.no_log_values.update(return_values(provider[param]))
-        if provider.get('optional_args') and provider['optional_args'].get(param):
-            module.no_log_values.update(return_values(provider['optional_args'].get(param)))
-        if module.params.get('optional_args') and module.params['optional_args'].get(param):
-            module.no_log_values.update(return_values(module.params['optional_args'].get(param)))
+        if provider.get("optional_args") and provider["optional_args"].get(param):
+            module.no_log_values.update(
+                return_values(provider["optional_args"].get(param))
+            )
+        if module.params.get("optional_args") and module.params["optional_args"].get(
+            param
+        ):
+            module.no_log_values.update(
+                return_values(module.params["optional_args"].get(param))
+            )
 
     # allow host or hostname
-    provider['hostname'] = provider.get('hostname', None) or provider.get('host', None)
+    provider["hostname"] = provider.get("hostname", None) or provider.get("host", None)
     # allow local params to override provider
     for param, pvalue in provider.items():
         if module.params.get(param) is not False:
             module.params[param] = module.params.get(param) or pvalue
 
-    hostname = module.params['hostname']
-    username = module.params['username']
-    dev_os = module.params['dev_os']
-    password = module.params['password']
-    timeout = module.params['timeout']
-    filter_list = module.params['filter']
-    args = module.params['args'] or {}
-    ignore_notimplemented = module.params['ignore_notimplemented']
+    hostname = module.params["hostname"]
+    username = module.params["username"]
+    dev_os = module.params["dev_os"]
+    password = module.params["password"]
+    timeout = module.params["timeout"]
+    filter_list = module.params["filter"]
+    args = module.params["args"] or {}
+    ignore_notimplemented = module.params["ignore_notimplemented"]
     implementation_errors = []
 
-    argument_check = {'hostname': hostname, 'username': username, 'dev_os': dev_os}
+    argument_check = {"hostname": hostname, "username": username, "dev_os": dev_os}
     for key, val in argument_check.items():
         if val is None:
             module.fail_json(msg=str(key) + " is required")
 
-    if module.params['optional_args'] is None:
+    if module.params["optional_args"] is None:
         optional_args = {}
     else:
-        optional_args = module.params['optional_args']
+        optional_args = module.params["optional_args"]
 
     try:
         network_driver = get_network_driver(dev_os)
@@ -220,11 +227,13 @@ def main():
         module.fail_json(msg="Failed to import napalm driver: " + str(e))
 
     try:
-        device = network_driver(hostname=hostname,
-                                username=username,
-                                password=password,
-                                timeout=timeout,
-                                optional_args=optional_args)
+        device = network_driver(
+            hostname=hostname,
+            username=username,
+            password=password,
+            timeout=timeout,
+            optional_args=optional_args,
+        )
         device.open()
     except Exception as e:
         module.fail_json(msg="cannot connect to device: " + str(e))
@@ -232,7 +241,11 @@ def main():
     # retreive data from device
     facts = {}
 
-    NAPALM_GETTERS = [getter for getter in dir(network_driver) if getter.startswith("get_")]
+    NAPALM_GETTERS = [
+        getter for getter in dir(network_driver) if getter.startswith("get_")
+    ]
+    # Allow NX-OS checkpoint file to be retrieved via Ansible for use with replace config
+    NAPALM_GETTERS.append("get_checkpoint_file")
 
     for getter in filter_list:
         getter_function = "get_{}".format(getter)
@@ -240,6 +253,8 @@ def main():
             module.fail_json(msg="filter not recognized: " + getter)
 
         try:
+            if getter_function == "get_checkpoint_file":
+                getter_function = "_get_checkpoint_file"
             get_func = getattr(device, getter_function)
             result = get_func(**args.get(getter, {}))
             facts[getter] = result
@@ -249,9 +264,13 @@ def main():
             else:
                 module.fail_json(
                     msg="The filter {} is not supported in napalm-{} [get_{}()]".format(
-                        getter, dev_os, getter))
+                        getter, dev_os, getter
+                    )
+                )
         except Exception as e:
-            module.fail_json(msg="[{}] cannot retrieve device data: ".format(getter) + str(e))
+            module.fail_json(
+                msg="[{}] cannot retrieve device data: ".format(getter) + str(e)
+            )
 
     # close device connection
     try:
@@ -269,13 +288,13 @@ def main():
                 new_facts[napalm_fact_name] = fact_value
         new_filter_name = "napalm_" + filter_name
         new_facts[new_filter_name] = filter_value
-    results = {'ansible_facts': new_facts}
+    results = {"ansible_facts": new_facts}
 
     if ignore_notimplemented:
-        results['not_implemented'] = sorted(implementation_errors)
+        results["not_implemented"] = sorted(implementation_errors)
 
     module.exit_json(**results)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

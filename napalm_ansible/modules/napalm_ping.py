@@ -26,7 +26,7 @@ def return_values(obj):
     yield str(obj)
 
 
-DOCUMENTATION = '''
+DOCUMENTATION = """
 ---
 module: napalm_ping
 author: "Jason Edelman (@jedelman8)"
@@ -93,9 +93,9 @@ options:
         description: vrf to source the echo request
         required: False
 
-'''
+"""
 
-EXAMPLES = '''
+EXAMPLES = """
 - napalm_ping:
     hostname: "{{ inventory_hostname }}"
     username: "napalm"
@@ -109,9 +109,9 @@ EXAMPLES = '''
     provider: "{{ napalm_provider }}"
     destination: 8.8.8.8
     count: 2
-'''
+"""
 
-RETURN = '''
+RETURN = """
 changed:
     description: ALWAYS RETURNS FALSE
     returned: always
@@ -135,12 +135,13 @@ alt_results:
     type: dict
     # when echo request succeeds
     sample: '{"error": "connect: Network is unreachable\n"}}'
-'''
+"""
 
 napalm_found = False
 try:
     from napalm import get_network_driver
     from napalm.base import ModuleImportError
+
     napalm_found = True
 except ImportError:
     pass
@@ -149,70 +150,76 @@ except ImportError:
 def main():
     module = AnsibleModule(
         argument_spec=dict(
-            hostname=dict(type='str', required=False, aliases=['host']),
-            username=dict(type='str', required=False),
-            password=dict(type='str', required=False, no_log=True),
-            provider=dict(type='dict', required=False),
-            timeout=dict(type='int', required=False, default=60),
-            optional_args=dict(required=False, type='dict', default=None),
-            dev_os=dict(type='str', required=False),
-            destination=dict(type='str', required=True),
-            source=dict(type='str', required=False),
-            ttl=dict(type='str', required=False),
-            ping_timeout=dict(type='str', required=False),
-            size=dict(type='str', required=False),
-            count=dict(type='str', required=False),
-            vrf=dict(type='str', required=False),
+            hostname=dict(type="str", required=False, aliases=["host"]),
+            username=dict(type="str", required=False),
+            password=dict(type="str", required=False, no_log=True),
+            provider=dict(type="dict", required=False),
+            timeout=dict(type="int", required=False, default=60),
+            optional_args=dict(required=False, type="dict", default=None),
+            dev_os=dict(type="str", required=False),
+            destination=dict(type="str", required=True),
+            source=dict(type="str", required=False),
+            ttl=dict(type="str", required=False),
+            ping_timeout=dict(type="str", required=False),
+            size=dict(type="str", required=False),
+            count=dict(type="str", required=False),
+            vrf=dict(type="str", required=False),
         ),
-        supports_check_mode=True
+        supports_check_mode=True,
     )
 
     if not napalm_found:
         module.fail_json(msg="the python module napalm is required")
 
-    provider = module.params['provider'] or {}
+    provider = module.params["provider"] or {}
 
-    no_log = ['password', 'secret']
+    no_log = ["password", "secret"]
     for param in no_log:
         if provider.get(param):
             module.no_log_values.update(return_values(provider[param]))
-        if provider.get('optional_args') and provider['optional_args'].get(param):
-            module.no_log_values.update(return_values(provider['optional_args'].get(param)))
-        if module.params.get('optional_args') and module.params['optional_args'].get(param):
-            module.no_log_values.update(return_values(module.params['optional_args'].get(param)))
+        if provider.get("optional_args") and provider["optional_args"].get(param):
+            module.no_log_values.update(
+                return_values(provider["optional_args"].get(param))
+            )
+        if module.params.get("optional_args") and module.params["optional_args"].get(
+            param
+        ):
+            module.no_log_values.update(
+                return_values(module.params["optional_args"].get(param))
+            )
 
     # allow host or hostname
-    provider['hostname'] = provider.get('hostname', None) or provider.get('host', None)
+    provider["hostname"] = provider.get("hostname", None) or provider.get("host", None)
     # allow local params to override provider
     for param, pvalue in provider.items():
         if module.params.get(param) is not False:
             module.params[param] = module.params.get(param) or pvalue
 
-    hostname = module.params['hostname']
-    username = module.params['username']
-    dev_os = module.params['dev_os']
-    password = module.params['password']
-    timeout = module.params['timeout']
-    destination = module.params['destination']
+    hostname = module.params["hostname"]
+    username = module.params["username"]
+    dev_os = module.params["dev_os"]
+    password = module.params["password"]
+    timeout = module.params["timeout"]
+    destination = module.params["destination"]
 
     ping_optional_args = {}
-    ping_args = ['source', 'ttl', 'ping_timeout', 'size', 'count', 'vrf']
+    ping_args = ["source", "ttl", "ping_timeout", "size", "count", "vrf"]
     for param, pvalue in module.params.items():
         if param in ping_args and pvalue is not None:
             ping_optional_args[param] = pvalue
-    if 'ping_timeout' in ping_optional_args:
-        ping_optional_args['timeout'] = ping_optional_args['ping_timeout']
-        ping_optional_args.pop('ping_timeout')
+    if "ping_timeout" in ping_optional_args:
+        ping_optional_args["timeout"] = ping_optional_args["ping_timeout"]
+        ping_optional_args.pop("ping_timeout")
 
-    argument_check = {'hostname': hostname, 'username': username, 'dev_os': dev_os}
+    argument_check = {"hostname": hostname, "username": username, "dev_os": dev_os}
     for key, val in argument_check.items():
         if val is None:
             module.fail_json(msg=str(key) + " is required")
 
-    if module.params['optional_args'] is None:
+    if module.params["optional_args"] is None:
         optional_args = {}
     else:
-        optional_args = module.params['optional_args']
+        optional_args = module.params["optional_args"]
 
     try:
         network_driver = get_network_driver(dev_os)
@@ -220,11 +227,13 @@ def main():
         module.fail_json(msg="Failed to import napalm driver: " + str(e))
 
     try:
-        device = network_driver(hostname=hostname,
-                                username=username,
-                                password=password,
-                                timeout=timeout,
-                                optional_args=optional_args)
+        device = network_driver(
+            hostname=hostname,
+            username=username,
+            password=password,
+            timeout=timeout,
+            optional_args=optional_args,
+        )
         device.open()
     except Exception as e:
         module.fail_json(msg="cannot connect to device: " + str(e))
@@ -239,5 +248,5 @@ def main():
     module.exit_json(changed=False, ping_results=ping_response)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

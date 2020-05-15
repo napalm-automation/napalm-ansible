@@ -5,6 +5,7 @@ napalm_found = False
 try:
     from napalm import get_network_driver
     from napalm.base import ModuleImportError
+
     napalm_found = True
 except ImportError:
     pass
@@ -24,7 +25,7 @@ def return_values(obj):
     yield str(obj)
 
 
-DOCUMENTATION = '''
+DOCUMENTATION = """
 ---
 module: napalm_validate
 author: Gabriele Gerbino (@GGabriele)
@@ -83,9 +84,9 @@ options:
         description:
           - dict to load into the YANG object
         required: False
-'''
+"""
 
-EXAMPLES = '''
+EXAMPLES = """
 - name: GET VALIDATION REPORT
   napalm_validate:
     username: "{{ un }}"
@@ -120,9 +121,9 @@ EXAMPLES = '''
         - models.openconfig_interfaces
     validation_file: "validate.yaml"
   register: report
-'''
+"""
 
-RETURN = '''
+RETURN = """
 changed:
     description: check to see if a change was made on the device.
     returned: always
@@ -132,46 +133,51 @@ compliance_report:
     description: validation report obtained via napalm.
     returned: always
     type: dict
-'''
+"""
 
 
 def get_compliance_report(module, device):
-    return device.compliance_report(module.params['validation_file'])
+    return device.compliance_report(module.params["validation_file"])
 
 
 def get_device_instance(module):
 
-    provider = module.params['provider'] or {}
+    provider = module.params["provider"] or {}
 
-    no_log = ['password', 'secret']
+    no_log = ["password", "secret"]
     for param in no_log:
         if provider.get(param):
             module.no_log_values.update(return_values(provider[param]))
-        if provider.get('optional_args') and provider['optional_args'].get(param):
-            module.no_log_values.update(return_values(provider['optional_args'].get(param)))
-        if module.params.get('optional_args') and module.params['optional_args'].get(param):
-            module.no_log_values.update(return_values(module.params['optional_args'].get(param)))
+        if provider.get("optional_args") and provider["optional_args"].get(param):
+            module.no_log_values.update(
+                return_values(provider["optional_args"].get(param))
+            )
+        if module.params.get("optional_args") and module.params["optional_args"].get(
+            param
+        ):
+            module.no_log_values.update(
+                return_values(module.params["optional_args"].get(param))
+            )
 
     # allow host or hostname
-    provider['hostname'] = provider.get('hostname', None) \
-        or provider.get('host', None)
+    provider["hostname"] = provider.get("hostname", None) or provider.get("host", None)
     # allow local params to override provider
     for param, pvalue in provider.items():
         if module.params.get(param) is not False:
             module.params[param] = module.params.get(param) or pvalue
 
-    hostname = module.params['hostname']
-    username = module.params['username']
-    dev_os = module.params['dev_os']
-    password = module.params['password']
-    timeout = module.params['timeout']
+    hostname = module.params["hostname"]
+    username = module.params["username"]
+    dev_os = module.params["dev_os"]
+    password = module.params["password"]
+    timeout = module.params["timeout"]
 
-    argument_check = {'hostname': hostname, 'username': username, 'dev_os': dev_os}
+    argument_check = {"hostname": hostname, "username": username, "dev_os": dev_os}
     for key, val in argument_check.items():
         if val is None:
             module.fail_json(msg=str(key) + " is required")
 
-    optional_args = module.params['optional_args'] or {}
+    optional_args = module.params["optional_args"] or {}
 
     try:
         network_driver = get_network_driver(dev_os)
@@ -179,11 +185,13 @@ def get_device_instance(module):
         module.fail_json(msg="Failed to import napalm driver: " + str(e))
 
     try:
-        device = network_driver(hostname=hostname,
-                                username=username,
-                                password=password,
-                                timeout=timeout,
-                                optional_args=optional_args)
+        device = network_driver(
+            hostname=hostname,
+            username=username,
+            password=password,
+            timeout=timeout,
+            optional_args=optional_args,
+        )
         device.open()
     except Exception as err:
         module.fail_json(msg="cannot connect to device: {0}".format(str(err)))
@@ -209,17 +217,17 @@ def main():
     module = AnsibleModule(
         argument_spec=dict(
             models=dict(type="list", required=False),
-            data=dict(type='dict', required=False),
-            hostname=dict(type='str', required=False, aliases=['host']),
-            username=dict(type='str', required=False),
-            password=dict(type='str', required=False, no_log=True),
-            provider=dict(type='dict', required=False),
-            dev_os=dict(type='str', required=False),
-            timeout=dict(type='int', required=False, default=60),
-            optional_args=dict(type='dict', required=False, default=None),
-            validation_file=dict(type='str', required=True),
+            data=dict(type="dict", required=False),
+            hostname=dict(type="str", required=False, aliases=["host"]),
+            username=dict(type="str", required=False),
+            password=dict(type="str", required=False, no_log=True),
+            provider=dict(type="dict", required=False),
+            dev_os=dict(type="str", required=False),
+            timeout=dict(type="int", required=False, default=60),
+            optional_args=dict(type="dict", required=False, default=None),
+            validation_file=dict(type="str", required=True),
         ),
-        supports_check_mode=False
+        supports_check_mode=False,
     )
     if not napalm_found:
         module.fail_json(msg="the python module napalm is required")
@@ -243,18 +251,17 @@ def main():
         try:
             device.close()
         except Exception as err:
-            module.fail_json(
-                msg="cannot close device connection: {0}".format(str(err)))
+            module.fail_json(msg="cannot close device connection: {0}".format(str(err)))
 
     results = {}
-    results['compliance_report'] = compliance_report
-    if not compliance_report['complies']:
+    results["compliance_report"] = compliance_report
+    if not compliance_report["complies"]:
         msg = "Device does not comply with policy"
-        results['msg'] = msg
+        results["msg"] = msg
         module.fail_json(**results)
 
     module.exit_json(**results)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
