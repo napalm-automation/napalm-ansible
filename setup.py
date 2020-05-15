@@ -6,10 +6,10 @@ with open("requirements.txt", "r") as fs:
 
 setup(
     name="napalm-ansible",
-    version="1.0.0",
+    version="1.1.0",
     packages=find_packages(exclude=("test*", "library")),
     author="David Barroso, Kirk Byers, Mircea Ulinic",
-    author_email="dbarrosop@dravetech.com, ktbyers@twb-tech.com",
+    author_email="ktbyers@twb-tech.com",
     description="Network Automation and Programmability Abstraction Layer with Multivendor support",
     classifiers=[
         "Topic :: Utilities",
