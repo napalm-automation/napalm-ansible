@@ -157,11 +157,13 @@ changed:
     returned: always
     type: bool
     sample: True
-msg:
+diff:
     description: diff of the change
     returned: always
-    type: string
-    sample: "[edit system]\n-  host-name lab-testing;\n+  host-name lab;"
+    type: dict
+    sample: {
+        'prepared': "[edit system]\n-  host-name lab-testing;\n+  host-name lab;",
+    }
 """
 
 napalm_found = False
@@ -331,7 +333,7 @@ def main():
     except Exception as e:
         module.fail_json(msg="cannot close device connection: " + str(e))
 
-    module.exit_json(changed=changed, msg=diff)
+    module.exit_json(changed=changed, diff={"prepared": diff})
 
 
 if __name__ == "__main__":
