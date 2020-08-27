@@ -333,7 +333,7 @@ def main():
     except Exception as e:
         module.fail_json(msg="cannot close device connection: " + str(e))
 
-    module.exit_json(changed=changed, diff={"prepared": diff})
+    module.exit_json(changed=changed, diff={"prepared": diff}, msg=diff)
 
 
 if __name__ == "__main__":
