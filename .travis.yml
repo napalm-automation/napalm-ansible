@@ -8,6 +8,7 @@ python:
 env:
     - ANSIBLE_VERSION=2.8
     - ANSIBLE_VERSION=2.9
+    - ANSIBLE_VERSION=2.10
 
 install:
     - pip install "ansible>=$ANSIBLE_VERSION.0,<$ANSIBLE_VERSION.99"
