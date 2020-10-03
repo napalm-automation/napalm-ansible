@@ -2,10 +2,12 @@ develop
 =======
     - Provide diff in napalm_install_config in ``result.diff`` instead
       of ``result.msg``.
+    - Drop support of Python 2.7
+    - Update tests to iuse Ansible 2.10.x.
 
 1.1.0
 =====
-    - Fix issue with -u <username> not working.
+    - FIX ISSUE WITH -U <USERNAME> NOT WORKING.
     - Update tests to use newer Python and to use Ansible 2.8.x or 2.9.x.
     - Improving documentation.
     - Update module docstring.
