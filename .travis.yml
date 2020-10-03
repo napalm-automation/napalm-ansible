@@ -1,7 +1,6 @@
 language: python
 
 python:
-    - 2.7
     - 3.6
     - 3.7
     - 3.8
@@ -9,10 +8,11 @@ python:
 env:
     - ANSIBLE_VERSION=2.8
     - ANSIBLE_VERSION=2.9
+    - ANSIBLE_VERSION=2.10
 
 install:
-    - pip install -r requirements-dev.txt
     - pip install "ansible>=$ANSIBLE_VERSION.0,<$ANSIBLE_VERSION.99"
+    - pip install -r requirements-dev.txt
     - pip install -e .
 
 script:

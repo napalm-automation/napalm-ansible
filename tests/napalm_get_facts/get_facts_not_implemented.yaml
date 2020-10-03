@@ -28,7 +28,7 @@
       rescue:
         - fail:
               msg: Whe shouldn't be here
-          when: ignore_notimplemented
+          when: ignore_notimplemented|bool
         - assert:
             that:
                 - ansible_failed_result.msg == "The filter route_to is not supported in napalm-mock [get_route_to()]"
