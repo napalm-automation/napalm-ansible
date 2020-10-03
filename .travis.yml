@@ -11,8 +11,8 @@ env:
     - ANSIBLE_VERSION=2.9
 
 install:
-    - pip install -r requirements-dev.txt
     - pip install "ansible>=$ANSIBLE_VERSION.0,<$ANSIBLE_VERSION.99"
+    - pip install -r requirements-dev.txt
     - pip install -e .
 
 script:
