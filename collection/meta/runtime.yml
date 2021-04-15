@@ -2,20 +2,8 @@
 requires_ansible: '>=2.9.10'
 plugin_routing:
   action:
-    napalm_get_facts:
-      redirect: napalm.napalm.napalm
     get_facts:
-      redirect: napalm.napalm.napalm
-    napalm_install_config:
-      redirect: napalm.napalm.napalm
-    install_config:
-      redirect: napalm.napalm.napalm
+      redirect: napalm.napalm.napalm_get_facts
   modules:
-    napalm_get_facts:
-      redirect: napalm.napalm.napalm_get_facts
     get_facts:
-      redirect: napalm.napalm.napalm_get_facts
-    napalm_install_config:
-      redirect: napalm.napalm.napalm_get_facts
-    install_config:
       redirect: napalm.napalm.napalm_get_facts
