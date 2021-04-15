@@ -1,5 +1,5 @@
 ---
-namespace: napalm-automation
+namespace: napalm
 name: napalm
 version: 1.2.0
 readme: README.md
