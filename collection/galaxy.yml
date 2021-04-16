@@ -1,7 +1,7 @@
 ---
 namespace: napalm
 name: napalm
-version: 0.9.9
+version: 0.9.12
 readme: README.md
 authors:
   - Kirk Byers
@@ -18,3 +18,4 @@ homepage: https://github.com/napalm-automation/napalm-ansible
 issues: https://github.com/napalm-automation/napalm-ansible/issues
 build_ignore:
   - "*.tar.gz"
+  - "build.sh"
