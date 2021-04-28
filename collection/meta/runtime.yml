@@ -1,0 +1,37 @@
+---
+requires_ansible: '>=2.9.10'
+plugin_routing:
+  action:
+    get_facts:
+      redirect: napalm.napalm.napalm_get_facts
+    install_config:
+      redirect: napalm.napalm.napalm_install_config
+    ping:
+      redirect: napalm.napalm.napalm_ping
+    validate:
+      redirect: napalm.napalm.napalm_validate
+    cli:
+      redirect: napalm.napalm.napalm_cli
+    parse_yang:
+      redirect: napalm.napalm.napalm_parse_yang
+    translate_yang:
+      redirect: napalm.napalm.napalm_translate_yang
+    diff_yang:
+      redirect: napalm.napalm.napalm_diff_yang
+  modules:
+    get_facts:
+      redirect: napalm.napalm.napalm_get_facts
+    install_config:
+      redirect: napalm.napalm.napalm_install_config
+    ping:
+      redirect: napalm.napalm.napalm_ping
+    validate:
+      redirect: napalm.napalm.napalm_validate
+    cli:
+      redirect: napalm.napalm.napalm_cli
+    parse_yang:
+      redirect: napalm.napalm.napalm_parse_yang
+    translate_yang:
+      redirect: napalm.napalm.napalm_translate_yang
+    diff_yang:
+      redirect: napalm.napalm.napalm_diff_yang

@@ -1,0 +1,21 @@
+---
+namespace: napalm
+name: napalm
+version: 0.9.13
+readme: README.md
+authors:
+  - Kirk Byers
+  - Mircea Ulinic
+  - David Barroso
+description: NAPALM + Ansible Modules
+license_file: LICENSE
+tags: 
+  - networking
+  - napalm
+repository: https://github.com/napalm-automation/napalm-ansible
+documentation: https://github.com/napalm-automation/napalm-ansible
+homepage: https://github.com/napalm-automation/napalm-ansible
+issues: https://github.com/napalm-automation/napalm-ansible/issues
+build_ignore:
+  - "*.tar.gz"
+  - "build.sh"
