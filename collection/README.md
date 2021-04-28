@@ -16,55 +16,20 @@ The following modules are currently available:
 - ``napalm_translate_yang``
 - ``napalm_validate``
 
-Action-Plugins
-=======
-
-Action-Plugins should be used to make napalm-ansible more consistent with the behavior of other Ansible modules (eliminate the need of a provider and of individual task arguments for hostname, username, password, and timeout).
-
-They provide default parameters for the hostname, username, password and timeout paramters.
-* hostname is set to the first of provider {{ hostname }}, provider {{ host }}, play-context remote_addr.
-* username is set to the first of provider {{ username }}, play-context connection_user.
-* password is set to the first of provider {{ password }}, play-context password (-k argument).
-* timeout is set to the provider {{ timeout }}, or else defaults to 60 seconds (can't be passed via command-line).
-
 Install
 =======
 
-To install run either:
+To install run:
 
 ```
-pip install napalm-ansible
 pip install napalm
-```
-
-Or:
-
-```
-git clone https://github.com/napalm-automation/napalm-ansible
-pip install napalm
-```
-
-Configuring Ansible
-===================
-
-Once you have installed ``napalm-ansible`` then you need to add napalm-ansible to your ``library`` and ``action_plugins`` paths in ``ansible.cfg``. If you used pip to install napalm-ansible, then you can just run the ``napalm-ansible`` command and follow the instructions specified there.
-
-```
-$ cat .ansible.cfg
-
-[defaults]
-library = ~/napalm-ansible/napalm_ansible/modules
-action_plugins = ~/napalm-ansible/napalm_ansible/plugins/action
-...
-
-For more details on ansible's configuration file visit:
-https://docs.ansible.com/ansible/latest/intro_configuration.html
+ansible-galaxy collection install napalm.napalm
 ```
 
 Dependencies
 =======
-* [napalm](https://github.com/napalm-automation/napalm) 2.5.0 or later
-* [ansible](https://github.com/ansible/ansible) 2.8.11 or later
+* [napalm](https://github.com/napalm-automation/napalm) 3.2.0 or later
+* [ansible](https://github.com/ansible/ansible) 2.9.20 or later
 
 
 Examples
@@ -96,7 +61,7 @@ ansible_ssh_pass=my_password
   gather_facts: False
   tasks:
     - name: napalm get_facts
-      napalm_get_facts:
+      napalm.napalm.get_facts:
         filter: facts,interfaces
 
     - debug:
@@ -167,7 +132,7 @@ ansible_ssh_pass=my_password
   gather_facts: False
   tasks:
     - name: napalm get_facts
-      napalm_get_facts:
+      napalm.napalm.get_facts:
         filter: facts,interfaces
 
     - debug:
@@ -239,7 +204,7 @@ ansible_ssh_pass=my_password
   gather_facts: False
   tasks:
     - name: Retrieve get_facts, get_interfaces
-      napalm_get_facts:
+      napalm.napalm.get_facts:
         filter: facts,interfaces
         # Specify NX-API Port
         optional_args:
@@ -292,7 +257,7 @@ nxos1 : ok=2 changed=0 unreachable=0 failed=0 skipped=0 rescued=0 ignored=0
   hosts: nxos1
   tasks:
     - name: Retrieve get_facts, get_interfaces
-      napalm_get_facts:
+      napalm.napalm.get_facts:
         filter: facts,interfaces
         # Instruct NAPALM module to use SSH
         dev_os: nxos_ssh
@@ -363,7 +328,7 @@ ansible_ssh_pass=my_password
   gather_facts: False
   tasks:
     - name: Retrieve get_facts, get_interfaces
-      napalm_get_facts:
+      napalm.napalm.get_facts:
         filter: facts,interfaces
 
     - debug:
@@ -433,7 +398,7 @@ juniper1 : ok=2 changed=0 unreachable=0 failed=0 skipped=0 rescued=0 ignored=0
     src=../compiled/{{ inventory_hostname }}/
     dest=../compiled/{{ inventory_hostname }}/running.conf
 
- - napalm_install_config:
+ - napalm.napalm.install_config:
     hostname={{ inventory_hostname }}
     username={{ user }}
     dev_os={{ os }}
@@ -449,7 +414,7 @@ juniper1 : ok=2 changed=0 unreachable=0 failed=0 skipped=0 rescued=0 ignored=0
 
 ```YAML
 - name: GET VALIDATION REPORT
-  napalm_validate:
+  napalm.napalm.validate:
     username: "{{ user }}"
     password: "{{ passwd }}"
     hostname: "{{ inventory_hostname }}"
