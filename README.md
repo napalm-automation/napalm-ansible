@@ -22,19 +22,38 @@ Action-Plugins
 Action-Plugins should be used to make napalm-ansible more consistent with the behavior of other Ansible modules (eliminate the need of a provider and of individual task arguments for hostname, username, password, and timeout).
 
 They provide default parameters for the hostname, username, password and timeout paramters.
-* hostname is set to the first of provider {{ hostname }}, provider {{ host }}, play-context remote_addr.
-* username is set to the first of provider {{ username }}, play-context connection_user.
-* password is set to the first of provider {{ password }}, play-context password (-k argument).
-* timeout is set to the provider {{ timeout }}, or else defaults to 60 seconds (can't be passed via command-line).
+* hostname is set to the first of provider `{{ hostname }}`, provider `{{ host }}`, play-context remote_addr.
+* username is set to the first of provider `{{ username }}`, play-context connection_user.
+* password is set to the first of provider `{{ password }}`, play-context password (-k argument).
+* timeout is set to the provider `{{ timeout }}`, or else defaults to 60 seconds (can't be passed via command-line).
 
-Install
+Installing
 =======
 
-To install run either:
+You can install the napalm-ansible collection with the Ansible Galaxy CLI:
 
 ```
-pip install napalm-ansible
+ansible-galaxy collection install napalm.napalm
+```
+
+You can also include it in a `requirements.yml` file and install it with `ansible-galaxy collection install -r requirements.yml`, using the format:
+
+```
+---
+collections:
+  - name: napalm.napalm
+```
+
+You will also need to install `napalm` via Pip as it is a dependency
+
+```
 pip install napalm
+```
+
+Alternatively, you can install it via Pip
+
+```
+pip install napalm napalm-ansible
 ```
 
 Or:
@@ -47,7 +66,7 @@ pip install napalm
 Configuring Ansible
 ===================
 
-Once you have installed ``napalm-ansible`` then you need to add napalm-ansible to your ``library`` and ``action_plugins`` paths in ``ansible.cfg``. If you used pip to install napalm-ansible, then you can just run the ``napalm-ansible`` command and follow the instructions specified there.
+If you have installed `napalm-ansible` via Pip you will need to add `library` and `actions_plugins` paths in `ansible.cfg`. Instructions can be found by running `napalm-ansible`
 
 ```
 $ cat .ansible.cfg
