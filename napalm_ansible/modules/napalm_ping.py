@@ -92,7 +92,9 @@ options:
     vrf:
         description: vrf to source the echo request
         required: False
-
+    source_interface:
+        description: interface to source the echo request.
+        required: False
 """
 
 EXAMPLES = """
@@ -164,6 +166,7 @@ def main():
             size=dict(type="str", required=False),
             count=dict(type="str", required=False),
             vrf=dict(type="str", required=False),
+            source_interface=dict(type="str", required=False)
         ),
         supports_check_mode=True,
     )
@@ -203,7 +206,7 @@ def main():
     destination = module.params["destination"]
 
     ping_optional_args = {}
-    ping_args = ["source", "ttl", "ping_timeout", "size", "count", "vrf"]
+    ping_args = ["source", "ttl", "ping_timeout", "size", "count", "vrf", "source_interface"]
     for param, pvalue in module.params.items():
         if param in ping_args and pvalue is not None:
             ping_optional_args[param] = pvalue
