@@ -1,5 +1,5 @@
 pylama==8.4.1
 pytest==7.3.1
-black==20.8b1; python_version >= '3.6'
+black==24.3.0; python_version >= '3.6'
 ansible
 -r requirements.txt
