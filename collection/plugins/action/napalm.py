@@ -27,6 +27,8 @@ class ActionModule(_ActionModule):
 
             if hasattr(pc, "network_os"):
                 provider["dev_os"] = provider.get("dev_os", pc.network_os)
+                if (provider["dev_os"]).find('.') > 1:
+                    provider["dev_os"] = ((provider["dev_os"]).split('.')).pop()
 
             self._task.args["provider"] = provider
 
