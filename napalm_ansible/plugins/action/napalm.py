@@ -25,7 +25,7 @@ class ActionModule(_ActionModule):
             # Timeout can't be passed via command-line as Ansible defaults to a 10 second timeout
             provider["timeout"] = provider.get("timeout", 60)
 
-            if hasattr(pc, "network_os"):
+            if getattr(pc, "network_os", None):
                 provider["dev_os"] = provider.get("dev_os", pc.network_os)
                 if (provider["dev_os"]).find('.') > 1:
                     provider["dev_os"] = ((provider["dev_os"]).split('.')).pop()
